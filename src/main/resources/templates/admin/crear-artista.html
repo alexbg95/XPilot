@@ -22,12 +22,6 @@
 <body>
 
 <!-- CURSOR -->
-<<<<<<< HEAD
-=======
-<div class="cur"><div class="cur-dot" id="curDot"></div></div>
-<div class="cur"><div class="cur-ring" id="curRing"></div></div>
-
->>>>>>> 644271645afd4c49fe1731bd7b62ea3ab38467bd
 <nav class="xp-nav">
   <a href="/admin" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
@@ -172,19 +166,8 @@ function prevMulti(input) {
 </script>
 
 <script>
-<<<<<<< HEAD
 if(dot&&ring){
   document.querySelectorAll("a,button,.xb,.stat,.card,.obra-item").forEach(el=>{
-=======
-const dot=document.getElementById("curDot"),ring=document.getElementById("curRing");
-let mx=0,my=0,rx=0,ry=0;
-if(dot&&ring){
-  document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
-  (function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(a);})();
-  document.querySelectorAll("a,button,.xb,.stat,.card,.obra-item").forEach(el=>{
-    el.addEventListener("mouseenter",()=>ring.classList.add("hovered"));
-    el.addEventListener("mouseleave",()=>ring.classList.remove("hovered"));
->>>>>>> 644271645afd4c49fe1731bd7b62ea3ab38467bd
   });
 }
 </script>
