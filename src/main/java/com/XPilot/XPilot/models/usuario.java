@@ -6,6 +6,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "usuario")
@@ -35,6 +37,7 @@ public class usuario {
     // 🔗 RELACIÓN CON MEDIA
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("usuario")
+    @JsonIgnore
     private List<media> media = new ArrayList<>();
 
     // 🔹 CONSTRUCTOR VACÍO
