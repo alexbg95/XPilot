@@ -14,7 +14,7 @@ public class Notificacion {
     private String mensaje;
 
     // ✅ CORREGIDO: nombre de columna coincide con la BD (leida)
-    @Column(name = "leida")
+    @Column(name = "leida", columnDefinition = "TINYINT(1)")
     private boolean leido = false;
 
     private LocalDateTime fecha = LocalDateTime.now();
