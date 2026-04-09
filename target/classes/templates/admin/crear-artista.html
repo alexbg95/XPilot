@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Crear Artista — XPilot</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:2rem;margin-bottom:1.5rem}
+    .section-label{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+    .img-preview-wrap{position:relative;display:inline-block;margin-bottom:12px}
+    .img-preview-badge{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);color:var(--amber);font-size:9px;font-weight:700;letter-spacing:0.08em;padding:2px 10px;border-radius:20px;white-space:nowrap}
+    .existing-obra{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);transition:border-color 0.2s}
+    .existing-obra:hover{border-color:var(--border2)}
+    .existing-obra img{width:90px;height:90px;object-fit:cover;display:block}
+    .existing-obra .del-btn{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(139,26,26,0.9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.2s}
+    .existing-obra .del-btn:hover{background:var(--crimson2)}
+    .existing-obra .lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);color:var(--amber);font-size:9px;font-weight:700;padding:3px 5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cur"><div class="cur-dot" id="curDot"></div></div>
+<div class="cur"><div class="cur-ring" id="curRing"></div></div>
+
+<nav class="xp-nav">
+  <a href="/admin" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
+  <div class="xp-nav-end">
+    <a href="/admin" class="xb xb-ghost xb-sm">← Volver al panel</a>
+  </div>
+</nav>
+
+<div class="container-narrow" style="padding:3rem 1.5rem 6rem;">
+  <div style="margin-bottom:2.5rem;">
+    <div class="sec-eyebrow">Gestión de artistas</div>
+    <h1 style="font-family:var(--serif);font-size:2.2rem;font-weight:600;">Crear / Editar Artista</h1>
+  </div>
+
+  <form th:action="@{/admin/guardar}" th:object="${media}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}">
+    <!-- Preservar URLs existentes -->
+    <input type="hidden" name="urlmActual" th:value="${media.urlm}">
+    <input type="hidden" name="tagsActual" th:value="${media.tags}">
+
+    <!-- INFO BÁSICA -->
+    <div class="section-card">
+      <div class="section-label">Información básica</div>
+      <div class="form-group">
+        <label class="label">Nombre del artista</label>
+        <input type="text" class="input" th:field="*{artist}" placeholder="Ej: Alex Dark" required>
+      </div>
+      <div class="form-group">
+        <label class="label">Estilo de obra</label>
+        <input type="text" class="input" th:field="*{style}" placeholder="Ej: Acuarela, Óleo, Arte digital, Mural...">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="label">Biografía</label>
+        <textarea class="input" th:field="*{biografia}" rows="5"
+                  placeholder="Historia del artista, orígenes, trayectoria, influencias..."></textarea>
+      </div>
+    </div>
+
+    <!-- IMÁGENES -->
+    <div class="section-card">
+      <div class="section-label">Imágenes</div>
+
+      <!-- Foto de perfil -->
+      <div class="form-group">
+        <label class="label">Foto de perfil</label>
+        <div th:if="${media.urlm != null and !#strings.isEmpty(media.urlm)}">
+          <div class="img-preview-wrap">
+            <img th:src="${media.urlm}" id="pp"
+                 style="width:90px;height:90px;object-fit:cover;border-radius:50%;border:2px solid var(--amber);">
+            <div class="img-preview-badge">Actual</div>
+          </div>
+        </div>
+        <img th:unless="${media.urlm != null and !#strings.isEmpty(media.urlm)}"
+             id="pp" src="" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:50%;border:2px solid var(--amber);margin-bottom:12px;">
+        <div style="margin-top:10px;">
+          <input type="file" class="input" name="fotoPerfil" accept="image/*"
+                 onchange="prev(this,'pp')" style="padding:8px;">
+          <div style="font-size:12px;color:var(--muted2);margin-top:5px;">Sube una nueva para reemplazar la actual</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Obra principal -->
+      <div class="form-group">
+        <label class="label">Obra principal <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(aparece en la tarjeta de la galería)</span></label>
+        <div th:if="${media.tags != null and !#strings.isEmpty(media.tags)}">
+          <div class="img-preview-wrap">
+            <img th:src="${media.tags}" id="po"
+                 style="width:180px;height:110px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border2);">
+            <div class="img-preview-badge">Actual</div>
+          </div>
+        </div>
+        <img th:unless="${media.tags != null and !#strings.isEmpty(media.tags)}"
+             id="po" src="" style="display:none;width:180px;height:110px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);margin-bottom:12px;">
+        <div style="margin-top:10px;">
+          <input type="file" class="input" name="obraArte" accept="image/*"
+                 onchange="prev(this,'po')" style="padding:8px;">
+          <div style="font-size:12px;color:var(--muted2);margin-top:5px;">Sube una nueva para reemplazar la actual</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Fotos existentes de galería -->
+      <div th:if="${fotosExistentes != null and !#lists.isEmpty(fotosExistentes)}" style="margin-bottom:1.5rem;">
+        <label class="label">Galería actual</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;">
+          <div class="existing-obra" th:each="foto : ${fotosExistentes}">
+            <img th:src="${foto.url}">
+            <div class="lbl" th:text="${foto.nombre != null ? foto.nombre : '#' + foto.id}"></div>
+            <a th:href="@{/admin/eliminar-foto/{f}(f=${foto.id},artistaId=${media.id})}"
+               onclick="return confirm('¿Eliminar esta obra de la galería?')" class="del-btn">×</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nuevas fotos extra -->
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="label">Agregar obras a la galería <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(puedes seleccionar varias)</span></label>
+        <input type="file" class="input" name="obrasExtra" accept="image/*" multiple
+               onchange="prevMulti(this)" style="padding:8px;">
+        <div id="extrasPreview" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+
+    <button type="submit" class="xb xb-amber xb-xl xb-full">💾 Guardar Artista</button>
+  </form>
+</div>
+
+<script>
+function prev(input, id) {
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = document.getElementById(id);
+    img.src = e.target.result;
+    img.style.display = 'block';
+    // Ocultar badge "Actual" si existe
+    const wrap = img.closest('.img-preview-wrap');
+    if (wrap) { const badge = wrap.querySelector('.img-preview-badge'); if(badge) badge.textContent = 'Nueva'; }
+  };
+  r.readAsDataURL(f);
+}
+function prevMulti(input) {
+  const c = document.getElementById("extrasPreview"); c.innerHTML = "";
+  Array.from(input.files).forEach((file, i) => {
+    const r = new FileReader();
+    r.onload = e => {
+      const w = document.createElement("div");
+      w.style = "display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);";
+      const n = file.name.split('.').slice(0, -1).join('.');
+      w.innerHTML = `<img src="${e.target.result}" style="width:70px;height:70px;object-fit:cover;border-radius:var(--r);flex-shrink:0;">
+        <div style="flex:1;">
+          <label class="label">Nombre obra ${i + 1}</label>
+          <input type="text" name="nombresObras" class="input" placeholder="Ej: Atardecer oscuro" value="${n}">
+        </div>`;
+      c.appendChild(w);
+    };
+    r.readAsDataURL(file);
+  });
+}
+</script>
+
+<script>
+const dot=document.getElementById("curDot"),ring=document.getElementById("curRing");
+let mx=0,my=0,rx=0,ry=0;
+if(dot&&ring){
+  document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
+  (function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(a);})();
+  document.querySelectorAll("a,button,.xb,.stat,.card,.obra-item").forEach(el=>{
+    el.addEventListener("mouseenter",()=>ring.classList.add("hovered"));
+    el.addEventListener("mouseleave",()=>ring.classList.remove("hovered"));
+  });
+}
+</script>
+</body>
+</html>

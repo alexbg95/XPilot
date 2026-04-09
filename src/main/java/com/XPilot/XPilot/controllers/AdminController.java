@@ -1,0 +1,275 @@
+package com.XPilot.XPilot.controllers;
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.XPilot.XPilot.models.media;
+import com.XPilot.XPilot.models.usuario;
+import com.XPilot.XPilot.models.Contratacion;
+import com.XPilot.XPilot.models.Notificacion;
+
+import com.XPilot.XPilot.repositories.mediaRepository;
+import com.XPilot.XPilot.repositories.usuarioRepository;
+import com.XPilot.XPilot.repositories.ContratacionRepository;
+import com.XPilot.XPilot.repositories.MediaFotoRepository;
+import com.XPilot.XPilot.models.MediaFoto;
+
+import com.XPilot.XPilot.services.NotificationService;
+import com.XPilot.XPilot.services.NotificacionService;
+
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+    @Autowired private mediaRepository mediaRepo;
+    @Autowired private usuarioRepository usuarioRepo;
+    @Autowired private ContratacionRepository contratacionRepo;
+    @Autowired private NotificationService notificationService;
+    @Autowired private NotificacionService notificacionService;
+    @Autowired private Cloudinary cloudinary;
+    @Autowired private MediaFotoRepository mediaFotoRepo;
+
+    // ================= DASHBOARD =================
+    @GetMapping
+    public String adminDashboard(Model model){
+        model.addAttribute("mediaList",   mediaRepo.findAll());
+        model.addAttribute("solicitudes", contratacionRepo.findByEstado("PENDIENTE"));
+        model.addAttribute("todos",       contratacionRepo.findAll());
+        model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
+        model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
+        return "admin/dashboard";
+    }
+
+    // ================= CREAR ARTISTA =================
+    @GetMapping("/nuevo")
+    public String nuevoArtista(Model model){
+        model.addAttribute("media", new media());
+        return "admin/crear-artista";
+    }
+
+    // ✅ GUARDAR CON CLOUDINARY
+    @PostMapping("/guardar")
+    public String guardarArtista(
+            @ModelAttribute media media,
+            @RequestParam(value = "fotoPerfil",   required = false) MultipartFile fotoPerfil,
+            @RequestParam(value = "obraArte",     required = false) MultipartFile obraArte,
+            @RequestParam(value = "urlmActual",   required = false) String urlmActual,
+            @RequestParam(value = "tagsActual",   required = false) String tagsActual,
+            @RequestParam(value = "obrasExtra",   required = false) List<MultipartFile> obrasExtra,
+            @RequestParam(value = "nombresObras", required = false) List<String> nombresObras,
+            Principal principal) {
+
+        if (principal == null) return "redirect:/login-view";
+
+        usuario user = usuarioRepo.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        media.setUsuario(user);
+
+        // ✅ Preservar imágenes existentes si no se sube una nueva
+        if (urlmActual != null && !urlmActual.isBlank()) media.setUrlm(urlmActual);
+        if (tagsActual != null && !tagsActual.isBlank()) media.setTags(tagsActual);
+
+        // ☁️ SUBIR FOTO DE PERFIL → urlm (sobreescribe solo si se sube una nueva)
+        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> resultado = cloudinary.uploader().upload(
+                        fotoPerfil.getBytes(),
+                        ObjectUtils.asMap("folder", "xpilot/perfiles", "upload_preset", "ml_default")
+                );
+                media.setUrlm((String) resultado.get("secure_url"));
+                System.out.println("✅ Foto perfil subida: " + media.getUrlm());
+            } catch (Exception e) {
+                System.out.println("❌ Error subiendo foto perfil: " + e.getMessage());
+            }
+        }
+
+        // ☁️ SUBIR OBRA PRINCIPAL → tags (sobreescribe solo si se sube una nueva)
+        if (obraArte != null && !obraArte.isEmpty()) {
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> resultado = cloudinary.uploader().upload(
+                        obraArte.getBytes(),
+                        ObjectUtils.asMap("folder", "xpilot/obras", "upload_preset", "ml_default")
+                );
+                media.setTags((String) resultado.get("secure_url"));
+                System.out.println("✅ Obra principal subida: " + media.getTags());
+            } catch (Exception e) {
+                System.out.println("❌ Error subiendo obra: " + e.getMessage());
+            }
+        }
+
+        media saved = mediaRepo.save(media);
+
+        // ☁️ SUBIR FOTOS EXTRA DE OBRAS
+        if (obrasExtra != null) {
+            for (int i = 0; i < obrasExtra.size(); i++) {
+                MultipartFile foto = obrasExtra.get(i);
+                if (foto != null && !foto.isEmpty()) {
+                    try {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> res = cloudinary.uploader().upload(
+                                foto.getBytes(),
+                                ObjectUtils.asMap("folder", "xpilot/obras-extra", "upload_preset", "ml_default")
+                        );
+                        String url = (String) res.get("secure_url");
+                        String nombreObra = (nombresObras != null && i < nombresObras.size()
+                                && !nombresObras.get(i).isBlank())
+                                ? nombresObras.get(i) : "Obra " + (i + 1);
+                        mediaFotoRepo.save(new MediaFoto(url, nombreObra, saved));
+                        System.out.println("✅ Foto extra subida: " + url + " | nombre: " + nombreObra);
+                    } catch (Exception e) {
+                        System.out.println("❌ Error subiendo foto extra: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return "redirect:/admin";
+    }
+
+    // ================= EDITAR =================
+    @GetMapping("/editar/{id}")
+    public String editarArtista(@PathVariable Long id, Model model){
+        media media = mediaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Artista no encontrado"));
+        model.addAttribute("media", media);
+        model.addAttribute("fotosExistentes", mediaFotoRepo.findByMedia(media));
+        return "admin/crear-artista";
+    }
+
+    // ================= ELIMINAR FOTO OBRA =================
+    @Transactional
+    @GetMapping("/eliminar-foto/{fotoId}")
+    public String eliminarFotoObra(@PathVariable Long fotoId,
+                                   @org.springframework.web.bind.annotation.RequestParam Long artistaId) {
+        mediaFotoRepo.deleteById(fotoId);
+        System.out.println("✅ Foto #" + fotoId + " eliminada");
+        return "redirect:/admin/editar/" + artistaId;
+    }
+
+    // ================= ELIMINAR =================
+    @Transactional
+    @GetMapping("/eliminar/{id}")
+    public String eliminarArtista(@PathVariable Long id){
+        contratacionRepo.deleteByArtista_Id(id);
+        mediaRepo.deleteById(id);
+        return "redirect:/admin";
+    }
+
+    // ================= 🔔 ACEPTAR + NOTIFICAR =================
+    @PostMapping("/aceptar/{id}")
+    public String aceptarSolicitud(@PathVariable Long id,
+                                   @RequestParam("fechaEvento") String fechaEvento){
+
+        Contratacion c = contratacionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        c.setEstado("ACEPTADO");
+        c.setFechaEvento(LocalDate.parse(fechaEvento));
+
+        try {
+            if (c.getArtista() != null && c.getArtista().getUsuario() != null) {
+                usuario artistaUser = c.getArtista().getUsuario();
+                String msg = "🎤 Has sido contratado para el " + c.getFechaEvento();
+                notificacionService.crearNotificacion(artistaUser, msg);
+                if (artistaUser.getFcmToken() != null && !artistaUser.getFcmToken().isBlank())
+                    notificationService.enviarNotificacion(artistaUser.getFcmToken(), "Nuevo contrato", msg);
+            }
+
+            if (c.getCliente() != null) {
+                usuario cliente = c.getCliente();
+                String msg = "🎉 Tu contrato con " + c.getArtista().getArtist()
+                           + " fue aceptado para el " + c.getFechaEvento();
+                notificacionService.crearNotificacion(cliente, msg);
+                if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
+                    notificationService.enviarNotificacion(cliente.getFcmToken(), "Contrato aceptado", msg);
+            }
+
+            if (!c.isNotificado()) c.setNotificado(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        contratacionRepo.save(c);
+        return "redirect:/admin";
+    }
+
+    // ================= 🔔 RECHAZAR + NOTIFICAR =================
+    @PostMapping("/rechazar/{id}")
+    public String rechazarSolicitud(@PathVariable Long id){
+
+        Contratacion c = contratacionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        c.setEstado("RECHAZADO");
+        c.setNotificado(true);
+        contratacionRepo.save(c);
+
+        try {
+            if (c.getCliente() != null) {
+                usuario cliente = c.getCliente();
+                String titulo = "❌ Contrato rechazado";
+                String msg = "Tu solicitud con " + c.getArtista().getArtist() + " fue rechazada por el administrador.";
+
+                // ✅ Guardar notificación en BD
+                notificacionService.crearNotificacion(cliente, titulo + " — " + msg);
+
+                // ✅ Enviar push si tiene token
+                if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank()) {
+                    notificationService.enviarNotificacion(cliente.getFcmToken(), titulo, msg);
+                    System.out.println("✅ Push de rechazo enviado a: " + cliente.getEmail());
+                } else {
+                    System.out.println("⚠ Cliente sin FCM token: " + cliente.getEmail());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error notificando rechazo: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin";
+    }
+
+    // ================= NOTIFICACIONES ADMIN =================
+    @GetMapping("/notificaciones")
+    @ResponseBody
+    public List<Notificacion> obtenerNotificaciones(Principal principal){
+        if (principal == null) throw new RuntimeException("No autenticado");
+        usuario user = usuarioRepo.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return notificacionService.obtenerNoLeidas(user.getId());
+    }
+
+    // ================= GUARDAR TOKEN =================
+    @PostMapping("/guardar-token")
+    @ResponseBody
+    public String guardarToken(@RequestBody Map<String, String> body, Principal principal){
+        try {
+            if (principal == null) return "NO AUTH";
+            String token = body.get("token");
+            if (token == null || token.isBlank()) return "TOKEN VACIO";
+            usuario user = usuarioRepo.findByEmail(principal.getName())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            user.setFcmToken(token);
+            usuarioRepo.save(user);
+            System.out.println("🔥 Token guardado para: " + user.getEmail());
+            return "OK";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERROR";
+        }
+    }
+}

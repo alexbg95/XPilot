@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title th:text="${artista.artist} + ' — XPilot'">Artista</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .bio-card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r2);padding:2.25rem;max-width:700px;
+      position:relative;overflow:hidden;
+    }
+    .bio-card::before{
+      content:'\201C';
+      font-family:var(--serif);font-size:8rem;color:var(--amber);
+      opacity:0.06;position:absolute;top:-20px;left:20px;line-height:1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cur"><div class="cur-dot" id="curDot"></div></div>
+<div class="cur"><div class="cur-ring" id="curRing"></div></div>
+
+
+<nav class="xp-nav" id="nav">
+  <a href="/gallery" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
+  <div class="xp-nav-end">
+    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
+    <a href="/gallery" class="xb xb-ghost xb-sm">← Galería</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="artista-hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-auto fu">
+        <img th:if="${artista.urlm != null and !#strings.isEmpty(artista.urlm)}"
+             th:src="${artista.urlm}" class="artista-avatar" th:alt="${artista.artist}">
+        <div th:unless="${artista.urlm != null and !#strings.isEmpty(artista.urlm)}"
+             style="width:140px;height:140px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:3.5rem;">🎤</div>
+      </div>
+      <div class="col fu d1">
+        <div class="sec-eyebrow">Perfil de artista</div>
+        <h1 style="font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;margin:6px 0;" th:text="${artista.artist}"></h1>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-bottom:1.75rem;" th:text="${artista.style}"></div>
+        <button class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BIO -->
+<div class="container" style="padding:3rem 0 0;" th:if="${artista.biografia != null and !#strings.isEmpty(artista.biografia)}">
+  <div class="bio-card fu">
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem;">Historia del artista</div>
+    <p style="font-family:var(--serif);font-size:1.1rem;font-weight:300;color:var(--off);line-height:1.85;margin:0;" th:text="${artista.biografia}"></p>
+  </div>
+</div>
+
+<!-- OBRAS -->
+<div class="container" style="padding:3.5rem 0 6rem;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;">
+    <div>
+      <div class="sec-eyebrow">Portfolio</div>
+      <div class="sec-title">Obras del Artista</div>
+    </div>
+    <div style="font-size:13px;color:var(--muted2);">Clic para contratar</div>
+  </div>
+
+  <!-- Fotos extra -->
+  <div class="row g-4" th:if="${fotos != null and !#lists.isEmpty(fotos)}">
+    <div class="col-lg-4 col-md-6 fu" th:each="foto,i : ${fotos}"
+         th:attr="style='animation-delay:' + ${i.index * 0.07} + 's'">
+      <div class="obra-item"
+           th:data-id="${foto.id}"
+           th:data-nombre="${foto.nombre != null ? foto.nombre : 'Obra #' + foto.id}"
+           th:data-url="${foto.url}"
+           onclick="abrirObra(this)">
+        <img th:src="${foto.url}" alt="Obra">
+        <div class="obra-id">#<span th:text="${foto.id}"></span><span th:if="${foto.nombre != null}" th:text="' · ' + ${foto.nombre}"></span></div>
+        <div class="obra-overlay">
+          <div class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Obra principal -->
+  <div th:if="${(fotos == null or #lists.isEmpty(fotos)) and artista.tags != null and !#strings.isEmpty(artista.tags)}"
+       class="row g-4 justify-content-center">
+    <div class="col-md-5 fu">
+      <div class="obra-item" data-id="0" data-nombre="Obra principal" th:data-url="${artista.tags}" onclick="abrirObra(this)">
+        <img th:src="${artista.tags}" alt="Obra principal">
+        <div class="obra-overlay">
+          <div class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin obras -->
+  <div th:if="${(fotos == null or #lists.isEmpty(fotos)) and (artista.tags == null or #strings.isEmpty(artista.tags))}"
+       style="text-align:center;padding:5rem 0;color:var(--muted2);">
+    <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
+    <p style="margin-bottom:1.5rem;">Este artista aún no tiene obras publicadas.</p>
+    <button class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo">X<em>Pilot</em></div>
+  <div class="footer-sub">© 2026 XPilot — Arte que inspira</div>
+</footer>
+
+<!-- MODAL OBRA -->
+<div class="modal fade" id="modalObra" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="obraTitulo">Obra</h5>
+          <small style="color:var(--muted2);" id="obraId"></small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="text-align:center;">
+        <img id="obraImg" src="" style="width:100%;max-height:52vh;object-fit:contain;border-radius:var(--r);margin-bottom:1.5rem;">
+        <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
+          <input type="hidden" name="obraId" id="inObraId">
+          <input type="hidden" name="obraNombre" id="inObraNombre">
+          <button type="submit" class="xb xb-amber xb-lg xb-full">
+            🎧 Contratar a <span th:text="${artista.artist}"></span> por esta obra
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GENERAL -->
+<div class="modal fade" id="modalContratar" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Contratar Artista</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:2rem;">
+        <div style="font-family:var(--serif);font-size:1.4rem;margin-bottom:1.5rem;color:var(--off);">
+          ¿Contratar a <em style="color:var(--amber2);" th:text="${artista.artist}"></em>?
+        </div>
+        <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
+          <button type="submit" class="xb xb-amber xb-lg xb-full">✓ Confirmar contratación</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirObra(el){
+  const id=el.getAttribute('data-id'),nombre=el.getAttribute('data-nombre'),url=el.getAttribute('data-url');
+  document.getElementById('obraImg').src=url;
+  document.getElementById('obraTitulo').textContent='🎨 '+nombre;
+  document.getElementById('obraId').textContent='ID de obra: #'+id;
+  document.getElementById('inObraId').value=id;
+  document.getElementById('inObraNombre').value=nombre;
+  new bootstrap.Modal(document.getElementById('modalObra')).show();
+}
+function abrirModalContratar(){new bootstrap.Modal(document.getElementById('modalContratar')).show();}
+</script>
+
+<script>
+const dot=document.getElementById("curDot"),ring=document.getElementById("curRing");
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
+(function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(a);})();
+document.querySelectorAll("a,button,.card,.obra-item,.xb").forEach(el=>{
+  el.addEventListener("mouseenter",()=>ring.classList.add("hovered"));
+  el.addEventListener("mouseleave",()=>ring.classList.remove("hovered"));
+});
+const nav=document.getElementById("nav");
+if(nav)window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
+</script>
+</body></html>
