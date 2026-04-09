@@ -130,7 +130,7 @@ navigator.serviceWorker.register("/firebase-messaging-sw.js").then(reg=>{
   Notification.requestPermission().then(async p=>{
     if(p!=="granted")return;
     const token=await messaging.getToken({vapidKey:"BK2AResPV3NQc7F-ZHUIKVIuwbI4HS2QLI4otoYKWNVr2wEAgBegGjc7pzgrm-fLZKuaS49DTxs2mNTQSB8Mz8c",serviceWorkerRegistration:reg});
-    fetch("/guardar-fcm-token",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token})});
+    fetch("/guardar-fcm-token",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({token})}).then(r=>console.log("FCM token status:",r.status));
   });
 });
 messaging.onMessage(p=>{new Notification(p.notification.title,{body:p.notification.body,icon:"/media/avatar.png"});cargarNotif();});
