@@ -165,7 +165,7 @@ public class AdminController {
     @GetMapping("/eliminar/{id}")
     public String eliminarArtista(@PathVariable Long id){
         contratacionRepo.deleteByArtista_Id(id);
-        mediaRepo.deleteById(id);
+        if (mediaRepo.existsById(id)) { mediaRepo.deleteById(id); }
         return "redirect:/admin";
     }
 
