@@ -30,6 +30,13 @@ public class usuario {
     @Column(nullable = false)
     private String rol = "USER";
 
+    // ✅ VERIFICACION EMAIL
+    @Column(name = "verificado")
+    private boolean verificado = false;
+
+    @Column(name = "token_verificacion", length = 100)
+    private String tokenVerificacion;
+
     // 🔔 TOKEN FIREBASE
     @Column(name = "fcm_token", length = 500)
     private String fcmToken;
@@ -73,6 +80,11 @@ public class usuario {
     public String getRol() { return rol; }
 
     public void setRol(String rol) { this.rol = rol; }
+
+    public boolean isVerificado() { return verificado; }
+    public void setVerificado(boolean verificado) { this.verificado = verificado; }
+    public String getTokenVerificacion() { return tokenVerificacion; }
+    public void setTokenVerificacion(String tokenVerificacion) { this.tokenVerificacion = tokenVerificacion; }
 
     public String getFcmToken() { return fcmToken; }
 
