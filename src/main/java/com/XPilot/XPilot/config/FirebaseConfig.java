@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
+import java.util.Base64;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -21,7 +22,8 @@ public class FirebaseConfig {
             InputStream credentialsStream;
 
             // En Railway: usa variable de entorno FIREBASE_CREDENTIALS
-            String firebaseJson = System.getenv("FIREBASE_CREDENTIALS");
+            String b64 = System.getenv("FIREBASE_CREDENTIALS_B64");
+            String firebaseJson = (b64 != null && !b64.isBlank()) ? new String(Base64.getDecoder().decode(b64)) : System.getenv("FIREBASE_CREDENTIALS");
 
             if (firebaseJson != null && !firebaseJson.isBlank()) {
                 // Producción: leer desde variable de entorno
