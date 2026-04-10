@@ -27,8 +27,9 @@ public class FirebaseConfig {
 
             if (firebaseJson != null && !firebaseJson.isBlank()) {
                 // Producción: leer desde variable de entorno
+                String fixedJson = firebaseJson.replace("\\n", "\n");
                 credentialsStream = new ByteArrayInputStream(
-                    firebaseJson.getBytes(StandardCharsets.UTF_8)
+                    fixedJson.getBytes(StandardCharsets.UTF_8)
                 );
                 System.out.println("✅ Firebase: credenciales desde variable de entorno");
             } else {
