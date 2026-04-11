@@ -71,6 +71,7 @@
               <span th:if="${c.estado == 'PENDIENTE'}"  class="badge bdg-pending">Pendiente</span>
               <span th:if="${c.estado == 'ACEPTADO'}"   class="badge bdg-ok">Aceptado</span>
               <span th:if="${c.estado == 'RECHAZADO'}"  class="badge bdg-no">Rechazado</span>
+              <span th:if="${c.estado == 'FINALIZADO'}" class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
             </td>
           </tr>
           <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
