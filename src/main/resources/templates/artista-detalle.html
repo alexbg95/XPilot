@@ -76,9 +76,10 @@
            th:data-id="${foto.id}"
            th:data-nombre="${foto.nombre != null ? foto.nombre : 'Obra #' + foto.id}"
            th:data-url="${foto.url}"
+           th:data-precio="${foto.precio}"
            onclick="abrirObra(this)">
         <img th:src="${foto.url}" alt="Obra">
-        <div class="obra-id">#<span th:text="${foto.id}"></span><span th:if="${foto.nombre != null}" th:text="' · ' + ${foto.nombre}"></span></div>
+        <div class="obra-id">#<span th:text="${foto.id}"></span><span th:if="${foto.nombre != null}" th:text="' · ' + ${foto.nombre}"></span><span th:if="${foto.precio != null}" th:text="' — $' + ${#numbers.formatInteger(foto.precio,1,'COMMA')}" style="color:var(--amber2);margin-left:4px;"></span></div>
         <div class="obra-overlay">
           <div class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
         </div>
@@ -125,7 +126,8 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" style="text-align:center;">
-        <img id="obraImg" src="" style="width:100%;max-height:52vh;object-fit:contain;border-radius:var(--r);margin-bottom:1.5rem;">
+        <img id="obraImg" src="" style="width:100%;max-height:52vh;object-fit:contain;border-radius:var(--r);margin-bottom:1rem;">
+        <div id="obraPrecio" style="font-family:var(--serif);font-size:1.2rem;color:var(--amber2);margin-bottom:1rem;"></div>
         <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
           <input type="hidden" name="obraId" id="inObraId">
           <input type="hidden" name="obraNombre" id="inObraNombre">
@@ -160,6 +162,9 @@
 
 <script>
 function abrirObra(el){
+  const precio=el.getAttribute('data-precio');
+  const precioEl=document.getElementById('obraPrecio');
+  if(precioEl) precioEl.textContent=precio&&precio!='null'?'Precio: $'+Number(precio).toLocaleString('es-CO'):'';
   const id=el.getAttribute('data-id'),nombre=el.getAttribute('data-nombre'),url=el.getAttribute('data-url');
   document.getElementById('obraImg').src=url;
   document.getElementById('obraTitulo').textContent='🎨 '+nombre;
