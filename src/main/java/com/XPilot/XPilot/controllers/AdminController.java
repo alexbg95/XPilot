@@ -88,7 +88,7 @@ public class AdminController {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> resultado = cloudinary.uploader().upload(
                         fotoPerfil.getBytes(),
-                        ObjectUtils.asMap("folder", "xpilot/perfiles", "upload_preset", "ml_default")
+                        ObjectUtils.asMap("folder", "xpilot/perfiles")
                 );
                 media.setUrlm((String) resultado.get("secure_url"));
                 System.out.println("✅ Foto perfil subida: " + media.getUrlm());
@@ -103,7 +103,7 @@ public class AdminController {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> resultado = cloudinary.uploader().upload(
                         obraArte.getBytes(),
-                        ObjectUtils.asMap("folder", "xpilot/obras", "upload_preset", "ml_default")
+                        ObjectUtils.asMap("folder", "xpilot/obras")
                 );
                 media.setTags((String) resultado.get("secure_url"));
                 System.out.println("✅ Obra principal subida: " + media.getTags());
@@ -124,7 +124,7 @@ public class AdminController {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> res = cloudinary.uploader().upload(
                                 foto.getBytes(),
-                                ObjectUtils.asMap("folder", "xpilot/obras-extra", "upload_preset", "ml_default")
+                                ObjectUtils.asMap("folder", "xpilot/obras-extra")
                         );
                         String url = (String) res.get("secure_url");
                         String nombreObra = (nombresObras != null && i < nombresObras.size()
