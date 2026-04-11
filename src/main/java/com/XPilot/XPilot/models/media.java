@@ -19,6 +19,10 @@ public class media {
     @Column(length = 1000)
     private String biografia;
 
+    private Double precio;
+
+    private boolean disponible = true;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private usuario usuario;
@@ -39,6 +43,10 @@ public class media {
 
     public String getBiografia() { return biografia; }
 
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
+    public boolean isDisponible() { return disponible; }
+    public void setDisponible(boolean disponible) { this.disponible = disponible; }
     public usuario getUsuario() { return usuario; }
 
     // ================= SETTERS =================

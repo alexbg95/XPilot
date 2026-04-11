@@ -10,9 +10,6 @@
 <body>
 
 <!-- CURSOR -->
-<div class="cur"><div class="cur-dot" id="curDot"></div></div>
-<div class="cur"><div class="cur-ring" id="curRing"></div></div>
-
 <div class="admin-wrap">
 
   <!-- SIDEBAR -->
@@ -190,14 +187,8 @@ function ap(t=""){const rows=document.querySelectorAll("#tablaH tbody tr[data-es
 </script>
 
 <script>
-const dot=document.getElementById("curDot"),ring=document.getElementById("curRing");
-let mx=0,my=0,rx=0,ry=0;
 if(dot&&ring){
-  document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";});
-  (function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(a);})();
   document.querySelectorAll("a,button,.xb,.stat,.card,.obra-item").forEach(el=>{
-    el.addEventListener("mouseenter",()=>ring.classList.add("hovered"));
-    el.addEventListener("mouseleave",()=>ring.classList.remove("hovered"));
   });
 }
 </script>

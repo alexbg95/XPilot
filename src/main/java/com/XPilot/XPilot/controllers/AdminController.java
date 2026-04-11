@@ -69,6 +69,7 @@ public class AdminController {
             @RequestParam(value = "tagsActual",   required = false) String tagsActual,
             @RequestParam(value = "obrasExtra",   required = false) List<MultipartFile> obrasExtra,
             @RequestParam(value = "nombresObras", required = false) List<String> nombresObras,
+            @RequestParam(value = "precio", required = false) Double precio,
             Principal principal) {
 
         if (principal == null) return "redirect:/login-view";
@@ -111,6 +112,7 @@ public class AdminController {
             }
         }
 
+        if (precio != null) media.setPrecio(precio);
         media saved = mediaRepo.save(media);
 
         // ☁️ SUBIR FOTOS EXTRA DE OBRAS
@@ -240,6 +242,33 @@ public class AdminController {
             System.out.println("❌ Error notificando rechazo: " + e.getMessage());
             e.printStackTrace();
         }
+        return "redirect:/admin";
+    }
+
+    // ================= FINALIZAR =================
+    @PostMapping("/finalizar/{id}")
+    public String finalizarContrato(@PathVariable Long id){
+        Contratacion c = contratacionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
+        c.setEstado("FINALIZADO");
+        contratacionRepo.save(c);
+        // Artista queda disponible
+        if (c.getArtista() != null) {
+            media artista = c.getArtista();
+            artista.setDisponible(true);
+            mediaRepo.save(artista);
+        }
+        try {
+            if (c.getArtista() != null && c.getArtista().getUsuario() != null) {
+                usuario artistaUser = c.getArtista().getUsuario();
+                String msg = "Tu contrato del " + c.getFechaEvento() + " ha sido marcado como finalizado.";
+                notificacionService.crearNotificacion(artistaUser, msg);
+            }
+            if (c.getCliente() != null) {
+                String msg = "Tu contrato con " + c.getArtista().getArtist() + " ha finalizado. Gracias por usar XPilot.";
+                notificacionService.crearNotificacion(c.getCliente(), msg);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
         return "redirect:/admin";
     }
 

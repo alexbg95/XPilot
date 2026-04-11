@@ -57,6 +57,12 @@
         <textarea class="input" th:field="*{biografia}" rows="5"
                   placeholder="Historia del artista, orígenes, trayectoria, influencias..."></textarea>
       </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="label">Precio base (COP)</label>
+        <input type="number" name="precio" class="input" placeholder="ej: 500000" th:value="${media.precio}" min="0" step="1000">
+      </div>
+      <div style="display:none">
+      </div>
     </div>
 
     <!-- IMÁGENES -->

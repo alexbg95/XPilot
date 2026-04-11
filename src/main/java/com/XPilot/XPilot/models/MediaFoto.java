@@ -15,6 +15,8 @@ public class MediaFoto {
     @Column(length = 200)
     private String nombre;
 
+    private Double precio;
+
     @ManyToOne
     @JoinColumn(name = "media_id")
     private media media;
@@ -23,6 +25,12 @@ public class MediaFoto {
     public MediaFoto(String url, String nombre, media media) {
         this.url = url;
         this.nombre = nombre;
+        this.media = media;
+    }
+    public MediaFoto(String url, String nombre, Double precio, media media) {
+        this.url = url;
+        this.nombre = nombre;
+        this.precio = precio;
         this.media = media;
     }
 
@@ -35,4 +43,6 @@ public class MediaFoto {
     public void setUrl(String url) { this.url = url; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setMedia(media media) { this.media = media; }
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
 }
