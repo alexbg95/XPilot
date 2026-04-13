@@ -77,10 +77,17 @@
                        style="width:46px;height:46px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">🎤</div>
                 </td>
                 <td>
-                  <div th:with="contratos=${contratacionesPorArtista[m.id]},ganancias=${gananciasPorArtista[m.id]}">
-                    <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;" th:text="${contratos != null ? contratos : 0}"></div>
-                    <div style="font-size:11px;color:var(--muted2);">contratos</div>
-                    <div th:if="${ganancias != null and ganancias > 0}" style="font-size:11px;color:var(--amber2);margin-top:2px;" th:text="'$' + ${#numbers.formatInteger(ganancias,1,'COMMA')}"></div>
+                  <div th:with="contratos=${contratacionesPorArtista[m.id]},ganancias=${gananciasPorArtista[m.id]}"
+                       style="display:flex;align-items:center;gap:16px;">
+                    <div>
+                      <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;" th:text="${contratos != null ? contratos : 0}"></div>
+                      <div style="font-size:11px;color:var(--muted2);">contratos</div>
+                    </div>
+                    <div th:if="${ganancias != null and ganancias > 0}"
+                         style="padding:4px 10px;background:rgba(200,129,58,0.1);border:1px solid rgba(200,129,58,0.2);border-radius:8px;">
+                      <div style="font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--amber2);" th:text="'$' + ${#numbers.formatInteger(ganancias,1,'COMMA')}"></div>
+                      <div style="font-size:10px;color:var(--muted2);">ganado</div>
+                    </div>
                   </div>
                 </td>
                 <td>
@@ -108,7 +115,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Cliente</th><th>Artista</th><th>Obra</th><th>Aceptar</th><th>Rechazar</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha solicitada</th><th>Aceptar</th><th>Rechazar</th></tr></thead>
             <tbody>
               <tr th:each="c : ${solicitudes}">
                 <td style="font-weight:600;" th:text="${c.cliente.uname}"></td>
@@ -116,6 +123,10 @@
                 <td>
                   <span th:if="${c.obraNombre != null}" class="badge bdg-art" th:text="${c.obraNombre}"></span>
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">—</span>
+                </td>
+                <td>
+                  <span th:if="${c.fechaEvento != null}" style="font-family:var(--serif);font-size:0.95rem;" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
+                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
                 <td>
                   <form th:action="@{/admin/aceptar/{id}(id=${c.id})}" method="post" style="display:flex;gap:8px;align-items:center;">
