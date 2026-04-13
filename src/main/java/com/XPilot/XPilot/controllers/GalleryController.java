@@ -77,6 +77,12 @@ public class GalleryController {
         if (obraId != null) c.setObraId(obraId);
         if (obraNombre != null && !obraNombre.isBlank()) c.setObraNombre(obraNombre);
         if (fechaEvento != null && !fechaEvento.isBlank()) c.setFechaEvento(java.time.LocalDate.parse(fechaEvento));
+        // Guardar precio de la obra
+        if (obraId != null && obraId > 0) {
+            mediaFotoRepo.findById(obraId).ifPresent(foto -> c.setPrecioObra(foto.getPrecio()));
+        } else {
+            c.setPrecioObra(artista.getPrecio());
+        }
 
         contratacionRepo.save(c);
 

@@ -32,6 +32,8 @@ public class Contratacion {
     @Column(length = 200)
     private String obraNombre;
 
+    private Double precioObra;
+
     public Long getId() { return id; }
 
     public usuario getCliente() { return cliente; }
@@ -54,4 +56,6 @@ public class Contratacion {
 
     public String getObraNombre() { return obraNombre; }
     public void setObraNombre(String obraNombre) { this.obraNombre = obraNombre; }
+    public Double getPrecioObra() { return precioObra; }
+    public void setPrecioObra(Double precioObra) { this.precioObra = precioObra; }
 }

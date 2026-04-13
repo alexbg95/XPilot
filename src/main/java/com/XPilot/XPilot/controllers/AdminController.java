@@ -50,13 +50,20 @@ public class AdminController {
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
         model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
 
-        // Contratos por artista
+        // Contratos y ganancias por artista
         java.util.Map<Long, Long> contratacionesPorArtista = new java.util.HashMap<>();
+        java.util.Map<Long, Double> gananciasPorArtista = new java.util.HashMap<>();
         for (media m : mediaRepo.findAll()) {
             long count = contratacionRepo.countByArtista_Id(m.getId());
             contratacionesPorArtista.put(m.getId(), count);
+            double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
+                .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
+                .mapToDouble(c -> c.getPrecioObra() != null ? c.getPrecioObra() : 0.0)
+                .sum();
+            gananciasPorArtista.put(m.getId(), ganancias);
         }
         model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
+        model.addAttribute("gananciasPorArtista", gananciasPorArtista);
 
         return "admin/dashboard";
     }

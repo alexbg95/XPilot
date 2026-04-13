@@ -16,4 +16,5 @@ public interface ContratacionRepository extends JpaRepository<Contratacion, Long
     // ✅ CORREGIDO: Integer → Long
     void deleteByArtista_Id(Long id);
     long countByArtista_Id(Long artistaId);
+    java.util.List<Contratacion> findByArtista_Id(Long artistaId);
 }
