@@ -69,6 +69,7 @@ public class AdminController {
             @RequestParam(value = "tagsActual",   required = false) String tagsActual,
             @RequestParam(value = "obrasExtra",   required = false) List<MultipartFile> obrasExtra,
             @RequestParam(value = "nombresObras", required = false) List<String> nombresObras,
+            @RequestParam(value = "preciosObras", required = false) List<Double> preciosObras,
             @RequestParam(value = "precio", required = false) Double precio,
             Principal principal) {
 
@@ -130,7 +131,10 @@ public class AdminController {
                         String nombreObra = (nombresObras != null && i < nombresObras.size()
                                 && !nombresObras.get(i).isBlank())
                                 ? nombresObras.get(i) : "Obra " + (i + 1);
-                        mediaFotoRepo.save(new MediaFoto(url, nombreObra, saved));
+                        Double precioObra = (preciosObras != null && i < preciosObras.size()) ? preciosObras.get(i) : null;
+                        MediaFoto mf = new MediaFoto(url, nombreObra, saved);
+                        mf.setPrecio(precioObra);
+                        mediaFotoRepo.save(mf);
                         System.out.println("✅ Foto extra subida: " + url + " | nombre: " + nombreObra);
                     } catch (Exception e) {
                         System.out.println("❌ Error subiendo foto extra: " + e.getMessage());
