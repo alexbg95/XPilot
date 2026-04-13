@@ -49,6 +49,15 @@ public class AdminController {
         model.addAttribute("todos",       contratacionRepo.findAll());
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
         model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
+
+        // Contratos por artista
+        java.util.Map<Long, Long> contratacionesPorArtista = new java.util.HashMap<>();
+        for (media m : mediaRepo.findAll()) {
+            long count = contratacionRepo.countByArtista_Id(m.getId());
+            contratacionesPorArtista.put(m.getId(), count);
+        }
+        model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
+
         return "admin/dashboard";
     }
 

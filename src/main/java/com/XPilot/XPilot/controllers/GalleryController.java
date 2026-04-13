@@ -47,6 +47,7 @@ public class GalleryController {
             @PathVariable Long artistaId,
             @RequestParam(value = "obraId",     required = false) Long obraId,
             @RequestParam(value = "obraNombre", required = false) String obraNombre,
+            @RequestParam(value = "fechaEvento", required = false) String fechaEvento,
             Principal principal) {
 
         if (principal == null) return "redirect:/login";
@@ -75,6 +76,7 @@ public class GalleryController {
         // ✅ Guardar datos de la obra si se contrató una específica
         if (obraId != null) c.setObraId(obraId);
         if (obraNombre != null && !obraNombre.isBlank()) c.setObraNombre(obraNombre);
+        if (fechaEvento != null && !fechaEvento.isBlank()) c.setFechaEvento(java.time.LocalDate.parse(fechaEvento));
 
         contratacionRepo.save(c);
 

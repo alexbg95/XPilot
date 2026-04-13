@@ -139,6 +139,11 @@
         <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
           <input type="hidden" name="obraId" id="inObraId">
           <input type="hidden" name="obraNombre" id="inObraNombre">
+          <div class="form-group" style="margin-bottom:1rem;text-align:left;">
+            <label class="label">Fecha del evento</label>
+            <input type="date" name="fechaEvento" class="input" required
+                   style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;">
+          </div>
           <button th:if="${artista.disponible}" type="submit" class="xb xb-amber xb-lg xb-full">🎧 Contratar a <span th:text="${artista.artist}"></span> por esta obra</button>
           <button th:unless="${artista.disponible}" type="button" disabled class="xb xb-lg xb-full" style="opacity:0.4;cursor:not-allowed;">Artista no disponible</button>
         </form>
@@ -160,6 +165,11 @@
           ¿Contratar a <em style="color:var(--amber2);" th:text="${artista.artist}"></em>?
         </div>
         <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
+          <div class="form-group" style="margin-bottom:1rem;text-align:left;">
+            <label class="label">Fecha del evento</label>
+            <input type="date" name="fechaEvento" class="input" required
+                   style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;">
+          </div>
           <button type="submit" class="xb xb-amber xb-lg xb-full">✓ Confirmar contratación</button>
         </form>
       </div>

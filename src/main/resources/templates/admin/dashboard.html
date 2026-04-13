@@ -63,7 +63,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Artista</th><th>Estilo</th><th>Imagen</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Artista</th><th>Estilo</th><th>Imagen</th><th>Contratos</th><th>Disponible</th><th>Acciones</th></tr></thead>
             <tbody>
               <tr th:each="m : ${mediaList}">
                 <td style="font-family:var(--serif);font-size:1.05rem;font-weight:600;" th:text="${m.artist}"></td>
@@ -75,6 +75,16 @@
                        style="width:46px;height:46px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);">
                   <div th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and (m.tags == null or #strings.isEmpty(m.tags))}"
                        style="width:46px;height:46px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">🎤</div>
+                </td>
+                <td>
+                  <div th:with="contratos=${contratacionesPorArtista[m.id]}">
+                    <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;" th:text="${contratos != null ? contratos : 0}"></div>
+                    <div style="font-size:11px;color:var(--muted2);">contratos</div>
+                  </div>
+                </td>
+                <td>
+                  <span th:if="${m.disponible}" style="background:rgba(42,97,69,0.15);color:#4caf80;border:1px solid rgba(76,175,128,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;">Disponible</span>
+                  <span th:unless="${m.disponible}" style="background:rgba(122,24,24,0.15);color:#f09090;border:1px solid rgba(240,144,144,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;">Ocupado</span>
                 </td>
                 <td><div style="display:flex;gap:8px;">
                   <a th:href="@{/admin/editar/{id}(id=${m.id})}" class="xb xb-outline xb-sm">Editar</a>
