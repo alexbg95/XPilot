@@ -57,6 +57,15 @@ public class GalleryController {
         media artista = mediaRepo.findById(artistaId)
                 .orElseThrow(() -> new RuntimeException("Artista no encontrado"));
 
+        // Verificar disponibilidad
+        if (!artista.isDisponible()) {
+            return "redirect:/artista/" + artistaId + "?ocupado=true";
+        }
+
+        // Marcar artista como no disponible
+        artista.setDisponible(false);
+        mediaRepo.save(artista);
+
         Contratacion c = new Contratacion();
         c.setCliente(cliente);
         c.setArtista(artista);

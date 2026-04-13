@@ -181,6 +181,11 @@ public class AdminController {
 
         c.setEstado("ACEPTADO");
         c.setFechaEvento(LocalDate.parse(fechaEvento));
+        // Marcar artista no disponible
+        if (c.getArtista() != null) {
+            c.getArtista().setDisponible(false);
+            mediaRepo.save(c.getArtista());
+        }
 
         try {
             if (c.getArtista() != null && c.getArtista().getUsuario() != null) {
