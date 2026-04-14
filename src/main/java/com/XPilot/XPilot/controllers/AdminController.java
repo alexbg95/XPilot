@@ -64,6 +64,8 @@ public class AdminController {
         }
         model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
         model.addAttribute("gananciasPorArtista", gananciasPorArtista);
+        double totalGanancias = gananciasPorArtista.values().stream().mapToDouble(Double::doubleValue).sum();
+        model.addAttribute("totalGanancias", totalGanancias);
 
         return "admin/dashboard";
     }
