@@ -53,6 +53,7 @@
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">⏳</div><div class="stat-val" th:text="${#lists.size(solicitudes)}">0</div><div class="stat-lbl">Pendientes</div></div></div>
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">✅</div><div class="stat-val" th:text="${#lists.size(aceptados)}">0</div><div class="stat-lbl">Aceptados</div></div></div>
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">📋</div><div class="stat-val" th:text="${#lists.size(todos)}">0</div><div class="stat-lbl">Total</div></div></div>
+        <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">💰</div><div class="stat-val" style="font-size:1.3rem;" th:text="'$' + ${#numbers.formatInteger(gananciasPorArtista.values().stream().mapToDouble(v -> v).sum(),1,'COMMA')}">$0</div><div class="stat-lbl">Ganancias</div></div></div>
       </div>
 
       <!-- ARTISTAS -->
