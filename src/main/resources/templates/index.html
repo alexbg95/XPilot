@@ -6,77 +6,258 @@
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    /* ── HERO ─────────────────────────────────────────────────── */
     .hero {
-      min-height:100vh; display:grid; place-items:center;
-      padding:100px 0 80px;
-      background:
-        radial-gradient(ellipse 800px 600px at 75% 20%, rgba(200,129,58,0.07) 0%, transparent 100%),
-        radial-gradient(ellipse 600px 500px at 10% 80%, rgba(122,24,24,0.05) 0%, transparent 100%),
-        var(--bg);
-      position:relative; overflow:hidden;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 100px 0 80px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
     }
-    .hero-bg-text {
-      position:absolute; bottom:-2%; right:-1%;
-      font-family:var(--serif); font-size:clamp(8rem,18vw,22rem);
-      font-weight:700; line-height:0.85;
-      color:transparent; user-select:none; pointer-events:none;
-      -webkit-text-stroke:1px rgba(200,129,58,0.06);
-      letter-spacing:-0.04em;
+    #particles-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 900px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,129,58,0.07) 0%, transparent 70%);
+      top: -200px; right: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-glow2 {
+      position: absolute;
+      width: 600px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(122,24,24,0.05) 0%, transparent 70%);
+      bottom: -100px; left: -100px;
+      pointer-events: none;
+      z-index: 0;
     }
     .hero-line {
-      position:absolute; top:0; left:0; right:0; height:1px;
-      background:linear-gradient(90deg,transparent 0%,rgba(200,129,58,0.5) 30%,rgba(200,129,58,0.5) 70%,transparent 100%);
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(200,129,58,0.6) 30%, rgba(200,129,58,0.6) 70%, transparent 100%);
+      z-index: 1;
     }
-    .hero-title {
-      font-family:var(--serif);
-      font-size:clamp(4rem,7.5vw,7.5rem);
-      font-weight:600; line-height:1.0;
-      color:var(--white); margin:1.5rem 0;
+    .hero-bg-text {
+      position: absolute; bottom: -2%; right: -1%;
+      font-family: var(--serif); font-size: clamp(8rem,18vw,22rem);
+      font-weight: 700; line-height: 0.85;
+      color: transparent; user-select: none; pointer-events: none;
+      -webkit-text-stroke: 1px rgba(200,129,58,0.05);
+      letter-spacing: -0.04em; z-index: 0;
     }
-    .hero-title em {
-      font-style:italic; color:transparent;
-      -webkit-text-stroke:1.5px var(--amber2);
-    }
+    .hero-content { position: relative; z-index: 2; }
     .hero-eyebrow {
-      font-family:var(--sans); font-size:10px; font-weight:700;
-      letter-spacing:0.25em; text-transform:uppercase; color:var(--amber);
-      display:flex; align-items:center; gap:12px;
+      font-family: var(--sans); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--amber);
+      display: flex; align-items: center; gap: 12px;
     }
     .hero-eyebrow::before { content:''; width:36px; height:1px; background:var(--amber) }
-    .hero-desc { font-size:16px; color:var(--muted2); max-width:430px; line-height:1.8; margin-bottom:2.5rem }
-    .hero-cta { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 7.5vw, 7.5rem);
+      font-weight: 600; line-height: 1.0;
+      color: var(--white); margin: 1.5rem 0;
+    }
+    .hero-title em {
+      font-style: italic; color: transparent;
+      -webkit-text-stroke: 1.5px var(--amber2);
+    }
+    /* Texto que cambia */
+    .rotating-text {
+      display: inline-block;
+      position: relative;
+      color: var(--amber2);
+      font-style: italic;
+      min-width: 280px;
+    }
+    .rotating-text span {
+      position: absolute;
+      left: 0; top: 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s, transform 0.5s;
+      white-space: nowrap;
+      -webkit-text-stroke: 0;
+      color: var(--amber2);
+    }
+    .rotating-text span.active {
+      opacity: 1;
+      transform: translateY(0);
+      position: relative;
+    }
+    .hero-desc { font-size: 16px; color: var(--muted2); max-width: 430px; line-height: 1.8; margin-bottom: 2.5rem }
+    .hero-cta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap }
     .hero-meta {
-      display:flex; gap:3rem; margin-top:4rem; padding-top:2rem;
-      border-top:1px solid var(--border);
+      display: flex; gap: 3rem; margin-top: 4rem; padding-top: 2rem;
+      border-top: 1px solid var(--border);
     }
-    .hero-meta-val { font-family:var(--serif); font-size:2.5rem; font-weight:300; color:var(--white); line-height:1 }
-    .hero-meta-lbl { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:6px }
+    .hero-meta-val {
+      font-family: var(--serif); font-size: 2.5rem; font-weight: 300;
+      color: var(--white); line-height: 1;
+    }
+    .hero-meta-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 6px }
 
-    /* Preview mosaic */
-    .mosaic { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:200px 160px; gap:10px }
-    .mosaic-cell { border-radius:var(--r2); overflow:hidden; position:relative; background:var(--bg3) }
-    .mosaic-cell:first-child { grid-row:span 2 }
-    .mosaic-cell img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.6s ease }
-    .mosaic-cell:hover img { transform:scale(1.05) }
+    /* Mosaic */
+    .mosaic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 200px 160px; gap: 10px }
+    .mosaic-cell { border-radius: var(--r2); overflow: hidden; position: relative; background: var(--bg3) }
+    .mosaic-cell:first-child { grid-row: span 2 }
+    .mosaic-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease }
+    .mosaic-cell:hover img { transform: scale(1.05) }
     .mosaic-cell::after {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
     }
 
-    /* Features */
-    .features { padding:9rem 0; background:var(--bg) }
-    .feat-num { font-family:var(--serif); font-size:5rem; font-weight:300; color:transparent; -webkit-text-stroke:1px rgba(200,129,58,0.18); line-height:1 }
-    .feat-line { width:44px; height:1px; background:linear-gradient(90deg,var(--amber),transparent); margin:0.75rem 0 1rem; transform-origin:left; animation:line-grow 0.6s ease both }
-    .feat-title { font-family:var(--serif); font-size:1.4rem; font-weight:600; margin-bottom:0.75rem }
-    .feat-desc { font-size:14px; color:var(--muted2); line-height:1.75 }
+    /* ── FEATURES ────────────────────────────────────────────── */
+    .features { padding: 9rem 0; background: var(--bg); position: relative; overflow: hidden; }
+    .features::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    }
+    .feat-card {
+      padding: 2.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      height: 100%;
+    }
+    .feat-card:hover {
+      border-color: var(--border3);
+      transform: translateY(-4px);
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feat-card:hover::before { opacity: 1; }
+    .feat-num {
+      font-family: var(--serif); font-size: 4rem; font-weight: 300;
+      color: transparent; -webkit-text-stroke: 1px rgba(200,129,58,0.15);
+      line-height: 1; margin-bottom: 1.5rem;
+    }
+    .feat-icon {
+      width: 48px; height: 48px; border-radius: var(--r);
+      background: rgba(200,129,58,0.08);
+      border: 1px solid rgba(200,129,58,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.25rem;
+    }
+    .feat-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin-bottom: 0.75rem }
+    .feat-desc { font-size: 14px; color: var(--muted2); line-height: 1.75; margin: 0; }
 
-    /* Artists section */
-    .artists-sec { padding:0 0 9rem }
+    /* ── STATS SECTION ───────────────────────────────────────── */
+    .stats-section {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .stats-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 600px 300px at 50% 50%, rgba(200,129,58,0.04), transparent);
+    }
+    .stat-item { text-align: center; position: relative; z-index: 1; }
+    .stat-item-val {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 300; color: var(--white);
+      line-height: 1;
+    }
+    .stat-item-val span { color: var(--amber2); }
+    .stat-item-lbl {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted); margin-top: 10px;
+    }
+    .stat-divider {
+      width: 1px; background: var(--border2);
+      align-self: stretch; margin: 0 2rem;
+    }
+
+    /* ── MASONRY GALLERY ─────────────────────────────────────── */
+    .artists-sec { padding: 0 0 9rem; }
+    .masonry-grid {
+      columns: 3;
+      column-gap: 16px;
+    }
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: var(--r2);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .masonry-item img {
+      width: 100%; display: block;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .masonry-item:hover img { transform: scale(1.06); }
+    .masonry-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.35s;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 1.5rem;
+    }
+    .masonry-item:hover .masonry-overlay { opacity: 1; }
+    .masonry-name { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: #fff; }
+    .masonry-style { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber2); margin-top: 4px; }
+    .masonry-btn {
+      margin-top: 12px; padding: 8px 16px;
+      background: var(--amber); color: #000;
+      border-radius: var(--r); font-size: 12px; font-weight: 700;
+      display: inline-block; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .masonry-btn:hover { background: var(--amber2); color: #000; }
+    .masonry-disponible {
+      position: absolute; top: 12px; right: 12px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .masonry-disponible.on { background: rgba(42,97,69,0.9); color: #4caf80; border: 1px solid rgba(76,175,128,0.3); }
+    .masonry-disponible.off { background: rgba(122,24,24,0.9); color: #f09090; border: 1px solid rgba(240,144,144,0.3); }
+
+    @media (max-width: 768px) {
+      .masonry-grid { columns: 2; }
+      .stat-divider { display: none; }
+      .hero-meta { gap: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .masonry-grid { columns: 1; }
+    }
+
+    /* Parallax */
+    .parallax-wrap { will-change: transform; }
   </style>
 </head>
 <body>
 
-<!-- CURSOR -->
 <!-- NAVBAR -->
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo">
@@ -99,14 +280,27 @@
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="hero">
+  <canvas id="particles-canvas"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
   <div class="hero-line"></div>
   <div class="hero-bg-text" aria-hidden="true">ARTE</div>
-  <div class="container">
+
+  <div class="container hero-content">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
         <div class="hero-eyebrow fu">Plataforma de Arte</div>
-        <h1 class="hero-title fu d1">Arte que<br><em>vive</em><br>entre nosotros</h1>
+        <h1 class="hero-title fu d1">
+          Arte que<br>
+          <span class="rotating-text">
+            <span class="active">vive</span>
+            <span>inspira</span>
+            <span>transforma</span>
+            <span>conecta</span>
+          </span><br>
+          entre nosotros
+        </h1>
         <p class="hero-desc fu d2">Descubre artistas extraordinarios, explora sus obras y contrátalos directamente para tu próximo evento o proyecto.</p>
         <div class="hero-cta fu d3">
           <div th:if="${usuarioLogueado}">
@@ -118,16 +312,44 @@
           </div>
         </div>
         <div class="hero-meta fu d4" th:if="${mediaList != null}">
-          <div><div class="hero-meta-val" th:text="${mediaList.size()}">0</div><div class="hero-meta-lbl">Artistas</div></div>
+          <div><div class="hero-meta-val counter" data-target th:attr="data-target=${mediaList.size()}">0</div><div class="hero-meta-lbl">Artistas</div></div>
           <div><div class="hero-meta-val">100%</div><div class="hero-meta-lbl">Arte original</div></div>
+          <div><div class="hero-meta-val counter" data-target="24">0</div><div class="hero-meta-lbl">Hrs respuesta</div></div>
         </div>
       </div>
-      <div class="col-lg-6 fu d2" th:if="${mediaList != null and !#lists.isEmpty(mediaList)}">
+      <div class="col-lg-6 fu d2 parallax-wrap" id="mosaicWrap" th:if="${mediaList != null and !#lists.isEmpty(mediaList)}">
         <div class="mosaic">
           <div class="mosaic-cell" th:each="m,i : ${mediaList}" th:if="${i.index < 3}">
             <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}" th:alt="${m.artist}">
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section" th:if="${mediaList != null}">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
+      <div class="stat-item" style="padding:0 3rem;">
+        <div class="stat-item-val"><span class="counter" data-target th:attr="data-target=${mediaList.size()}">0</span>+</div>
+        <div class="stat-item-lbl">Artistas activos</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" style="padding:0 3rem;">
+        <div class="stat-item-val"><span>100</span>%</div>
+        <div class="stat-item-lbl">Arte verificado</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" style="padding:0 3rem;">
+        <div class="stat-item-val"><span>24</span>h</div>
+        <div class="stat-item-lbl">Respuesta rápida</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item" style="padding:0 3rem;">
+        <div class="stat-item-val"><span>∞</span></div>
+        <div class="stat-item-lbl">Estilos únicos</div>
       </div>
     </div>
   </div>
@@ -139,31 +361,38 @@
     <div style="text-align:center;max-width:500px;margin:0 auto 5rem;">
       <div class="sec-eyebrow" style="justify-content:center;"><span>Cómo funciona</span></div>
       <h2 style="font-family:var(--serif);font-size:3rem;font-weight:600;">Tres pasos<br>para el arte</h2>
+      <p style="color:var(--muted2);font-size:15px;margin-top:1rem;line-height:1.7;">Conectamos talento con oportunidades de forma simple, rápida y profesional.</p>
     </div>
-    <div class="row g-5">
+    <div class="row g-4">
       <div class="col-md-4 fu">
-        <div class="feat-num">01</div>
-        <div class="feat-line"></div>
-        <div class="feat-title">Explora artistas</div>
-        <div class="feat-desc">Navega por nuestra galería curada de artistas con estilos únicos — del jazz al gótico, del mural al óleo.</div>
+        <div class="feat-card">
+          <div class="feat-num">01</div>
+          <div class="feat-icon">🔍</div>
+          <div class="feat-title">Explora artistas</div>
+          <p class="feat-desc">Navega por nuestra galería curada de artistas con estilos únicos — del jazz al gótico, del mural al óleo.</p>
+        </div>
       </div>
       <div class="col-md-4 fu d2">
-        <div class="feat-num">02</div>
-        <div class="feat-line"></div>
-        <div class="feat-title">Elige la obra</div>
-        <div class="feat-desc">Cada artista muestra su portfolio completo. Selecciona la obra o estilo que mejor encaja con tu visión.</div>
+        <div class="feat-card">
+          <div class="feat-num">02</div>
+          <div class="feat-icon">🎨</div>
+          <div class="feat-title">Elige la obra</div>
+          <p class="feat-desc">Cada artista muestra su portfolio completo. Selecciona la obra o estilo que mejor encaja con tu visión.</p>
+        </div>
       </div>
       <div class="col-md-4 fu d3">
-        <div class="feat-num">03</div>
-        <div class="feat-line"></div>
-        <div class="feat-title">Contrata directo</div>
-        <div class="feat-desc">Un clic y tu solicitud llega al artista. Recibirás confirmación y fecha del evento en tiempo real.</div>
+        <div class="feat-card">
+          <div class="feat-num">03</div>
+          <div class="feat-icon">🎧</div>
+          <div class="feat-title">Contrata directo</div>
+          <p class="feat-desc">Un clic y tu solicitud llega al artista. Recibirás confirmación y fecha del evento en tiempo real.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ARTISTAS -->
+<!-- MASONRY ARTISTAS -->
 <section class="artists-sec" th:if="${mediaList != null and !#lists.isEmpty(mediaList)}">
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;">
@@ -173,22 +402,18 @@
       </div>
       <a th:href="${usuarioLogueado ? '/gallery' : '/login-view'}" class="xb xb-outline xb-sm">Ver todos →</a>
     </div>
-    <div class="row g-4">
-      <div class="col-lg-4 col-md-6 fu" th:each="m,i : ${mediaList}" th:if="${i.index < 6}"
-           th:attr="style='animation-delay:' + ${i.index * 0.08} + 's'">
-        <div class="card">
-          <div class="card-img-wrap">
-            <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
-                 class="card-img" th:alt="${m.artist}">
-            <div class="card-img-overlay"></div>
-            <div style="position:absolute;bottom:14px;left:16px;right:50px;">
-              <div style="font-family:var(--serif);font-size:1.25rem;font-weight:600;color:#fff;line-height:1.2;" th:text="${m.artist}"></div>
-              <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber2);margin-top:4px;" th:text="${m.style}"></div>
-            </div>
-            <div style="position:absolute;bottom:14px;right:14px;" th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}">
-              <img th:src="${m.urlm}" style="width:36px;height:36px;object-fit:cover;border-radius:50%;border:1.5px solid rgba(200,129,58,0.5);">
-            </div>
-          </div>
+    <div class="masonry-grid">
+      <div class="masonry-item fu" th:each="m,i : ${mediaList}" th:if="${i.index < 6}"
+           th:attr="style='animation-delay:' + ${i.index * 0.08} + 's'"
+           th:onclick="'window.location=\'/artista/' + ${m.id} + '\''">
+        <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
+             th:alt="${m.artist}" loading="lazy">
+        <div th:if="${m.disponible}" class="masonry-disponible on">Disponible</div>
+        <div th:unless="${m.disponible}" class="masonry-disponible off">Ocupado</div>
+        <div class="masonry-overlay">
+          <div class="masonry-name" th:text="${m.artist}"></div>
+          <div class="masonry-style" th:text="${m.style}"></div>
+          <a th:href="@{/artista/{id}(id=${m.id})}" class="masonry-btn">Ver perfil →</a>
         </div>
       </div>
     </div>
@@ -202,8 +427,112 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Navbar scroll
-const nav=document.getElementById('nav');
-if(nav)window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>40);});
+// ── PARTÍCULAS ────────────────────────────────────────────────────
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let animFrame;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = document.getElementById('hero').offsetHeight;
+}
+
+function createParticles() {
+  particles = [];
+  const count = Math.floor(canvas.width / 20);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      o: Math.random() * 0.4 + 0.1
+    });
+  }
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,129,58,${p.o})`;
+    ctx.fill();
+    p.x += p.dx;
+    p.y += p.dy;
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  });
+  // Líneas entre partículas cercanas
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(200,129,58,${0.06 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  animFrame = requestAnimationFrame(drawParticles);
+}
+
+resize();
+createParticles();
+drawParticles();
+window.addEventListener('resize', () => { resize(); createParticles(); });
+
+// ── TEXTO ROTATIVO ────────────────────────────────────────────────
+const words = document.querySelectorAll('.rotating-text span');
+let current = 0;
+setInterval(() => {
+  words[current].classList.remove('active');
+  current = (current + 1) % words.length;
+  words[current].classList.add('active');
+}, 2500);
+
+// ── PARALLAX ──────────────────────────────────────────────────────
+const mosaicWrap = document.getElementById('mosaicWrap');
+window.addEventListener('scroll', () => {
+  if (!mosaicWrap) return;
+  const scrollY = window.scrollY;
+  mosaicWrap.style.transform = `translateY(${scrollY * 0.08}px)`;
+});
+
+// ── CONTADORES ────────────────────────────────────────────────────
+function animateCounter(el) {
+  const target = parseInt(el.getAttribute('data-target')) || 0;
+  if (target === 0) return;
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = current;
+  }, 40);
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.counter').forEach(animateCounter);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.hero-meta, .stats-section').forEach(el => observer.observe(el));
+
+// ── NAVBAR ────────────────────────────────────────────────────────
+const nav = document.getElementById('nav');
+if (nav) window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
 </script>
-</body></html>
+</body>
+</html>
