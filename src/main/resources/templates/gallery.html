@@ -7,60 +7,193 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <style>
-    .gallery-header{
-      padding:calc(58px + 2.5rem) 0 2.5rem;
-      border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .gallery-header {
+      padding: calc(58px + 3rem) 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+      position: relative; overflow: hidden;
     }
-    .filter-bar{
-      display:flex;gap:8px;flex-wrap:wrap;margin-top:1.5rem;
+    .gallery-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 600px 300px at 70% 50%, rgba(200,129,58,0.05), transparent);
+      pointer-events: none;
     }
-    .filter-btn{
-      font-family:var(--sans);font-size:11px;font-weight:700;
-      letter-spacing:0.1em;text-transform:uppercase;
-      padding:6px 16px;border-radius:20px;cursor:pointer;
-      background:transparent;color:var(--muted2);
-      border:1px solid var(--border);transition:all 0.2s;
+    .gallery-header-bg {
+      position: absolute; right: -2%; bottom: -10%;
+      font-family: var(--serif); font-size: 14rem; font-weight: 700;
+      color: transparent; -webkit-text-stroke: 1px rgba(200,129,58,0.04);
+      user-select: none; pointer-events: none; line-height: 1;
     }
-    .filter-btn.active,.filter-btn:hover{
-      background:rgba(212,136,58,0.1);color:var(--amber2);
-      border-color:rgba(212,136,58,0.3);
+
+    /* ── FILTER BAR ─────────────────────────────────────────── */
+    .filter-wrap {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      align-items: center; margin-top: 2rem;
     }
-    .notif-btn{
-      position:relative;background:var(--bg3);
-      border:1px solid var(--border);border-radius:var(--r);
-      padding:8px 14px;cursor:pointer;color:var(--muted2);
-      font-size:16px;transition:all 0.2s;
+    .filter-btn {
+      font-family: var(--sans); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 7px 18px; border-radius: 20px; cursor: pointer;
+      background: transparent; color: var(--muted2);
+      border: 1px solid var(--border); transition: all 0.25s;
+      position: relative; overflow: hidden;
     }
-    .notif-btn:hover{border-color:var(--border2);color:var(--white)}
-    .notif-count{
-      position:absolute;top:-5px;right:-5px;
-      background:var(--crimson2);color:#fff;
-      font-size:10px;font-weight:700;font-family:var(--sans);
-      width:18px;height:18px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
+    .filter-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(200,129,58,0.08);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.25s; border-radius: 20px;
     }
+    .filter-btn.active::before, .filter-btn:hover::before { transform: scaleX(1); }
+    .filter-btn.active, .filter-btn:hover { color: var(--amber2); border-color: rgba(200,129,58,0.35); }
+    .filter-btn.active { color: var(--amber); border-color: rgba(200,129,58,0.5); }
+
+    /* Search */
+    .search-wrap {
+      margin-left: auto; position: relative;
+    }
+    .search-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--white); border-radius: 20px;
+      padding: 7px 16px 7px 36px; font-family: var(--sans);
+      font-size: 12px; outline: none; width: 180px;
+      transition: border-color 0.2s, width 0.3s;
+    }
+    .search-input:focus { border-color: var(--border3); width: 220px; }
+    .search-icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: var(--muted);
+      font-size: 13px; pointer-events: none;
+    }
+
+    /* ── NOTIF ───────────────────────────────────────────────── */
+    .notif-btn {
+      position: relative; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: var(--r);
+      padding: 8px 14px; cursor: pointer; color: var(--muted2);
+      font-size: 16px; transition: all 0.2s;
+    }
+    .notif-btn:hover { border-color: var(--border2); color: var(--white); }
+    .notif-count {
+      position: absolute; top: -5px; right: -5px;
+      background: var(--crimson2); color: #fff;
+      font-size: 10px; font-weight: 700; font-family: var(--sans);
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── MASONRY ─────────────────────────────────────────────── */
+    .masonry-grid {
+      columns: 4; column-gap: 16px;
+      padding: 3.5rem 0 6rem;
+    }
+    .masonry-item {
+      break-inside: avoid; margin-bottom: 16px;
+      border-radius: var(--r2); overflow: hidden;
+      position: relative; cursor: pointer;
+      background: var(--bg3);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s;
+    }
+    .masonry-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .masonry-item.hidden {
+      display: none;
+    }
+    .masonry-item img {
+      width: 100%; display: block;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .masonry-item:hover img { transform: scale(1.06); }
+
+    .masonry-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      opacity: 0; transition: opacity 0.35s;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 1.25rem;
+    }
+    .masonry-item:hover .masonry-overlay { opacity: 1; }
+
+    .masonry-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; border: 2px solid rgba(200,129,58,0.6);
+      margin-bottom: 8px; flex-shrink: 0;
+    }
+    .masonry-name {
+      font-family: var(--serif); font-size: 1.15rem;
+      font-weight: 600; color: #fff; line-height: 1.2;
+    }
+    .masonry-style {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--amber2); margin-top: 3px;
+    }
+    .masonry-actions {
+      display: flex; gap: 8px; margin-top: 12px;
+    }
+    .masonry-badge {
+      position: absolute; top: 10px; left: 10px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; z-index: 2;
+    }
+    .badge-on { background: rgba(42,97,69,0.92); color: #4caf80; border: 1px solid rgba(76,175,128,0.3); }
+    .badge-off { background: rgba(122,24,24,0.92); color: #f09090; border: 1px solid rgba(240,144,144,0.3); }
+
+    /* Precio badge */
+    .masonry-precio {
+      position: absolute; top: 10px; right: 10px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+      background: rgba(0,0,0,0.7); color: var(--amber2);
+      border: 1px solid rgba(200,129,58,0.25); z-index: 2;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 6rem 0; color: var(--muted2);
+    }
+    .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+
+    /* Skeleton loader */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--r2);
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    @media (max-width: 1024px) { .masonry-grid { columns: 3; } }
+    @media (max-width: 768px) { .masonry-grid { columns: 2; } .search-wrap { margin-left: 0; width: 100%; } .search-input { width: 100%; } }
+    @media (max-width: 480px) { .masonry-grid { columns: 1; } }
+
+    /* Animate in */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .masonry-item { animation: fadeInUp 0.5s ease both; }
   </style>
 </head>
 <body>
 
-<!-- CURSOR -->
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
     <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
-
-    <!-- NOTIFICACIONES -->
     <div class="dropdown">
       <button class="notif-btn" id="notifBtn" data-bs-toggle="dropdown" data-bs-auto-close="outside">
         🔔
         <span class="notif-count" id="contadorNotif" style="display:none;">0</span>
       </button>
       <div class="dropdown-menu dropdown-menu-end p-0 notif-dd border-0" id="listaNotificaciones">
-        <div style="padding:1rem;text-align:center;font-size:13px;color:var(--muted2);" id="sinNotif">Sin notificaciones</div>
+        <div style="padding:1rem;text-align:center;font-size:13px;color:var(--muted2);">Sin notificaciones</div>
       </div>
     </div>
-
     <a href="/mis-contratos" class="xb xb-outline xb-sm">Mis contratos</a>
     <form th:action="@{/logout}" method="post" style="margin:0;">
       <button class="xb xb-ghost xb-sm">Salir</button>
@@ -70,52 +203,76 @@
 
 <!-- HEADER -->
 <div class="gallery-header">
-  <div class="container">
+  <div class="gallery-header-bg" aria-hidden="true">GALERÍA</div>
+  <div class="container" style="position:relative;z-index:1;">
     <div class="sec-eyebrow fu">Directorio de artistas</div>
-    <h1 style="font-family:var(--serif);font-size:3rem;font-weight:600;margin:0;" class="fu d1">Galería de Arte</h1>
-    <p style="color:var(--muted2);font-size:15px;margin-top:8px;" class="fu d2">Haz clic en un artista para explorar sus obras</p>
+    <h1 style="font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;margin:0;" class="fu d1">Galería de Arte</h1>
+    <p style="color:var(--muted2);font-size:15px;margin-top:8px;" class="fu d2">Explora artistas únicos y contrátalos para tu próximo proyecto</p>
+
+    <!-- FILTROS -->
+    <div class="filter-wrap fu d3">
+      <button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>
+      <button class="filter-btn" onclick="filtrar('disponible', this)">Disponibles</button>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar artista..." oninput="buscar(this.value)">
+      </div>
+    </div>
+
+    <!-- ESTILOS DINÁMICOS -->
+    <div class="filter-wrap" id="styleFilters" style="margin-top:8px;"></div>
   </div>
 </div>
 
-<!-- GRID -->
-<div class="container" style="padding:3.5rem 0 6rem;">
-  <div class="row g-4" id="artistGrid">
-    <div class="col-lg-4 col-md-6 fu" th:each="m,i : ${mediaList}"
-         th:attr="style='animation-delay:' + ${i.index * 0.06} + 's'">
-      <div class="card" style="cursor:pointer;"
-           th:onclick="'window.location=\'/artista/' + ${m.id} + '\''">
-        <div class="card-img-wrap">
-          <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
-               class="card-img" th:alt="${m.artist}">
-          <div class="card-img-overlay"></div>
-          <!-- Info sobre imagen -->
-          <div style="position:absolute;bottom:14px;left:16px;right:16px;">
-            <div style="font-family:var(--serif);font-size:1.3rem;font-weight:600;color:#fff;" th:text="${m.artist}"></div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber2);margin-top:2px;" th:text="${m.style}"></div>
-          </div>
-          <!-- Foto de perfil -->
-          <div style="position:absolute;top:14px;right:14px;" th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}">
-            <img th:src="${m.urlm}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;border:2px solid rgba(212,136,58,0.6);">
+<!-- MASONRY -->
+<div class="container">
+  <div class="masonry-grid" id="masonryGrid">
+    <div class="masonry-item"
+         th:each="m,i : ${mediaList}"
+         th:attr="data-style=${m.style},data-disponible=${m.disponible},data-nombre=${m.artist},style='animation-delay:' + ${i.index * 0.06} + 's'"
+         th:onclick="'window.location=\'/artista/' + ${m.id} + '\''">
+
+      <!-- Imagen -->
+      <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
+           th:alt="${m.artist}" loading="lazy">
+
+      <!-- Badges -->
+      <div th:if="${m.disponible}" class="masonry-badge badge-on">● Disponible</div>
+      <div th:unless="${m.disponible}" class="masonry-badge badge-off">● Ocupado</div>
+      <div th:if="${m.precio != null}" class="masonry-precio"
+           th:text="'$' + ${#numbers.formatInteger(m.precio,1,'COMMA')}"></div>
+
+      <!-- Overlay -->
+      <div class="masonry-overlay">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <img th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}"
+               th:src="${m.urlm}" class="masonry-avatar">
+          <div>
+            <div class="masonry-name" th:text="${m.artist}"></div>
+            <div class="masonry-style" th:text="${m.style}"></div>
           </div>
         </div>
-        <div style="position:absolute;top:12px;right:12px;z-index:2;">
-          <span th:if="${m.disponible}" style="background:rgba(42,97,69,0.9);color:#4caf80;border:1px solid rgba(76,175,128,0.3);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Disponible</span>
-          <span th:unless="${m.disponible}" style="background:rgba(122,24,24,0.9);color:#f09090;border:1px solid rgba(240,144,144,0.3);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Ocupado</span>
-        </div>
-        <div class="card-actions">
-          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-outline xb-sm" style="flex:1;justify-content:center;"
-             onclick="event.stopPropagation()">Ver obras</a>
-          <form th:action="@{/contratar/{id}(id=${m.id})}" method="post" style="flex:1;" onclick="event.stopPropagation()">
-            <button class="xb xb-success xb-sm xb-full">Contratar</button>
-          </form>
+        <div class="masonry-actions" onclick="event.stopPropagation()">
+          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-outline xb-sm" style="flex:1;justify-content:center;">Ver obras</a>
+          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-amber xb-sm" style="flex:1;justify-content:center;">Contratar</a>
         </div>
       </div>
     </div>
 
-    <div th:if="${mediaList == null or #lists.isEmpty(mediaList)}" class="col-12" style="text-align:center;padding:6rem 0;color:var(--muted2);">
-      <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
-      <div>No hay artistas disponibles aún</div>
+    <div th:if="${mediaList == null or #lists.isEmpty(mediaList)}" style="column-span:all;">
+      <div class="empty-state">
+        <div class="empty-state-icon">🎵</div>
+        <div style="font-family:var(--serif);font-size:1.4rem;margin-bottom:8px;">No hay artistas aún</div>
+        <div style="font-size:14px;">Vuelve pronto para descubrir nuevos talentos</div>
+      </div>
     </div>
+  </div>
+
+  <!-- Empty filtrado -->
+  <div id="noResults" style="display:none;" class="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <div style="font-family:var(--serif);font-size:1.4rem;margin-bottom:8px;">Sin resultados</div>
+    <div style="font-size:14px;color:var(--muted2);">Prueba con otro filtro o búsqueda</div>
   </div>
 </div>
 
@@ -124,6 +281,7 @@
   <div class="footer-sub">© 2026 XPilot — Arte que inspira</div>
 </footer>
 
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script>
@@ -183,9 +341,68 @@ cargarNotif();
 </script>
 
 <script>
-document.querySelectorAll("a,button,.card,.obra-item,.xb").forEach(el=>{
+// ── FILTROS DINÁMICOS POR ESTILO ──────────────────────────────────
+const items = document.querySelectorAll('.masonry-item');
+const styleSet = new Set();
+items.forEach(item => {
+  const style = item.getAttribute('data-style');
+  if (style) styleSet.add(style);
 });
-const nav=document.getElementById("nav");
-if(nav)window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
+
+const styleFilters = document.getElementById('styleFilters');
+styleSet.forEach(style => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = style;
+  btn.onclick = () => filtrar('style:' + style, btn);
+  styleFilters.appendChild(btn);
+});
+
+// ── FILTRAR ───────────────────────────────────────────────────────
+let currentFilter = 'todos';
+let searchQuery = '';
+
+function filtrar(tipo, btn) {
+  currentFilter = tipo;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  aplicarFiltros();
+}
+
+function buscar(q) {
+  searchQuery = q.toLowerCase();
+  aplicarFiltros();
+}
+
+function aplicarFiltros() {
+  let visible = 0;
+  items.forEach((item, i) => {
+    const nombre = (item.getAttribute('data-nombre') || '').toLowerCase();
+    const style = (item.getAttribute('data-style') || '').toLowerCase();
+    const disponible = item.getAttribute('data-disponible') === 'true';
+
+    let show = true;
+
+    // Filtro tipo
+    if (currentFilter === 'disponible') show = disponible;
+    else if (currentFilter.startsWith('style:')) show = style === currentFilter.slice(6).toLowerCase();
+
+    // Filtro búsqueda
+    if (searchQuery && !nombre.includes(searchQuery) && !style.includes(searchQuery)) show = false;
+
+    item.classList.toggle('hidden', !show);
+    if (show) {
+      item.style.animationDelay = (visible * 0.05) + 's';
+      visible++;
+    }
+  });
+
+  document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+}
+
+// ── NAVBAR ────────────────────────────────────────────────────────
+const nav = document.getElementById('nav');
+if (nav) window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
 </script>
-</body></html>
+</body>
+</html>
