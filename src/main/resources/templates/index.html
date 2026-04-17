@@ -306,10 +306,6 @@
           <div th:if="${usuarioLogueado}">
             <a th:href="@{/gallery}" class="xb xb-amber xb-xl">Explorar galería →</a>
           </div>
-          <div th:unless="${usuarioLogueado}" style="display:flex;gap:12px;flex-wrap:wrap;">
-            <a th:href="@{/login-view}" class="xb xb-amber xb-xl">Comenzar →</a>
-            <a th:href="@{/register}" class="xb xb-outline xb-lg">Crear cuenta</a>
-          </div>
         </div>
         <div class="hero-meta fu d4" th:if="${mediaList != null}">
           <div><div class="hero-meta-val counter" data-target th:attr="data-target=${mediaList.size()}">0</div><div class="hero-meta-lbl">Artistas</div></div>
