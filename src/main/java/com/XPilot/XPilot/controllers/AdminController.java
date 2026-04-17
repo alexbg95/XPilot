@@ -50,7 +50,6 @@ public class AdminController {
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
         model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
 
-        // Contratos y ganancias por artista
         java.util.Map<Long, Long> contratacionesPorArtista = new java.util.HashMap<>();
         java.util.Map<Long, Double> gananciasPorArtista = new java.util.HashMap<>();
         for (media m : mediaRepo.findAll()) {
@@ -77,7 +76,7 @@ public class AdminController {
         return "admin/crear-artista";
     }
 
-    // ✅ GUARDAR CON CLOUDINARY
+    // ================= GUARDAR CON CLOUDINARY =================
     @PostMapping("/guardar")
     public String guardarArtista(
             @ModelAttribute media media,
@@ -97,11 +96,9 @@ public class AdminController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         media.setUsuario(user);
 
-        // ✅ Preservar imágenes existentes si no se sube una nueva
         if (urlmActual != null && !urlmActual.isBlank()) media.setUrlm(urlmActual);
         if (tagsActual != null && !tagsActual.isBlank()) media.setTags(tagsActual);
 
-        // ☁️ SUBIR FOTO DE PERFIL → urlm (sobreescribe solo si se sube una nueva)
         if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
             try {
                 @SuppressWarnings("unchecked")
@@ -110,13 +107,11 @@ public class AdminController {
                         ObjectUtils.asMap("folder", "xpilot/perfiles")
                 );
                 media.setUrlm((String) resultado.get("secure_url"));
-                System.out.println("✅ Foto perfil subida: " + media.getUrlm());
             } catch (Exception e) {
                 System.out.println("❌ Error subiendo foto perfil: " + e.getMessage());
             }
         }
 
-        // ☁️ SUBIR OBRA PRINCIPAL → tags (sobreescribe solo si se sube una nueva)
         if (obraArte != null && !obraArte.isEmpty()) {
             try {
                 @SuppressWarnings("unchecked")
@@ -125,7 +120,6 @@ public class AdminController {
                         ObjectUtils.asMap("folder", "xpilot/obras")
                 );
                 media.setTags((String) resultado.get("secure_url"));
-                System.out.println("✅ Obra principal subida: " + media.getTags());
             } catch (Exception e) {
                 System.out.println("❌ Error subiendo obra: " + e.getMessage());
             }
@@ -134,7 +128,6 @@ public class AdminController {
         if (precio != null) media.setPrecio(precio);
         media saved = mediaRepo.save(media);
 
-        // ☁️ SUBIR FOTOS EXTRA DE OBRAS
         if (obrasExtra != null) {
             for (int i = 0; i < obrasExtra.size(); i++) {
                 MultipartFile foto = obrasExtra.get(i);
@@ -153,7 +146,6 @@ public class AdminController {
                         MediaFoto mf = new MediaFoto(url, nombreObra, saved);
                         mf.setPrecio(precioObra);
                         mediaFotoRepo.save(mf);
-                        System.out.println("✅ Foto extra subida: " + url + " | nombre: " + nombreObra);
                     } catch (Exception e) {
                         System.out.println("❌ Error subiendo foto extra: " + e.getMessage());
                     }
@@ -178,9 +170,8 @@ public class AdminController {
     @Transactional
     @GetMapping("/eliminar-foto/{fotoId}")
     public String eliminarFotoObra(@PathVariable Long fotoId,
-                                   @org.springframework.web.bind.annotation.RequestParam Long artistaId) {
+                                   @RequestParam Long artistaId) {
         mediaFotoRepo.deleteById(fotoId);
-        System.out.println("✅ Foto #" + fotoId + " eliminada");
         return "redirect:/admin/editar/" + artistaId;
     }
 
@@ -193,7 +184,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // ================= 🔔 ACEPTAR + NOTIFICAR =================
+    // ================= ACEPTAR + NOTIFICAR =================
     @PostMapping("/aceptar/{id}")
     public String aceptarSolicitud(@PathVariable Long id,
                                    @RequestParam("fechaEvento") String fechaEvento){
@@ -203,7 +194,6 @@ public class AdminController {
 
         c.setEstado("ACEPTADO");
         c.setFechaEvento(LocalDate.parse(fechaEvento));
-        // Marcar artista no disponible
         if (c.getArtista() != null) {
             c.getArtista().setDisponible(false);
             mediaRepo.save(c.getArtista());
@@ -217,7 +207,6 @@ public class AdminController {
                 if (artistaUser.getFcmToken() != null && !artistaUser.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(artistaUser.getFcmToken(), "Nuevo contrato", msg);
             }
-
             if (c.getCliente() != null) {
                 usuario cliente = c.getCliente();
                 String msg = "🎉 Tu contrato con " + c.getArtista().getArtist()
@@ -226,9 +215,7 @@ public class AdminController {
                 if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), "Contrato aceptado", msg);
             }
-
             if (!c.isNotificado()) c.setNotificado(true);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,12 +224,12 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // ================= 🔔 RECHAZAR + NOTIFICAR =================
+    // ================= RECHAZAR + NOTIFICAR =================
     @PostMapping("/rechazar/{id}")
     public String rechazarSolicitud(@PathVariable Long id){
 
         Contratacion c = contratacionRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
 
         c.setEstado("RECHAZADO");
         c.setNotificado(true);
@@ -253,20 +240,35 @@ public class AdminController {
                 usuario cliente = c.getCliente();
                 String titulo = "❌ Contrato rechazado";
                 String msg = "Tu solicitud con " + c.getArtista().getArtist() + " fue rechazada por el administrador.";
-
-                // ✅ Guardar notificación en BD
                 notificacionService.crearNotificacion(cliente, titulo + " — " + msg);
-
-                // ✅ Enviar push si tiene token
-                if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank()) {
+                if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), titulo, msg);
-                    System.out.println("✅ Push de rechazo enviado a: " + cliente.getEmail());
-                } else {
-                    System.out.println("⚠ Cliente sin FCM token: " + cliente.getEmail());
-                }
             }
         } catch (Exception e) {
-            System.out.println("❌ Error notificando rechazo: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin";
+    }
+
+    // ================= 📅 NO DISPONIBLE PARA FECHA =================
+    @PostMapping("/no-disponible/{id}")
+    public String noDisponibleFecha(@PathVariable Long id,
+                                    @RequestParam("mensaje") String mensaje){
+
+        Contratacion c = contratacionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
+
+        try {
+            if (c.getCliente() != null) {
+                usuario cliente = c.getCliente();
+                String titulo = "📅 Artista no disponible para esa fecha";
+                String msg = "⚠️ El artista " + c.getArtista().getArtist()
+                           + " no está disponible para la fecha solicitada. Motivo: " + mensaje;
+                notificacionService.crearNotificacion(cliente, msg);
+                if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
+                    notificationService.enviarNotificacion(cliente.getFcmToken(), titulo, msg);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "redirect:/admin";
@@ -279,7 +281,6 @@ public class AdminController {
                 .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
         c.setEstado("FINALIZADO");
         contratacionRepo.save(c);
-        // Artista queda disponible
         if (c.getArtista() != null) {
             media artista = c.getArtista();
             artista.setDisponible(true);
@@ -321,7 +322,6 @@ public class AdminController {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             user.setFcmToken(token);
             usuarioRepo.save(user);
-            System.out.println("🔥 Token guardado para: " + user.getEmail());
             return "OK";
         } catch (Exception e) {
             e.printStackTrace();
