@@ -53,6 +53,7 @@
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">⏳</div><div class="stat-val" th:text="${#lists.size(solicitudes)}">0</div><div class="stat-lbl">Pendientes</div></div></div>
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">✅</div><div class="stat-val" th:text="${#lists.size(aceptados)}">0</div><div class="stat-lbl">Aceptados</div></div></div>
         <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">📋</div><div class="stat-val" th:text="${#lists.size(todos)}">0</div><div class="stat-lbl">Total</div></div></div>
+        <div class="col-6 col-md-3"><div class="stat"><div class="stat-icon">💰</div><div class="stat-val" style="font-size:1.3rem;" th:text="'$' + ${#numbers.formatInteger(totalGanancias,1,'COMMA')}">$0</div><div class="stat-lbl">Ganancias</div></div></div>
       </div>
 
       <!-- ARTISTAS -->
@@ -63,7 +64,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Artista</th><th>Estilo</th><th>Imagen</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Artista</th><th>Estilo</th><th>Imagen</th><th>Contratos</th><th>Disponible</th><th>Acciones</th></tr></thead>
             <tbody>
               <tr th:each="m : ${mediaList}">
                 <td style="font-family:var(--serif);font-size:1.05rem;font-weight:600;" th:text="${m.artist}"></td>
@@ -75,6 +76,24 @@
                        style="width:46px;height:46px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);">
                   <div th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and (m.tags == null or #strings.isEmpty(m.tags))}"
                        style="width:46px;height:46px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">🎤</div>
+                </td>
+                <td>
+                  <div th:with="contratos=${contratacionesPorArtista[m.id]},ganancias=${gananciasPorArtista[m.id]}"
+                       style="display:flex;align-items:center;gap:16px;">
+                    <div>
+                      <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;" th:text="${contratos != null ? contratos : 0}"></div>
+                      <div style="font-size:11px;color:var(--muted2);">contratos</div>
+                    </div>
+                    <div th:if="${ganancias != null and ganancias > 0}"
+                         style="padding:4px 10px;background:rgba(200,129,58,0.1);border:1px solid rgba(200,129,58,0.2);border-radius:8px;">
+                      <div style="font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--amber2);" th:text="'$' + ${#numbers.formatInteger(ganancias,1,'COMMA')}"></div>
+                      <div style="font-size:10px;color:var(--muted2);">ganado</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span th:if="${m.disponible}" style="background:rgba(42,97,69,0.15);color:#4caf80;border:1px solid rgba(76,175,128,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;">Disponible</span>
+                  <span th:unless="${m.disponible}" style="background:rgba(122,24,24,0.15);color:#f09090;border:1px solid rgba(240,144,144,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;">Ocupado</span>
                 </td>
                 <td><div style="display:flex;gap:8px;">
                   <a th:href="@{/admin/editar/{id}(id=${m.id})}" class="xb xb-outline xb-sm">Editar</a>
@@ -97,7 +116,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Cliente</th><th>Artista</th><th>Obra</th><th>Aceptar</th><th>Rechazar</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha solicitada</th><th>Aceptar</th><th>Rechazar</th></tr></thead>
             <tbody>
               <tr th:each="c : ${solicitudes}">
                 <td style="font-weight:600;" th:text="${c.cliente.uname}"></td>
@@ -105,6 +124,10 @@
                 <td>
                   <span th:if="${c.obraNombre != null}" class="badge bdg-art" th:text="${c.obraNombre}"></span>
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">—</span>
+                </td>
+                <td>
+                  <span th:if="${c.fechaEvento != null}" style="font-family:var(--serif);font-size:0.95rem;" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
+                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
                 <td>
                   <form th:action="@{/admin/aceptar/{id}(id=${c.id})}" method="post" style="display:flex;gap:8px;align-items:center;">
@@ -136,13 +159,14 @@
             <button class="xb xb-ghost xb-sm tab-btn" onclick="filtrar('PENDIENTE',this)">Pendientes</button>
             <button class="xb xb-ghost xb-sm tab-btn" onclick="filtrar('ACEPTADO',this)">Aceptados</button>
             <button class="xb xb-ghost xb-sm tab-btn" onclick="filtrar('RECHAZADO',this)">Rechazados</button>
+            <button class="xb xb-ghost xb-sm tab-btn" onclick="filtrar('FINALIZADO',this)" style="color:#a0a0ff;border-color:rgba(100,100,255,0.3);">Finalizados</button>
             <input type="text" id="buscador" placeholder="Buscar..." oninput="buscar(this.value)"
                    style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:7px 12px;font-family:var(--sans);font-size:13px;outline:none;width:160px;">
           </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl" id="tablaH">
-            <thead><tr><th>#</th><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha</th><th>Estado</th></tr></thead>
+            <thead><tr><th>#</th><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha</th><th>Estado</th><th>Accion</th></tr></thead>
             <tbody>
               <tr th:each="c : ${todos}" th:attr="data-estado=${c.estado}">
                 <td style="color:var(--muted);font-size:13px;" th:text="${c.id}"></td>
@@ -157,6 +181,13 @@
                   <span th:if="${c.estado == 'PENDIENTE'}" class="badge bdg-pending">Pendiente</span>
                   <span th:if="${c.estado == 'ACEPTADO'}"  class="badge bdg-ok">Aceptado</span>
                   <span th:if="${c.estado == 'RECHAZADO'}" class="badge bdg-no">Rechazado</span>
+                  <span th:if="${c.estado == 'FINALIZADO'}" class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
+                </td>
+                <td>
+                  <form th:if="${c.estado == 'ACEPTADO'}" th:action="'/admin/finalizar/' + ${c.id}" method="post">
+                    <button class="xb xb-sm" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">✓ Finalizar</button>
+                  </form>
+                  <span th:unless="${c.estado == 'ACEPTADO'}" style="color:var(--muted);font-size:12px;">—</span>
                 </td>
               </tr>
               <tr th:if="${#lists.isEmpty(todos)}">

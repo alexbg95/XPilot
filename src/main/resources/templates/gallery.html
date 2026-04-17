@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -103,18 +102,31 @@
     .masonry-item.hidden {
       display: none;
     }
-    .masonry-item img {
-      width: 100%; display: block;
+
+    /* ── FIX PRINCIPAL: imagen con altura máxima y object-fit ── */
+    .masonry-item img.masonry-main-img {
+      width: 100%;
+      display: block;
+      max-height: 320px;
+      object-fit: cover;
       transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
     }
-    .masonry-item:hover img { transform: scale(1.06); }
+    .masonry-item:hover img.masonry-main-img { transform: scale(1.06); }
 
+    /* ── FIX OVERLAY: z-index y gradiente más fuerte ─────────── */
     .masonry-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.97) 0%,
+        rgba(0,0,0,0.6) 45%,
+        rgba(0,0,0,0.1) 75%,
+        transparent 100%
+      );
       opacity: 0; transition: opacity 0.35s;
       display: flex; flex-direction: column;
       justify-content: flex-end; padding: 1.25rem;
+      z-index: 3;
     }
     .masonry-item:hover .masonry-overlay { opacity: 1; }
 
@@ -138,7 +150,7 @@
       position: absolute; top: 10px; left: 10px;
       padding: 3px 10px; border-radius: 20px;
       font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; z-index: 2;
+      text-transform: uppercase; z-index: 4;
     }
     .badge-on { background: rgba(42,97,69,0.92); color: #4caf80; border: 1px solid rgba(76,175,128,0.3); }
     .badge-off { background: rgba(122,24,24,0.92); color: #f09090; border: 1px solid rgba(240,144,144,0.3); }
@@ -149,7 +161,7 @@
       padding: 3px 10px; border-radius: 20px;
       font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
       background: rgba(0,0,0,0.7); color: var(--amber2);
-      border: 1px solid rgba(200,129,58,0.25); z-index: 2;
+      border: 1px solid rgba(200,129,58,0.25); z-index: 4;
     }
 
     /* Empty state */
@@ -232,21 +244,22 @@
          th:attr="data-style=${m.style},data-disponible=${m.disponible},data-nombre=${m.artist},style='animation-delay:' + ${i.index * 0.06} + 's'"
          th:onclick="'window.location=\'/artista/' + ${m.id} + '\''">
 
-      <!-- Imagen -->
-      <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
+      <!-- Imagen principal con clase masonry-main-img (FIX) -->
+      <img class="masonry-main-img"
+           th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
            th:alt="${m.artist}" loading="lazy">
 
-      <!-- Badges -->
+      <!-- Badges con z-index 4 para estar sobre el overlay -->
       <div th:if="${m.disponible}" class="masonry-badge badge-on">● Disponible</div>
       <div th:unless="${m.disponible}" class="masonry-badge badge-off">● Ocupado</div>
       <div th:if="${m.precio != null}" class="masonry-precio"
            th:text="'$' + ${#numbers.formatInteger(m.precio,1,'COMMA')}"></div>
 
-      <!-- Overlay -->
+      <!-- Overlay con z-index 3 (FIX) -->
       <div class="masonry-overlay">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
           <img th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}"
-               th:src="${m.urlm}" class="masonry-avatar">
+               th:src="${m.urlm}" class="masonry-avatar" th:alt="${m.artist}">
           <div>
             <div class="masonry-name" th:text="${m.artist}"></div>
             <div class="masonry-style" th:text="${m.style}"></div>

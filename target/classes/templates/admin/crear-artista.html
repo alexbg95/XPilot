@@ -57,6 +57,12 @@
         <textarea class="input" th:field="*{biografia}" rows="5"
                   placeholder="Historia del artista, orígenes, trayectoria, influencias..."></textarea>
       </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="label">Precio base (COP)</label>
+        <input type="number" name="precio" class="input" placeholder="ej: 500000" th:value="${media.precio}" min="0" step="1000">
+      </div>
+      <div style="display:none">
+      </div>
     </div>
 
     <!-- IMÁGENES -->
@@ -154,9 +160,15 @@ function prevMulti(input) {
       w.style = "display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);";
       const n = file.name.split('.').slice(0, -1).join('.');
       w.innerHTML = `<img src="${e.target.result}" style="width:70px;height:70px;object-fit:cover;border-radius:var(--r);flex-shrink:0;">
-        <div style="flex:1;">
-          <label class="label">Nombre obra ${i + 1}</label>
-          <input type="text" name="nombresObras" class="input" placeholder="Ej: Atardecer oscuro" value="${n}">
+        <div style="flex:1;display:flex;gap:10px;">
+          <div style="flex:2;">
+            <label class="label">Nombre obra ${i + 1}</label>
+            <input type="text" name="nombresObras" class="input" placeholder="Ej: Atardecer oscuro" value="${n}">
+          </div>
+          <div style="flex:1;">
+            <label class="label">Precio (COP)</label>
+            <input type="number" name="preciosObras" class="input" placeholder="ej: 500000" min="0" step="1000">
+          </div>
         </div>`;
       c.appendChild(w);
     };
