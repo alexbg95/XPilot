@@ -87,7 +87,7 @@ public class AdminController {
             @RequestParam(value = "obrasExtra",   required = false) List<MultipartFile> obrasExtra,
             @RequestParam(value = "nombresObras", required = false) List<String> nombresObras,
             @RequestParam(value = "preciosObras", required = false) List<Double> preciosObras,
-            @RequestParam(value = "precio", required = false) Double precio,
+            @RequestParam(value = "precio",       required = false) Double precio,
             Principal principal) {
 
         if (principal == null) return "redirect:/login-view";
@@ -103,9 +103,7 @@ public class AdminController {
             try {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> resultado = cloudinary.uploader().upload(
-                        fotoPerfil.getBytes(),
-                        ObjectUtils.asMap("folder", "xpilot/perfiles")
-                );
+                        fotoPerfil.getBytes(), ObjectUtils.asMap("folder", "xpilot/perfiles"));
                 media.setUrlm((String) resultado.get("secure_url"));
             } catch (Exception e) {
                 System.out.println("❌ Error subiendo foto perfil: " + e.getMessage());
@@ -116,9 +114,7 @@ public class AdminController {
             try {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> resultado = cloudinary.uploader().upload(
-                        obraArte.getBytes(),
-                        ObjectUtils.asMap("folder", "xpilot/obras")
-                );
+                        obraArte.getBytes(), ObjectUtils.asMap("folder", "xpilot/obras"));
                 media.setTags((String) resultado.get("secure_url"));
             } catch (Exception e) {
                 System.out.println("❌ Error subiendo obra: " + e.getMessage());
@@ -135,9 +131,7 @@ public class AdminController {
                     try {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> res = cloudinary.uploader().upload(
-                                foto.getBytes(),
-                                ObjectUtils.asMap("folder", "xpilot/obras-extra")
-                        );
+                                foto.getBytes(), ObjectUtils.asMap("folder", "xpilot/obras-extra"));
                         String url = (String) res.get("secure_url");
                         String nombreObra = (nombresObras != null && i < nombresObras.size()
                                 && !nombresObras.get(i).isBlank())
@@ -169,8 +163,7 @@ public class AdminController {
     // ================= ELIMINAR FOTO OBRA =================
     @Transactional
     @GetMapping("/eliminar-foto/{fotoId}")
-    public String eliminarFotoObra(@PathVariable Long fotoId,
-                                   @RequestParam Long artistaId) {
+    public String eliminarFotoObra(@PathVariable Long fotoId, @RequestParam Long artistaId) {
         mediaFotoRepo.deleteById(fotoId);
         return "redirect:/admin/editar/" + artistaId;
     }
@@ -258,12 +251,24 @@ public class AdminController {
         Contratacion c = contratacionRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contrato no encontrado"));
 
+        // Estado especial: usuario puede reprogramar desde Mis Contratos
+        c.setEstado("FECHA_RECHAZADA");
+        c.setNotificado(true);
+        contratacionRepo.save(c);
+
+        // Artista vuelve a estar disponible
+        if (c.getArtista() != null) {
+            c.getArtista().setDisponible(true);
+            mediaRepo.save(c.getArtista());
+        }
+
         try {
             if (c.getCliente() != null) {
                 usuario cliente = c.getCliente();
                 String titulo = "📅 Artista no disponible para esa fecha";
                 String msg = "⚠️ El artista " + c.getArtista().getArtist()
-                           + " no está disponible para la fecha solicitada. Motivo: " + mensaje;
+                           + " no está disponible para la fecha solicitada. Motivo: " + mensaje
+                           + ". Puedes reprogramar la fecha desde Mis Contratos.";
                 notificacionService.crearNotificacion(cliente, msg);
                 if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), titulo, msg);
@@ -282,20 +287,16 @@ public class AdminController {
         c.setEstado("FINALIZADO");
         contratacionRepo.save(c);
         if (c.getArtista() != null) {
-            media artista = c.getArtista();
-            artista.setDisponible(true);
-            mediaRepo.save(artista);
+            c.getArtista().setDisponible(true);
+            mediaRepo.save(c.getArtista());
         }
         try {
-            if (c.getArtista() != null && c.getArtista().getUsuario() != null) {
-                usuario artistaUser = c.getArtista().getUsuario();
-                String msg = "Tu contrato del " + c.getFechaEvento() + " ha sido marcado como finalizado.";
-                notificacionService.crearNotificacion(artistaUser, msg);
-            }
-            if (c.getCliente() != null) {
-                String msg = "Tu contrato con " + c.getArtista().getArtist() + " ha finalizado. Gracias por usar XPilot.";
-                notificacionService.crearNotificacion(c.getCliente(), msg);
-            }
+            if (c.getArtista() != null && c.getArtista().getUsuario() != null)
+                notificacionService.crearNotificacion(c.getArtista().getUsuario(),
+                    "Tu contrato del " + c.getFechaEvento() + " ha sido marcado como finalizado.");
+            if (c.getCliente() != null)
+                notificacionService.crearNotificacion(c.getCliente(),
+                    "Tu contrato con " + c.getArtista().getArtist() + " ha finalizado. Gracias por usar XPilot.");
         } catch (Exception e) { e.printStackTrace(); }
         return "redirect:/admin";
     }

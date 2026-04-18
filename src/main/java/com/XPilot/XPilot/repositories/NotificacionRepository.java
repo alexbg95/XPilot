@@ -4,7 +4,6 @@ import com.XPilot.XPilot.models.Notificacion;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
@@ -12,6 +11,9 @@ public interface NotificacionRepository extends JpaRepository<Notificacion, Long
     List<Notificacion> findByUsuarioIdAndLeidoFalse(Long userId);
 
     long countByUsuarioIdAndLeidoFalse(Long userId);
+
+    // ── HISTORIAL COMPLETO ordenado por más reciente ──────────────
+    List<Notificacion> findByUsuario_IdOrderByIdDesc(Long userId);
 
     @Modifying
     @Transactional
@@ -22,5 +24,4 @@ public interface NotificacionRepository extends JpaRepository<Notificacion, Long
     @Transactional
     @Query("UPDATE Notificacion n SET n.leido = true WHERE n.usuario.id = :userId")
     void marcarTodas(@Param("userId") Long userId);
-
 }
