@@ -68,7 +68,9 @@
     .alert-fecha-text strong { color: var(--amber2); }
 
     /* Celda acción no desborda */
-    #tablaContratos td:last-child { white-space: nowrap; }
+    #tablaContratos td:last-child { white-space: nowrap; min-width: 130px; }
+    #tablaContratos td:nth-child(2) { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #tablaContratos th:last-child { min-width: 130px; }
   </style>
 </head>
 <body>
