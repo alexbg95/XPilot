@@ -30,7 +30,6 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        // ✅ Constructor moderno: pasa userDetailsService y passwordEncoder directamente
         return new DaoAuthenticationProvider(passwordEncoder()) {{
             setUserDetailsService(userDetailsService);
         }};
@@ -57,7 +56,10 @@ public class SecurityConfig {
                 .requestMatchers("/guardar-fcm-token").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/contratar/**", "/gallery", "/mis-contratos", "/artista/**").authenticated()
+                // ✅ artista/** es público — cualquiera puede ver el perfil
+                .requestMatchers("/artista/**").permitAll()
+                // Contratar y galería requieren login
+                .requestMatchers("/contratar/**", "/gallery", "/mis-contratos").authenticated()
                 .anyRequest().authenticated()
             )
 

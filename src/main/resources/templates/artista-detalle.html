@@ -17,16 +17,36 @@
       font-family:var(--serif);font-size:8rem;color:var(--amber);
       opacity:0.06;position:absolute;top:-20px;left:20px;line-height:1;
     }
+    /* Modal login */
+    .login-modal-icon {
+      width:64px;height:64px;border-radius:50%;
+      background:rgba(200,129,58,0.1);border:1px solid rgba(200,129,58,0.2);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;margin:0 auto 1.25rem;
+    }
   </style>
 </head>
 <body>
 
-<!-- CURSOR -->
 <nav class="xp-nav" id="nav">
-  <a href="/gallery" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
+  <!-- Nav diferente según si está logueado o no -->
+  <a th:if="${#authorization.expression('isAuthenticated()')}" href="/gallery" class="xp-logo">
+    <div class="xp-logo-dot"></div>X<em>Pilot</em>
+  </a>
+  <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/" class="xp-logo">
+    <div class="xp-logo-dot"></div>X<em>Pilot</em>
+  </a>
   <div class="xp-nav-end">
-    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
-    <a href="/gallery" class="xb xb-ghost xb-sm">← Galería</a>
+    <!-- Usuario logueado -->
+    <div th:if="${#authorization.expression('isAuthenticated()')}" style="display:flex;align-items:center;gap:12px;">
+      <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
+      <a href="/gallery" class="xb xb-ghost xb-sm">← Galería</a>
+    </div>
+    <!-- No logueado -->
+    <div th:unless="${#authorization.expression('isAuthenticated()')}" style="display:flex;gap:10px;">
+      <a href="/register" class="xb xb-ghost xb-sm">Registrarse</a>
+      <a href="/login-view" class="xb xb-amber xb-sm">Iniciar sesión</a>
+    </div>
   </div>
 </nav>
 
@@ -47,7 +67,15 @@
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
           <span th:if="${artista.disponible}" style="background:rgba(42,97,69,0.15);color:#4caf80;border:1px solid rgba(76,175,128,0.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">● Disponible</span>
           <span th:unless="${artista.disponible}" style="background:rgba(122,24,24,0.15);color:#f09090;border:1px solid rgba(240,144,144,0.25);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">● Ocupado</span>
-          <button th:if="${artista.disponible}" class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+
+          <!-- Botón contratar — comportamiento según autenticación -->
+          <button th:if="${artista.disponible and #authorization.expression('isAuthenticated()')}"
+                  class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+
+          <!-- No logueado: abre modal de login -->
+          <button th:if="${artista.disponible and !#authorization.expression('isAuthenticated()')}"
+                  class="xb xb-amber xb-lg" onclick="abrirModalLogin()">🎧 Contratar Artista</button>
+
           <button th:unless="${artista.disponible}" class="xb xb-lg" disabled style="opacity:0.4;cursor:not-allowed;">No disponible</button>
         </div>
         <div th:if="${param.ocupado}" style="margin-top:1rem;padding:12px 16px;background:rgba(122,24,24,0.1);border:1px solid rgba(240,144,144,0.2);border-radius:8px;color:#f09090;font-size:13px;">
@@ -73,7 +101,11 @@
       <div class="sec-eyebrow">Portfolio</div>
       <div class="sec-title">Obras del Artista</div>
     </div>
-    <div style="font-size:13px;color:var(--muted2);">Clic para contratar</div>
+    <div style="font-size:13px;color:var(--muted2);">
+      <!-- Mensaje según estado de sesión -->
+      <span th:if="${#authorization.expression('isAuthenticated()')}">Clic para contratar</span>
+      <span th:unless="${#authorization.expression('isAuthenticated()')}">Inicia sesión para contratar</span>
+    </div>
   </div>
 
   <!-- Fotos extra -->
@@ -85,11 +117,12 @@
            th:data-nombre="${foto.nombre != null ? foto.nombre : 'Obra #' + foto.id}"
            th:data-url="${foto.url}"
            th:data-precio="${foto.precio}"
-           onclick="abrirObra(this)">
+           th:onclick="${#authorization.expression('isAuthenticated()') ? 'abrirObra(this)' : 'abrirModalLogin()'}">
         <img th:src="${foto.url}" alt="Obra">
         <div class="obra-id">#<span th:text="${foto.id}"></span><span th:if="${foto.nombre != null}" th:text="' · ' + ${foto.nombre}"></span><span th:if="${foto.precio != null}" th:text="' — $' + ${#numbers.formatInteger(foto.precio,1,'COMMA')}" style="color:var(--amber2);margin-left:4px;"></span></div>
         <div class="obra-overlay">
-          <div class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+          <div th:if="${#authorization.expression('isAuthenticated()')}" class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+          <div th:unless="${#authorization.expression('isAuthenticated()')}" class="xb xb-outline xb-sm xb-full">🔒 Inicia sesión para contratar</div>
         </div>
       </div>
     </div>
@@ -99,10 +132,12 @@
   <div th:if="${(fotos == null or #lists.isEmpty(fotos)) and artista.tags != null and !#strings.isEmpty(artista.tags)}"
        class="row g-4 justify-content-center">
     <div class="col-md-5 fu">
-      <div class="obra-item" data-id="0" data-nombre="Obra principal" th:data-url="${artista.tags}" onclick="abrirObra(this)">
+      <div class="obra-item" data-id="0" data-nombre="Obra principal" th:data-url="${artista.tags}"
+           th:onclick="${#authorization.expression('isAuthenticated()') ? 'abrirObra(this)' : 'abrirModalLogin()'}">
         <img th:src="${artista.tags}" alt="Obra principal">
         <div class="obra-overlay">
-          <div class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+          <div th:if="${#authorization.expression('isAuthenticated()')}" class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
+          <div th:unless="${#authorization.expression('isAuthenticated()')}" class="xb xb-outline xb-sm xb-full">🔒 Inicia sesión para contratar</div>
         </div>
       </div>
     </div>
@@ -113,7 +148,8 @@
        style="text-align:center;padding:5rem 0;color:var(--muted2);">
     <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
     <p style="margin-bottom:1.5rem;">Este artista aún no tiene obras publicadas.</p>
-    <button class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+    <button th:if="${#authorization.expression('isAuthenticated()')}" class="xb xb-amber xb-lg" onclick="abrirModalContratar()">🎧 Contratar Artista</button>
+    <button th:unless="${#authorization.expression('isAuthenticated()')}" class="xb xb-amber xb-lg" onclick="abrirModalLogin()">🎧 Contratar Artista</button>
   </div>
 </div>
 
@@ -122,8 +158,34 @@
   <div class="footer-sub">© 2026 XPilot — Arte que inspira</div>
 </footer>
 
-<!-- MODAL OBRA -->
-<div class="modal fade" id="modalObra" tabindex="-1">
+<!-- MODAL LOGIN (para no autenticados) -->
+<div class="modal fade" id="modalLogin" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <h5 class="modal-title" style="font-family:var(--serif);font-size:1.2rem;margin:0;">Acceso requerido</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:2.5rem 2rem;">
+        <div class="login-modal-icon">🎨</div>
+        <h5 style="font-family:var(--serif);font-size:1.4rem;margin-bottom:10px;color:var(--white);">
+          Para contratar a <em style="color:var(--amber2);" th:text="${artista.artist}"></em>
+        </h5>
+        <p style="color:var(--muted2);font-size:14px;line-height:1.6;margin-bottom:2rem;">
+          Necesitas una cuenta en XPilot para contratar artistas y gestionar tus eventos.
+          ¡Es gratis y solo toma un minuto!
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="/login-view" class="xb xb-amber xb-lg">Iniciar sesión</a>
+          <a href="/register" class="xb xb-outline xb-lg">Crear cuenta gratis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OBRA (solo para autenticados) -->
+<div th:if="${#authorization.expression('isAuthenticated()')}" class="modal fade" id="modalObra" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -144,16 +206,15 @@
             <input type="date" name="fechaEvento" class="input" required
                    style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;">
           </div>
-          <button th:if="${artista.disponible}" type="submit" class="xb xb-amber xb-lg xb-full">🎧 Contratar a <span th:text="${artista.artist}"></span> por esta obra</button>
-          <button th:unless="${artista.disponible}" type="button" disabled class="xb xb-lg xb-full" style="opacity:0.4;cursor:not-allowed;">Artista no disponible</button>
+          <button type="submit" class="xb xb-amber xb-lg xb-full">🎧 Contratar a <span th:text="${artista.artist}"></span> por esta obra</button>
         </form>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL GENERAL -->
-<div class="modal fade" id="modalContratar" tabindex="-1">
+<!-- MODAL CONTRATAR GENERAL (solo para autenticados) -->
+<div th:if="${#authorization.expression('isAuthenticated()')}" class="modal fade" id="modalContratar" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -178,6 +239,9 @@
 </div>
 
 <script>
+function abrirModalLogin() {
+  new bootstrap.Modal(document.getElementById('modalLogin')).show();
+}
 function abrirObra(el){
   const precio=el.getAttribute('data-precio');
   const precioEl=document.getElementById('obraPrecio');
@@ -190,13 +254,11 @@ function abrirObra(el){
   document.getElementById('inObraNombre').value=nombre;
   new bootstrap.Modal(document.getElementById('modalObra')).show();
 }
-function abrirModalContratar(){new bootstrap.Modal(document.getElementById('modalContratar')).show();}
-</script>
-
-<script>
-document.querySelectorAll("a,button,.card,.obra-item,.xb").forEach(el=>{
-});
+function abrirModalContratar(){
+  new bootstrap.Modal(document.getElementById('modalContratar')).show();
+}
 const nav=document.getElementById("nav");
 if(nav)window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
 </script>
-</body></html>
+</body>
+</html>
