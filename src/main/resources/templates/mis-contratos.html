@@ -23,14 +23,26 @@
     .notif-icon.fecha { background: rgba(200,129,58,0.22); border-color: rgba(200,129,58,0.5); }
     .notif-msg { font-size: 13px; color: var(--off); line-height: 1.6; flex: 1; }
     .notif-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
-    .reprog-btn {
-      display: inline-block; margin-top: 10px; padding: 7px 14px;
-      background: var(--amber); color: #000;
-      border: none; border-radius: var(--r);
-      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-      cursor: pointer; font-family: var(--sans); transition: background 0.2s;
+
+    /* Botón reprogramar — igual que xb xb-outline xb-sm del sistema */
+    .btn-reprog {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 8px; padding: 6px 14px;
+      background: transparent;
+      color: var(--amber2);
+      border: 1px solid rgba(200,129,58,0.45);
+      border-radius: var(--r);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer;
+      font-family: var(--sans);
+      transition: background 0.2s, border-color 0.2s;
+      white-space: nowrap;
     }
-    .reprog-btn:hover { background: var(--amber2); }
+    .btn-reprog:hover {
+      background: rgba(200,129,58,0.12);
+      border-color: rgba(200,129,58,0.7);
+    }
+
     .tabs-wrap { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .tab-pill {
       padding: 6px 18px; border-radius: 20px; font-size: 11px;
@@ -43,15 +55,20 @@
       background: rgba(200,129,58,0.1); color: var(--amber2);
       border-color: rgba(200,129,58,0.35);
     }
+
+    /* Banner alerta fecha rechazada */
     .alert-fecha {
-      background: rgba(200,129,58,0.08);
-      border: 1px solid rgba(200,129,58,0.35);
-      border-radius: var(--r2); padding: 1rem 1.25rem;
-      margin-bottom: 1.25rem;
+      background: rgba(200,129,58,0.07);
+      border: 1px solid rgba(200,129,58,0.3);
+      border-radius: var(--r2); padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
       display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
     }
-    .alert-fecha-text { flex: 1; font-size: 13px; color: var(--off); line-height: 1.5; }
+    .alert-fecha-text { flex: 1; font-size: 13px; color: var(--off); line-height: 1.5; min-width: 200px; }
     .alert-fecha-text strong { color: var(--amber2); }
+
+    /* Celda acción no desborda */
+    #tablaContratos td:last-child { white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -77,15 +94,15 @@
 
 <div class="container" style="padding:3rem 0 6rem;">
 
-  <!-- BANNER: un banner por cada contrato con fecha rechazada -->
+  <!-- BANNER por cada contrato con fecha rechazada -->
   <div th:each="c : ${contratos}" th:if="${c.estado == 'FECHA_RECHAZADA'}" class="alert-fecha">
-    <div style="font-size:1.6rem;">📅</div>
+    <div style="font-size:1.5rem;flex-shrink:0;">📅</div>
     <div class="alert-fecha-text">
       <strong>Fecha no disponible</strong> — El artista
       <strong th:text="${c.artista != null ? c.artista.artist : ''}"></strong>
       no puede en la fecha solicitada. Por favor elige una nueva fecha.
     </div>
-    <button class="reprog-btn"
+    <button class="xb xb-amber xb-sm"
             th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
       📅 Cambiar fecha
     </button>
@@ -112,7 +129,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr th:each="c : ${contratos}" class="fu" th:attr="data-estado=${c.estado},data-id=${c.id},data-artista=${c.artista != null ? c.artista.artist : ''}">
+              <tr th:each="c : ${contratos}" class="fu"
+                  th:attr="data-estado=${c.estado},data-id=${c.id},data-artista=${c.artista != null ? c.artista.artist : ''}">
                 <td>
                   <div style="display:flex;align-items:center;gap:12px;">
                     <img th:if="${c.artista != null and c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}"
@@ -141,15 +159,15 @@
                   <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok">Aceptado</span>
                   <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no">Rechazado</span>
                   <span th:if="${c.estado == 'FINALIZADO'}"      class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
-                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">📅 Fecha rechazada</span>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
                 </td>
                 <td>
-                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}">
-                    <button class="reprog-btn"
-                            th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
-                      📅 Cambiar fecha
-                    </button>
-                  </span>
+                  <button th:if="${c.estado == 'FECHA_RECHAZADA'}"
+                          class="xb xb-outline xb-sm"
+                          style="color:var(--amber2);border-color:rgba(200,129,58,0.45);"
+                          th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
+                    📅 Cambiar fecha
+                  </button>
                   <span th:unless="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--muted);font-size:12px;">—</span>
                 </td>
               </tr>
@@ -218,7 +236,7 @@
 </div>
 
 <script>
-// Mapa de contratos con FECHA_RECHAZADA para enlazar desde notificación
+// Mapa de contratos con FECHA_RECHAZADA
 const mapaFechasRechazadas = {};
 document.querySelectorAll('#tablaContratos tbody tr[data-estado="FECHA_RECHAZADA"]').forEach(row => {
   const id = row.getAttribute('data-id');
@@ -245,17 +263,14 @@ async function cargarNotifHistorial() {
       let botonReprog = '';
 
       if (esFechaRechazada) {
-        // Buscar el contrato correspondiente por nombre de artista
         for (const [key, val] of Object.entries(mapaFechasRechazadas)) {
           if (n.mensaje.toLowerCase().includes(key)) {
-            botonReprog = `<button class="reprog-btn" onclick="abrirReprogramar(${val.id}, '${val.nombre}')">📅 Cambiar fecha ahora</button>`;
+            botonReprog = `<button class="btn-reprog" onclick="abrirReprogramar(${val.id}, '${val.nombre}')">📅 Cambiar fecha</button>`;
             break;
           }
         }
-        // Si no encontró en el mapa (notif antigua), mostrar botón genérico que scrollea a la tabla
-        if (!botonReprog) {
-          botonReprog = `<button class="reprog-btn" onclick="document.getElementById('tablaContratos').scrollIntoView({behavior:'smooth'})">📅 Ver contrato</button>`;
-        }
+        if (!botonReprog)
+          botonReprog = `<button class="btn-reprog" onclick="document.getElementById('tablaContratos').scrollIntoView({behavior:'smooth'})">📅 Ver contrato</button>`;
       }
 
       const div = document.createElement("div");
