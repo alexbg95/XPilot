@@ -117,7 +117,8 @@
            th:data-nombre="${foto.nombre != null ? foto.nombre : 'Obra #' + foto.id}"
            th:data-url="${foto.url}"
            th:data-precio="${foto.precio}"
-           th:onclick="${#authorization.expression('isAuthenticated()') ? 'abrirObra(this)' : 'abrirModalLogin()'}">
+           th:data-auth="${#authorization.expression('isAuthenticated()')}"
+           onclick="handleObraClick(this)">
         <img th:src="${foto.url}" alt="Obra">
         <div class="obra-id">#<span th:text="${foto.id}"></span><span th:if="${foto.nombre != null}" th:text="' · ' + ${foto.nombre}"></span><span th:if="${foto.precio != null}" th:text="' — $' + ${#numbers.formatInteger(foto.precio,1,'COMMA')}" style="color:var(--amber2);margin-left:4px;"></span></div>
         <div class="obra-overlay">
@@ -132,8 +133,10 @@
   <div th:if="${(fotos == null or #lists.isEmpty(fotos)) and artista.tags != null and !#strings.isEmpty(artista.tags)}"
        class="row g-4 justify-content-center">
     <div class="col-md-5 fu">
-      <div class="obra-item" data-id="0" data-nombre="Obra principal" th:data-url="${artista.tags}"
-           th:onclick="${#authorization.expression('isAuthenticated()') ? 'abrirObra(this)' : 'abrirModalLogin()'}">
+      <div class="obra-item" data-id="0" data-nombre="Obra principal"
+           th:data-url="${artista.tags}"
+           th:data-auth="${#authorization.expression('isAuthenticated()')}"
+           onclick="handleObraClick(this)">
         <img th:src="${artista.tags}" alt="Obra principal">
         <div class="obra-overlay">
           <div th:if="${#authorization.expression('isAuthenticated()')}" class="xb xb-amber xb-sm xb-full">🎧 Contratar esta obra</div>
@@ -239,6 +242,14 @@
 </div>
 
 <script>
+function handleObraClick(el) {
+  const auth = el.getAttribute('data-auth');
+  if (auth === 'true') {
+    abrirObra(el);
+  } else {
+    abrirModalLogin();
+  }
+}
 function abrirModalLogin() {
   new bootstrap.Modal(document.getElementById('modalLogin')).show();
 }
