@@ -96,20 +96,6 @@
 
 <div class="container" style="padding:3rem 0 6rem;">
 
-  <!-- BANNER por cada contrato con fecha rechazada -->
-  <div th:each="c : ${contratos}" th:if="${c.estado == 'FECHA_RECHAZADA'}" class="alert-fecha">
-    <div style="font-size:1.5rem;flex-shrink:0;">📅</div>
-    <div class="alert-fecha-text">
-      <strong>Fecha no disponible</strong> — El artista
-      <strong th:text="${c.artista != null ? c.artista.artist : ''}"></strong>
-      no puede en la fecha solicitada. Por favor elige una nueva fecha.
-    </div>
-    <button class="xb xb-amber xb-sm"
-            th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
-      📅 Cambiar fecha
-    </button>
-  </div>
-
   <div class="row g-4">
 
     <!-- CONTRATOS -->
