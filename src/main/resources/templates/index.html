@@ -436,15 +436,15 @@ function resize() {
 
 function createParticles() {
   particles = [];
-  const count = Math.floor(canvas.width / 20);
+  const count = Math.floor(canvas.width / 14);
   for (let i = 0; i < count; i++) {
     particles.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      r: Math.random() * 1.5 + 0.3,
+      r: Math.random() * 2.3 + 0.5,
       dx: (Math.random() - 0.5) * 0.3,
       dy: (Math.random() - 0.5) * 0.3,
-      o: Math.random() * 0.4 + 0.1
+      o: Math.random() * 0.45 + 0.2
     });
   }
 }
@@ -471,7 +471,7 @@ function drawParticles() {
         ctx.beginPath();
         ctx.moveTo(particles[i].x, particles[i].y);
         ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(200,129,58,${0.06 * (1 - dist/100)})`;
+        ctx.strokeStyle = `rgba(200,129,58,${0.14 * (1 - dist/100)})`;
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
