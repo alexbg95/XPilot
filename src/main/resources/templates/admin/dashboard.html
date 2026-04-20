@@ -173,9 +173,7 @@
         <h1 style="font-family:var(--serif);font-size:1.75rem;font-weight:600;margin:0;">Panel de Control</h1>
         <div style="font-size:12px;color:var(--muted2);margin-top:2px;">Gestión de artistas y contrataciones · XPilot</div>
       </div>
-      <a th:href="@{/admin/nuevo}" class="xb xb-amber" style="display:flex;align-items:center;gap:8px;">
-        <i data-lucide="plus" style="width:16px;height:16px;"></i> Crear Artista
-      </a>
+
     </div>
 
     <div class="admin-content">
@@ -229,3 +227,318 @@
             <span style="font-size:11px;font-weight:400;color:var(--muted2);"
                   th:text="${#lists.size(mediaList)} + ' en total'"></span>
           </div>
+          <a th:href="@{/admin/nuevo}" class="xb xb-amber xb-sm" style="display:flex;align-items:center;gap:6px;">
+            <i data-lucide="plus" style="width:14px;height:14px;"></i> Crear Artista
+          </a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Artista</th><th>Estilo</th><th>Contratos</th>
+                <th>Ganancias</th><th>Estado</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="m : ${mediaList}">
+                <td>
+                  <div class="artista-row">
+                    <div class="artista-av">
+                      <img th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}" th:src="${m.urlm}">
+                      <img th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and m.tags != null and !#strings.isEmpty(m.tags)}" th:src="${m.tags}">
+                      <i th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and (m.tags == null or #strings.isEmpty(m.tags))}"
+                         data-lucide="mic-2"></i>
+                    </div>
+                    <div>
+                      <div style="font-family:var(--serif);font-weight:600;" th:text="${m.artist}"></div>
+                      <div style="font-size:11px;color:var(--muted2);" th:text="'ID #' + ${m.id}"></div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge bdg-art" th:text="${m.style}"></span></td>
+                <td>
+                  <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;"
+                       th:text="${contratacionesPorArtista[m.id] != null ? contratacionesPorArtista[m.id] : 0}"></div>
+                </td>
+                <td>
+                  <span th:with="g=${gananciasPorArtista[m.id]}" th:if="${g != null and g > 0}"
+                        style="color:var(--amber2);font-family:var(--serif);font-weight:600;"
+                        th:text="'$' + ${#numbers.formatInteger(g,1,'COMMA')}"></span>
+                  <span th:with="g=${gananciasPorArtista[m.id]}" th:unless="${g != null and g > 0}"
+                        style="color:var(--muted);">—</span>
+                </td>
+                <td>
+                  <span th:if="${m.disponible}"
+                        style="background:rgba(42,97,69,0.15);color:#4caf80;border:1px solid rgba(76,175,128,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#4caf80;display:inline-block;"></span>
+                    Disponible
+                  </span>
+                  <span th:unless="${m.disponible}"
+                        style="background:rgba(122,24,24,0.15);color:#f09090;border:1px solid rgba(240,144,144,0.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#f09090;display:inline-block;"></span>
+                    Ocupado
+                  </span>
+                </td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <a th:href="@{/admin/editar/{id}(id=${m.id})}" class="xb xb-outline xb-sm"
+                       style="display:inline-flex;align-items:center;gap:5px;" data-tooltip="Editar artista">
+                      <i data-lucide="pencil" style="width:13px;height:13px;"></i> Editar
+                    </a>
+                    <a th:href="@{/admin/eliminar/{id}(id=${m.id})}" class="xb xb-danger xb-sm"
+                       style="display:inline-flex;align-items:center;gap:5px;"
+                       onclick="return confirm('¿Eliminar artista?')" data-tooltip="Eliminar artista">
+                      <i data-lucide="trash-2" style="width:13px;height:13px;"></i> Eliminar
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(mediaList)}">
+                <td colspan="6" style="text-align:center;padding:3rem;color:var(--muted2);">
+                  No hay artistas registrados
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── SOLICITUDES ── -->
+      <div id="solicitudes" class="section-wrap">
+        <div class="section-head">
+          <div class="section-title">
+            <i data-lucide="inbox"></i>
+            Solicitudes pendientes
+            <span class="badge bdg-pending" th:text="${#lists.size(solicitudes)}"></span>
+          </div>
+        </div>
+
+        <div th:each="c : ${solicitudes}" class="solicitud-card">
+          <div class="sol-avatar">
+            <img th:if="${c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}" th:src="${c.artista.urlm}">
+            <i th:unless="${c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}" data-lucide="mic-2"></i>
+          </div>
+          <div class="sol-info">
+            <div class="sol-name" th:text="${c.artista.artist}"></div>
+            <div class="sol-meta">
+              <i data-lucide="user"></i>
+              <span th:text="${c.cliente.uname}"></span>
+              <span th:if="${c.obraNombre != null}">·
+                <span class="badge bdg-art obra-tag" th:text="${c.obraNombre}"></span>
+              </span>
+            </div>
+            <div class="sol-meta" th:if="${c.fechaSolicitud != null}" style="margin-top:3px;">
+              <i data-lucide="send"></i>
+              <span style="color:var(--amber2);"
+                    th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy HH:mm')} + ' hrs'"></span>
+            </div>
+          </div>
+          <div class="sol-fecha" th:if="${c.fechaEvento != null}">
+            <div class="sol-fecha-day" th:text="${#temporals.format(c.fechaEvento,'dd MMM')}"></div>
+            <div style="font-size:11px;color:var(--muted2);" th:text="${#temporals.format(c.fechaEvento,'yyyy')}"></div>
+            <div class="sol-fecha-sub">Evento</div>
+          </div>
+          <div class="sol-fecha" th:unless="${c.fechaEvento != null}">
+            <div style="color:var(--muted);font-size:12px;">Sin fecha</div>
+          </div>
+          <div class="sol-actions">
+            <form th:action="@{/admin/aceptar/{id}(id=${c.id})}" method="post"
+                  style="display:flex;gap:6px;align-items:center;">
+              <input type="date" name="fechaEvento" required
+                     style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:6px 10px;font-family:var(--sans);font-size:12px;outline:none;width:130px;">
+              <button class="xb xb-success xb-sm" data-tooltip="Aceptar solicitud"
+                      style="display:inline-flex;align-items:center;gap:5px;">
+                <i data-lucide="check" style="width:14px;height:14px;"></i> Aceptar
+              </button>
+            </form>
+            <button class="xb xb-sm" data-tooltip="Fecha no disponible"
+                    style="background:rgba(200,129,58,0.1);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);display:inline-flex;align-items:center;gap:5px;"
+                    th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
+              <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
+            </button>
+            <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post">
+              <button class="xb xb-danger xb-sm" data-tooltip="Rechazar solicitud"
+                      style="display:inline-flex;align-items:center;gap:5px;">
+                <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(solicitudes)}"
+             style="padding:3rem;text-align:center;color:var(--muted2);">
+          <i data-lucide="inbox" style="width:2.5rem;height:2.5rem;margin-bottom:12px;opacity:0.3;"></i>
+          <div>No hay solicitudes pendientes</div>
+        </div>
+      </div>
+
+      <!-- ── HISTORIAL ── -->
+      <div id="historial" class="section-wrap">
+        <div class="section-head">
+          <div class="section-title">
+            <i data-lucide="scroll-text"></i>
+            Historial de contrataciones
+          </div>
+          <div class="filter-tabs">
+            <button class="ftab active"  onclick="filtrar('TODOS',this)">Todos</button>
+            <button class="ftab"         onclick="filtrar('PENDIENTE',this)">Pendientes</button>
+            <button class="ftab f-green" onclick="filtrar('ACEPTADO',this)">Aceptados</button>
+            <button class="ftab f-red"   onclick="filtrar('RECHAZADO',this)">Rechazados</button>
+            <button class="ftab f-blue"  onclick="filtrar('FINALIZADO',this)">Finalizados</button>
+            <div style="position:relative;">
+              <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none;"></i>
+              <input type="text" id="buscador" placeholder="Buscar..." oninput="buscar(this.value)"
+                     style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:6px 12px 6px 30px;font-family:var(--sans);font-size:12px;outline:none;width:140px;">
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tbl" id="tablaH">
+            <thead>
+              <tr>
+                <th>#</th><th>Cliente</th><th>Artista</th><th>Obra</th>
+                <th>Fecha evento</th><th>Recibida</th><th>Estado</th><th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="c : ${todos}" th:attr="data-estado=${c.estado}">
+                <td style="color:var(--muted);font-size:12px;" th:text="${c.id}"></td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <i data-lucide="user" style="width:13px;height:13px;color:var(--muted);"></i>
+                    <span style="font-weight:600;" th:text="${c.cliente.uname}"></span>
+                  </div>
+                </td>
+                <td style="font-family:var(--serif);" th:text="${c.artista.artist}"></td>
+                <td>
+                  <span th:if="${c.obraNombre != null}" class="badge bdg-art obra-tag"
+                        th:text="${c.obraNombre}"></span>
+                  <span th:unless="${c.obraNombre != null}" style="color:var(--muted);">—</span>
+                </td>
+                <td>
+                  <div th:if="${c.fechaEvento != null}" style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--off);">
+                    <i data-lucide="calendar" style="width:12px;height:12px;color:var(--muted);"></i>
+                    <span th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
+                  </div>
+                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);">—</span>
+                </td>
+                <td>
+                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;line-height:1.5;">
+                    <div style="color:var(--off);" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
+                    <div style="color:var(--amber2);font-size:11px;"
+                         th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
+                  </div>
+                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);">—</span>
+                </td>
+                <td>
+                  <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
+                  <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok">Aceptado</span>
+                  <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no">Rechazado</span>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge"
+                        style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
+                  <span th:if="${c.estado == 'FINALIZADO'}"      class="badge"
+                        style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
+                </td>
+                <td>
+                  <form th:if="${c.estado == 'ACEPTADO'}" th:action="'/admin/finalizar/' + ${c.id}" method="post">
+                    <button class="xb xb-sm"
+                            style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);display:inline-flex;align-items:center;gap:5px;">
+                      <i data-lucide="flag" style="width:13px;height:13px;"></i> Finalizar
+                    </button>
+                  </form>
+                  <span th:unless="${c.estado == 'ACEPTADO'}" style="color:var(--muted);font-size:12px;">—</span>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(todos)}">
+                <td colspan="8" style="text-align:center;padding:3rem;color:var(--muted2);">No hay contrataciones</td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="noRes" style="display:none;text-align:center;padding:2rem;color:var(--muted2);font-size:13px;">Sin resultados</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL NO DISPONIBLE -->
+<div class="modal fade" id="modalNoDisponible" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <i data-lucide="calendar-x" style="width:20px;height:20px;color:var(--amber2);"></i>
+          <div>
+            <h5 class="modal-title" style="font-family:var(--serif);font-size:1.1rem;margin:0;">Artista no disponible</h5>
+            <small style="color:var(--muted2);">El usuario recibirá una notificación</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:1.5rem;">
+        <div style="margin-bottom:1rem;padding:10px 14px;background:rgba(200,129,58,0.08);border:1px solid rgba(200,129,58,0.2);border-radius:var(--r);font-size:13px;color:var(--amber2);display:flex;align-items:center;gap:8px;">
+          <i data-lucide="user" style="width:14px;height:14px;flex-shrink:0;"></i>
+          Artista: <strong id="ndArtista" style="color:var(--white);"></strong>
+        </div>
+        <form id="formNoDisponible" method="post">
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="label">Mensaje para el usuario</label>
+            <textarea name="mensaje" id="ndMensaje" class="input" rows="4"
+                      placeholder="Ej: El artista ya tiene un compromiso para esa fecha, por favor elige otra fecha..."
+                      required
+                      style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;resize:vertical;outline:none;"></textarea>
+          </div>
+          <button type="submit" class="xb xb-amber xb-lg xb-full"
+                  style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
+            <i data-lucide="send" style="width:15px;height:15px;"></i>
+            Enviar notificación
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+<script>
+const fc={apiKey:"AIzaSyB7va5Y5oL7US3W65JfMCYjsZbnE0iGUvI",authDomain:"xpilot-notif.firebaseapp.com",projectId:"xpilot-notif",storageBucket:"xpilot-notif.firebasestorage.app",messagingSenderId:"872077118353",appId:"1:872077118353:web:1455bccab759151ee86830"};
+if(!firebase.apps.length)firebase.initializeApp(fc);
+const msg=firebase.messaging();
+window.addEventListener("load",async()=>{try{const r=await navigator.serviceWorker.register("/firebase-messaging-sw.js");const p=await Notification.requestPermission();if(p!=="granted")return;const t=await msg.getToken({vapidKey:"BK2AResPV3NQc7F-ZHUIKVIuwbI4HS2QLI4otoYKWNVr2wEAgBegGjc7pzgrm-fLZKuaS49DTxs2mNTQSB8Mz8c",serviceWorkerRegistration:r});if(!t)return;await fetch("/guardar-fcm-token",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({token:t})});}catch(e){}});
+msg.onMessage(p=>{new Notification(p.notification.title,{body:p.notification.body,icon:"/media/avatar.png"});});
+
+function abrirNoDisponible(id, nombre) {
+  document.getElementById('ndArtista').textContent = nombre;
+  document.getElementById('ndMensaje').value = '';
+  document.getElementById('formNoDisponible').action = '/admin/no-disponible/' + id;
+  new bootstrap.Modal(document.getElementById('modalNoDisponible')).show();
+}
+
+let cur = "TODOS";
+function filtrar(e, b) {
+  cur = e;
+  document.querySelectorAll(".ftab").forEach(x => x.classList.remove("active"));
+  b.classList.add("active");
+  document.getElementById("buscador").value = "";
+  ap();
+}
+function buscar(t) { ap(t); }
+function ap(t = "") {
+  const rows = document.querySelectorAll("#tablaH tbody tr[data-estado]");
+  let v = 0; const b = t.toLowerCase();
+  rows.forEach(r => {
+    const ok = (cur === "TODOS" || r.getAttribute("data-estado") === cur)
+            && (b === "" || r.innerText.toLowerCase().includes(b));
+    r.style.display = ok ? "" : "none";
+    if (ok) v++;
+  });
+  document.getElementById("noRes").style.display = v === 0 ? "block" : "none";
+}
+
+// Inicializar iconos Lucide
+lucide.createIcons();
+</script>
+</body>
+</html>
