@@ -411,7 +411,7 @@
       <a th:href="${usuarioLogueado ? '/gallery' : '/login-view'}" class="xb xb-outline xb-sm">Ver todos →</a>
     </div>
     <div class="masonry-grid">
-      <div class="masonry-item fu" th:each="m,i : ${mediaList}" th:if="${i.index < 6}"
+      <div class="masonry-item fu" th:each="m : ${mediaList}"
            th:attr="style='animation-delay:' + ${i.index * 0.08} + 's'"
            th:onclick="'window.location=\'/artista/' + ${m.id} + '\''">
         <img th:src="${m.tags != null and !#strings.isEmpty(m.tags) ? m.tags : (m.urlm != null and !#strings.isEmpty(m.urlm) ? m.urlm : '/media/avatar.png')}"
