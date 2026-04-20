@@ -30,6 +30,14 @@ public class GalleryController {
     @GetMapping("/gallery")
     public String gallery(Model model) {
         model.addAttribute("mediaList", mediaRepo.findAll());
+        try {
+            java.security.Principal p = request.getUserPrincipal();
+            if (p != null) {
+                com.XPilot.XPilot.models.usuario u = usuarioRepo.findByEmail(p.getName()).orElse(null);
+                if (u != null) model.addAttribute("uname", u.getUname());
+                if (u != null) model.addAttribute("fotoPerfil", u.getFotoPerfil());
+            }
+        } catch(Exception e) {}
         return "gallery";
     }
 
