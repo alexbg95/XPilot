@@ -68,9 +68,7 @@
     .alert-fecha-text strong { color: var(--amber2); }
 
     /* Celda acción no desborda */
-    #tablaContratos td:last-child { white-space: nowrap; min-width: 130px; }
-    #tablaContratos td:nth-child(2) { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    #tablaContratos th:last-child { min-width: 130px; }
+    #tablaContratos td:last-child { white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -96,6 +94,20 @@
 
 <div class="container" style="padding:3rem 0 6rem;">
 
+  <!-- BANNER por cada contrato con fecha rechazada -->
+  <div th:each="c : ${contratos}" th:if="${c.estado == 'FECHA_RECHAZADA'}" class="alert-fecha">
+    <div style="font-size:1.5rem;flex-shrink:0;">📅</div>
+    <div class="alert-fecha-text">
+      <strong>Fecha no disponible</strong> — El artista
+      <strong th:text="${c.artista != null ? c.artista.artist : ''}"></strong>
+      no puede en la fecha solicitada. Por favor elige una nueva fecha.
+    </div>
+    <button class="xb xb-amber xb-sm"
+            th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
+      📅 Cambiar fecha
+    </button>
+  </div>
+
   <div class="row g-4">
 
     <!-- CONTRATOS -->
@@ -106,7 +118,6 @@
         <button class="tab-pill" onclick="filtrarContratos('ACEPTADO', this)">Aceptados</button>
         <button class="tab-pill" onclick="filtrarContratos('RECHAZADO', this)">Rechazados</button>
         <button class="tab-pill" onclick="filtrarContratos('FINALIZADO', this)">Finalizados</button>
-        <button class="tab-pill" onclick="filtrarContratos('FECHA_RECHAZADA', this)">Fecha rechazada</button>
       </div>
 
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
@@ -114,7 +125,7 @@
           <table class="tbl" id="tablaContratos">
             <thead>
               <tr>
-                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Solicitud enviada</th><th>Estado</th><th>Acción</th>
+                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Estado</th><th>Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -140,25 +151,8 @@
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">Contratación general</span>
                 </td>
                 <td>
-                  <div th:if="${c.estado == 'FECHA_RECHAZADA'}">
-                    <form th:action="@{/contrato/reprogramar/{id}(id=${c.id})}" method="post" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                      <input type="date" name="fechaEvento" required
-                             style="background:var(--bg3);border:1px solid rgba(200,129,58,0.45);color:var(--white);border-radius:var(--r);padding:5px 10px;font-family:var(--sans);font-size:12px;outline:none;">
-                      <button type="submit" class="xb xb-amber xb-sm" style="padding:5px 12px;font-size:11px;">Guardar</button>
-                    </form>
-                  </div>
-                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento != null}"
-                        th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"
-                        style="font-family:var(--serif);font-size:1rem;"></span>
-                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento == null}"
-                        style="color:var(--muted);font-size:13px;">Por confirmar</span>
-                </td>
-                <td>
-                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;line-height:1.6;">
-                    <div style="color:var(--off);font-weight:600;" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
-                    <div style="color:var(--amber2);font-size:11px;" th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
-                  </div>
-                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
+                  <span th:if="${c.fechaEvento != null}" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}" style="font-family:var(--serif);font-size:1rem;"></span>
+                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">Por confirmar</span>
                 </td>
                 <td>
                   <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
@@ -168,12 +162,17 @@
                   <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
                 </td>
                 <td>
-                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--amber2);font-size:12px;font-weight:700;">↑ Ingresa fecha</span>
+                  <button th:if="${c.estado == 'FECHA_RECHAZADA'}"
+                          class="xb xb-outline xb-sm"
+                          style="color:var(--amber2);border-color:rgba(200,129,58,0.45);"
+                          th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
+                    📅 Cambiar fecha
+                  </button>
                   <span th:unless="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--muted);font-size:12px;">—</span>
                 </td>
               </tr>
               <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
-                <td colspan="6" style="text-align:center;padding:5rem;color:var(--muted2);">
+                <td colspan="5" style="text-align:center;padding:5rem;color:var(--muted2);">
                   <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
                   <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
                   <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>
@@ -328,27 +327,5 @@ if (nav) window.addEventListener("scroll", () => nav.classList.toggle("scrolled"
 
 cargarNotifHistorial();
 </script>
-  <!-- TOAST CONTRATADO -->
-  <div id="toastContratado" style="position:fixed;bottom:2rem;right:2rem;z-index:9999;
-    background:rgba(42,97,69,0.95);border:1px solid rgba(76,175,128,0.4);
-    border-radius:var(--r2);padding:1rem 1.5rem;
-    display:flex;align-items:center;gap:12px;
-    box-shadow:0 8px 32px rgba(0,0,0,0.4);
-    transform:translateY(100px);opacity:0;
-    transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
-    max-width:360px;">
-    <div style="width:36px;height:36px;border-radius:50%;background:rgba(76,175,128,0.2);border:1px solid rgba(76,175,128,0.4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✅</div>
-    <div>
-      <div style="font-family:var(--serif);font-size:1rem;font-weight:600;color:#fff;">¡Solicitud enviada!</div>
-      <div style="font-size:12px;color:rgba(76,175,128,0.9);margin-top:2px;">El artista revisará tu solicitud pronto.</div>
-    </div>
-  </div>
-  <script>
-    if(new URLSearchParams(window.location.search).get("contratado")==="true"){
-      const t=document.getElementById("toastContratado");
-      setTimeout(()=>{t.style.transform="translateY(0)";t.style.opacity="1";},300);
-      setTimeout(()=>{t.style.transform="translateY(100px)";t.style.opacity="0";},4000);
-    }
-  </script>
 </body>
 </html>
