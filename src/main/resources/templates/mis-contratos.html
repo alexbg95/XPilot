@@ -139,8 +139,18 @@
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">Contratación general</span>
                 </td>
                 <td>
-                  <span th:if="${c.fechaEvento != null}" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}" style="font-family:var(--serif);font-size:1rem;"></span>
-                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">Por confirmar</span>
+                  <div th:if="${c.estado == 'FECHA_RECHAZADA'}">
+                    <form th:action="@{/contrato/reprogramar/{id}(id=${c.id})}" method="post" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                      <input type="date" name="fechaEvento" required
+                             style="background:var(--bg3);border:1px solid rgba(200,129,58,0.45);color:var(--white);border-radius:var(--r);padding:5px 10px;font-family:var(--sans);font-size:12px;outline:none;">
+                      <button type="submit" class="xb xb-amber xb-sm" style="padding:5px 12px;font-size:11px;">Guardar</button>
+                    </form>
+                  </div>
+                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento != null}"
+                        th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"
+                        style="font-family:var(--serif);font-size:1rem;"></span>
+                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento == null}"
+                        style="color:var(--muted);font-size:13px;">Por confirmar</span>
                 </td>
                 <td>
                   <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
@@ -150,12 +160,7 @@
                   <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
                 </td>
                 <td>
-                  <button th:if="${c.estado == 'FECHA_RECHAZADA'}"
-                          class="xb xb-outline xb-sm"
-                          style="color:var(--amber2);border-color:rgba(200,129,58,0.45);"
-                          th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
-                    📅 Cambiar fecha
-                  </button>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--amber2);font-size:12px;font-weight:700;">↑ Ingresa fecha</span>
                   <span th:unless="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--muted);font-size:12px;">—</span>
                 </td>
               </tr>

@@ -86,10 +86,16 @@ public class GalleryController {
 
         contratacionRepo.save(c);
 
-        // ✅ Construir mensaje con detalle de obra
+        // ✅ Construir detalle de obra para mensajes
         String detalleObra = (obraNombre != null && !obraNombre.isBlank())
-                ? " — obra: \"" + obraNombre + "\" (ID #" + obraId + ")"
+                ? " — obra: \"" + obraNombre + "\""
                 : "";
+
+        // 🔔 Notificar al cliente con artista + obra
+        String mensajeCliente = (obraNombre != null && !obraNombre.isBlank())
+                ? "✅ Contrataste a " + artista.getArtist() + " por la obra \"" + obraNombre + "\". Tu solicitud está pendiente de confirmación."
+                : "✅ Contrataste a " + artista.getArtist() + ". Tu solicitud está pendiente de confirmación.";
+        notificacionService.crearNotificacion(cliente, mensajeCliente);
 
         try {
             usuario admin = usuarioRepo.findByRol("ADMIN");
