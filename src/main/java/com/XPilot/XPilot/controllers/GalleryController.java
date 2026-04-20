@@ -118,6 +118,6 @@ public class GalleryController {
             System.out.println("❌ Error notificando admin: " + e.getMessage());
         }
 
-        return "redirect:/mis-contratos";
+        return "redirect:/mis-contratos?contratado=true";
     }
 }
