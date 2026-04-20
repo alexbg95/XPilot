@@ -9,7 +9,6 @@
 </head>
 <body>
 
-<!-- CURSOR -->
 <div class="admin-wrap">
 
   <!-- SIDEBAR -->
@@ -101,7 +100,7 @@
                 </div></td>
               </tr>
               <tr th:if="${#lists.isEmpty(mediaList)}">
-                <td colspan="4" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay artistas registrados</td>
+                <td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay artistas registrados</td>
               </tr>
             </tbody>
           </table>
@@ -116,7 +115,17 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl">
-            <thead><tr><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha solicitada</th><th>Aceptar</th><th>Rechazar</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Artista</th>
+                <th>Obra</th>
+                <th>Fecha solicitada</th>
+                <th>Aceptar</th>
+                <th>No disponible</th>
+                <th>Rechazar</th>
+              </tr>
+            </thead>
             <tbody>
               <tr th:each="c : ${solicitudes}">
                 <td style="font-weight:600;" th:text="${c.cliente.uname}"></td>
@@ -129,6 +138,7 @@
                   <span th:if="${c.fechaEvento != null}" style="font-family:var(--serif);font-size:0.95rem;" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
                   <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
+                <!-- ACEPTAR -->
                 <td>
                   <form th:action="@{/admin/aceptar/{id}(id=${c.id})}" method="post" style="display:flex;gap:8px;align-items:center;">
                     <input type="date" name="fechaEvento" required
@@ -136,6 +146,15 @@
                     <button class="xb xb-success xb-sm">✔ Aceptar</button>
                   </form>
                 </td>
+                <!-- NO DISPONIBLE PARA FECHA -->
+                <td>
+                  <button class="xb xb-sm"
+                          style="background:rgba(200,129,58,0.12);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);"
+                          th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
+                    📅 No disponible
+                  </button>
+                </td>
+                <!-- RECHAZAR -->
                 <td>
                   <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post">
                     <button class="xb xb-danger xb-sm">✖ Rechazar</button>
@@ -143,7 +162,7 @@
                 </td>
               </tr>
               <tr th:if="${#lists.isEmpty(solicitudes)}">
-                <td colspan="5" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay solicitudes pendientes</td>
+                <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay solicitudes pendientes</td>
               </tr>
             </tbody>
           </table>
@@ -191,7 +210,7 @@
                 </td>
               </tr>
               <tr th:if="${#lists.isEmpty(todos)}">
-                <td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay contrataciones</td>
+                <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay contrataciones</td>
               </tr>
             </tbody>
           </table>
@@ -203,6 +222,36 @@
   </main>
 </div>
 
+<!-- ===== MODAL NO DISPONIBLE PARA FECHA ===== -->
+<div class="modal fade" id="modalNoDisponible" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <div>
+          <h5 class="modal-title" style="font-family:var(--serif);font-size:1.2rem;margin:0;">📅 Artista no disponible</h5>
+          <small style="color:var(--muted2);">El usuario recibirá una notificación con tu mensaje</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:1.75rem;">
+        <div style="margin-bottom:1rem;padding:10px 14px;background:rgba(200,129,58,0.08);border:1px solid rgba(200,129,58,0.2);border-radius:var(--r);font-size:13px;color:var(--amber2);">
+          Artista: <strong id="ndArtista" style="color:var(--white);"></strong>
+        </div>
+        <form id="formNoDisponible" method="post">
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="label">Mensaje para el usuario</label>
+            <textarea name="mensaje" id="ndMensaje" class="input" rows="4"
+                      placeholder="Ej: El artista ya tiene un compromiso para esa fecha, por favor elige otra fecha disponible..."
+                      required
+                      style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;resize:vertical;outline:none;"></textarea>
+          </div>
+          <button type="submit" class="xb xb-amber xb-lg xb-full">📨 Enviar notificación</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script>
@@ -211,16 +260,20 @@ if(!firebase.apps.length)firebase.initializeApp(fc);
 const msg=firebase.messaging();
 window.addEventListener("load",async()=>{try{const r=await navigator.serviceWorker.register("/firebase-messaging-sw.js");const p=await Notification.requestPermission();if(p!=="granted")return;const t=await msg.getToken({vapidKey:"BK2AResPV3NQc7F-ZHUIKVIuwbI4HS2QLI4otoYKWNVr2wEAgBegGjc7pzgrm-fLZKuaS49DTxs2mNTQSB8Mz8c",serviceWorkerRegistration:r});if(!t)return;await fetch("/guardar-fcm-token",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({token:t})});}catch(e){}});
 msg.onMessage(p=>{new Notification(p.notification.title,{body:p.notification.body,icon:"/media/avatar.png"});});
+
+// ── MODAL NO DISPONIBLE ───────────────────────────────────────────
+function abrirNoDisponible(contratoId, artistaNombre) {
+  document.getElementById('ndArtista').textContent = artistaNombre;
+  document.getElementById('ndMensaje').value = '';
+  document.getElementById('formNoDisponible').action = '/admin/no-disponible/' + contratoId;
+  new bootstrap.Modal(document.getElementById('modalNoDisponible')).show();
+}
+
+// ── FILTROS HISTORIAL ─────────────────────────────────────────────
 let cur="TODOS";
 function filtrar(e,b){cur=e;document.querySelectorAll(".tab-btn").forEach(x=>{x.className=x.className.replace(" active","")});b.classList.add("active");document.getElementById("buscador").value="";ap();}
 function buscar(t){ap(t);}
 function ap(t=""){const rows=document.querySelectorAll("#tablaH tbody tr[data-estado]");let v=0;const b=t.toLowerCase();rows.forEach(r=>{const ok=(cur==="TODOS"||r.getAttribute("data-estado")===cur)&&(b===""||r.innerText.toLowerCase().includes(b));r.style.display=ok?"":"none";if(ok)v++;});document.getElementById("noRes").style.display=v===0?"block":"none";}
 </script>
-
-<script>
-if(dot&&ring){
-  document.querySelectorAll("a,button,.xb,.stat,.card,.obra-item").forEach(el=>{
-  });
-}
-</script>
-</body></html>
+</body>
+</html>

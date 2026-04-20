@@ -29,7 +29,7 @@ public class Contratacion {
 
     // ✅ Fecha y hora de cuando se envió la solicitud
     @Column(name = "fecha_solicitud")
-    private LocalDateTime fechaSolicitud = LocalDateTime.now();
+    private LocalDateTime fechaSolicitud = LocalDateTime.now(java.time.ZoneId.of("America/Bogota"));
 
     // Obra específica contratada (opcional)
     private Long obraId;

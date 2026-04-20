@@ -5,10 +5,76 @@
   <title>Mis Contratos — XPilot</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .notif-history-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .notif-history-item:last-child { border-bottom: none; }
+    .notif-history-item:hover { background: var(--bg3); }
+    .notif-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(200,129,58,0.1); border: 1px solid rgba(200,129,58,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .notif-icon.fecha { background: rgba(200,129,58,0.22); border-color: rgba(200,129,58,0.5); }
+    .notif-msg { font-size: 13px; color: var(--off); line-height: 1.6; flex: 1; }
+    .notif-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Botón reprogramar — igual que xb xb-outline xb-sm del sistema */
+    .btn-reprog {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 8px; padding: 6px 14px;
+      background: transparent;
+      color: var(--amber2);
+      border: 1px solid rgba(200,129,58,0.45);
+      border-radius: var(--r);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer;
+      font-family: var(--sans);
+      transition: background 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .btn-reprog:hover {
+      background: rgba(200,129,58,0.12);
+      border-color: rgba(200,129,58,0.7);
+    }
+
+    .tabs-wrap { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .tab-pill {
+      padding: 6px 18px; border-radius: 20px; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--muted2);
+      transition: all 0.2s; font-family: var(--sans);
+    }
+    .tab-pill.active, .tab-pill:hover {
+      background: rgba(200,129,58,0.1); color: var(--amber2);
+      border-color: rgba(200,129,58,0.35);
+    }
+
+    /* Banner alerta fecha rechazada */
+    .alert-fecha {
+      background: rgba(200,129,58,0.07);
+      border: 1px solid rgba(200,129,58,0.3);
+      border-radius: var(--r2); padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .alert-fecha-text { flex: 1; font-size: 13px; color: var(--off); line-height: 1.5; min-width: 200px; }
+    .alert-fecha-text strong { color: var(--amber2); }
+
+    /* Celda acción no desborda */
+    #tablaContratos td:last-child { white-space: nowrap; min-width: 130px; }
+    #tablaContratos td:nth-child(2) { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #tablaContratos th:last-child { min-width: 130px; }
+  </style>
 </head>
 <body>
 
-<!-- CURSOR -->
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
@@ -24,66 +90,103 @@
   <div class="container">
     <div class="sec-eyebrow fu">Mi actividad</div>
     <h1 style="font-family:var(--serif);font-size:3rem;font-weight:600;" class="fu d1">Mis Contratos</h1>
-    <p style="color:var(--muted2);font-size:15px;margin-top:6px;" class="fu d2">Historial de tus contrataciones de artistas</p>
+    <p style="color:var(--muted2);font-size:15px;margin-top:6px;" class="fu d2">Historial de tus contrataciones y notificaciones</p>
   </div>
 </div>
 
 <div class="container" style="padding:3rem 0 6rem;">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
-    <div style="overflow-x:auto;">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th>Artista</th>
-            <th>Obra contratada</th>
-            <th>Fecha del evento</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="c : ${contratos}" class="fu">
-            <td>
-              <div style="display:flex;align-items:center;gap:12px;">
-                <img th:if="${c.artista != null and c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}"
-                     th:src="${c.artista.urlm}"
-                     style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid var(--border2);">
-                <div th:unless="${c.artista != null and c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}"
-                     style="width:42px;height:42px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🎤</div>
-                <div>
-                  <div style="font-family:var(--serif);font-size:1rem;font-weight:600;" th:text="${c.artista != null ? c.artista.artist : '—'}"></div>
-                  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);" th:text="${c.artista != null ? c.artista.style : ''}"></div>
-                </div>
-              </div>
-            </td>
-            <td>
-              <span th:if="${c.obraNombre != null}" class="badge bdg-art">
-                #<span th:text="${c.obraId}"></span> · <span th:text="${c.obraNombre}"></span>
-              </span>
-              <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">Contratación general</span>
-            </td>
-            <td>
-              <span th:if="${c.fechaEvento != null}"
-                    th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"
-                    style="font-family:var(--serif);font-size:1rem;"></span>
-              <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">Por confirmar</span>
-            </td>
-            <td>
-              <span th:if="${c.estado == 'PENDIENTE'}"  class="badge bdg-pending">Pendiente</span>
-              <span th:if="${c.estado == 'ACEPTADO'}"   class="badge bdg-ok">Aceptado</span>
-              <span th:if="${c.estado == 'RECHAZADO'}"  class="badge bdg-no">Rechazado</span>
-              <span th:if="${c.estado == 'FINALIZADO'}" class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
-            </td>
-          </tr>
-          <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
-            <td colspan="4" style="text-align:center;padding:5rem;color:var(--muted2);">
-              <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
-              <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
-              <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+  <div class="row g-4">
+
+    <!-- CONTRATOS -->
+    <div class="col-lg-8">
+      <div class="tabs-wrap">
+        <button class="tab-pill active" onclick="filtrarContratos('TODOS', this)">Todos</button>
+        <button class="tab-pill" onclick="filtrarContratos('PENDIENTE', this)">Pendientes</button>
+        <button class="tab-pill" onclick="filtrarContratos('ACEPTADO', this)">Aceptados</button>
+        <button class="tab-pill" onclick="filtrarContratos('RECHAZADO', this)">Rechazados</button>
+        <button class="tab-pill" onclick="filtrarContratos('FINALIZADO', this)">Finalizados</button>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table class="tbl" id="tablaContratos">
+            <thead>
+              <tr>
+                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Estado</th><th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="c : ${contratos}" class="fu"
+                  th:attr="data-estado=${c.estado},data-id=${c.id},data-artista=${c.artista != null ? c.artista.artist : ''}">
+                <td>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <img th:if="${c.artista != null and c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}"
+                         th:src="${c.artista.urlm}"
+                         style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid var(--border2);">
+                    <div th:unless="${c.artista != null and c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}"
+                         style="width:42px;height:42px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🎤</div>
+                    <div>
+                      <div style="font-family:var(--serif);font-size:1rem;font-weight:600;" th:text="${c.artista != null ? c.artista.artist : '—'}"></div>
+                      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);" th:text="${c.artista != null ? c.artista.style : ''}"></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span th:if="${c.obraNombre != null}" class="badge bdg-art">
+                    #<span th:text="${c.obraId}"></span> · <span th:text="${c.obraNombre}"></span>
+                  </span>
+                  <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">Contratación general</span>
+                </td>
+                <td>
+                  <span th:if="${c.fechaEvento != null}" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}" style="font-family:var(--serif);font-size:1rem;"></span>
+                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">Por confirmar</span>
+                </td>
+                <td>
+                  <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
+                  <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok">Aceptado</span>
+                  <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no">Rechazado</span>
+                  <span th:if="${c.estado == 'FINALIZADO'}"      class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
+                </td>
+                <td>
+                  <button th:if="${c.estado == 'FECHA_RECHAZADA'}"
+                          class="xb xb-outline xb-sm"
+                          style="color:var(--amber2);border-color:rgba(200,129,58,0.45);"
+                          th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
+                    📅 Cambiar fecha
+                  </button>
+                  <span th:unless="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--muted);font-size:12px;">—</span>
+                </td>
+              </tr>
+              <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
+                <td colspan="5" style="text-align:center;padding:5rem;color:var(--muted2);">
+                  <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
+                  <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
+                  <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+
+    <!-- NOTIFICACIONES -->
+    <div class="col-lg-4">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
+        <div style="padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;">🔔 Notificaciones</div>
+          <button onclick="marcarTodasLeidas()" style="background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:var(--sans);">Limpiar todo</button>
+        </div>
+        <div id="notifHistorial">
+          <div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🔕</div>Cargando...
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -92,10 +195,125 @@
   <div class="footer-sub">© 2026 XPilot — Arte que inspira</div>
 </footer>
 
+<!-- MODAL REPROGRAMAR -->
+<div class="modal fade" id="modalReprogramar" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <div>
+          <h5 class="modal-title" style="font-family:var(--serif);font-size:1.2rem;margin:0;">📅 Reprogramar fecha</h5>
+          <small style="color:var(--muted2);">Elige una nueva fecha para el evento</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:1.75rem;">
+        <div style="margin-bottom:1.25rem;padding:10px 14px;background:rgba(200,129,58,0.08);border:1px solid rgba(200,129,58,0.2);border-radius:var(--r);font-size:13px;color:var(--amber2);">
+          Artista: <strong id="reprogArtista" style="color:var(--white);"></strong>
+        </div>
+        <form id="formReprogramar" method="post">
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="label">Nueva fecha del evento</label>
+            <input type="date" name="fechaEvento" id="reprogFecha" class="input" required
+                   style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;outline:none;">
+          </div>
+          <button type="submit" class="xb xb-amber xb-lg xb-full">✓ Confirmar nueva fecha</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-document.querySelectorAll("a,button,.card,.obra-item,.xb").forEach(el=>{
+// Mapa de contratos con FECHA_RECHAZADA
+const mapaFechasRechazadas = {};
+document.querySelectorAll('#tablaContratos tbody tr[data-estado="FECHA_RECHAZADA"]').forEach(row => {
+  const id = row.getAttribute('data-id');
+  const artista = row.getAttribute('data-artista');
+  if (id && artista) mapaFechasRechazadas[artista.toLowerCase()] = { id, nombre: artista };
 });
-const nav=document.getElementById("nav");
-if(nav)window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",scrollY>40));
+
+// ── NOTIFICACIONES ────────────────────────────────────────────────
+async function cargarNotifHistorial() {
+  try {
+    const res = await fetch("/api/notificaciones/historial");
+    if (!res.ok) return;
+    const lista = await res.json();
+    const box = document.getElementById("notifHistorial");
+    box.innerHTML = "";
+
+    if (!lista || lista.length === 0) {
+      box.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;"><div style="font-size:2rem;margin-bottom:8px;">🔕</div>Sin notificaciones</div>`;
+      return;
+    }
+
+    lista.forEach(n => {
+      const esFechaRechazada = n.mensaje && n.mensaje.includes("no está disponible para la fecha");
+      let botonReprog = '';
+
+      if (esFechaRechazada) {
+        for (const [key, val] of Object.entries(mapaFechasRechazadas)) {
+          if (n.mensaje.toLowerCase().includes(key)) {
+            botonReprog = `<button class="btn-reprog" onclick="abrirReprogramar(${val.id}, '${val.nombre}')">📅 Cambiar fecha</button>`;
+            break;
+          }
+        }
+        if (!botonReprog)
+          botonReprog = `<button class="btn-reprog" onclick="document.getElementById('tablaContratos').scrollIntoView({behavior:'smooth'})">📅 Ver contrato</button>`;
+      }
+
+      const div = document.createElement("div");
+      div.className = "notif-history-item";
+      div.id = "nh-" + n.id;
+      div.innerHTML = `
+        <div class="notif-icon ${esFechaRechazada ? 'fecha' : ''}">${esFechaRechazada ? '📅' : '🔔'}</div>
+        <div class="notif-msg">
+          ${n.mensaje}
+          ${botonReprog}
+          <div style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+            <span class="notif-time">${n.fecha ? new Date(n.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : ''}</span>
+            <button onclick="marcarLeida(${n.id})" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--sans);padding:0;">✓ Leída</button>
+          </div>
+        </div>`;
+      box.appendChild(div);
+    });
+  } catch(e) { console.error(e); }
+}
+
+async function marcarLeida(id) {
+  await fetch(`/api/notificaciones/${id}/leer`, { method: "POST" });
+  document.getElementById("nh-" + id)?.remove();
+  const box = document.getElementById("notifHistorial");
+  if (box && box.children.length === 0)
+    box.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;"><div style="font-size:2rem;margin-bottom:8px;">🔕</div>Sin notificaciones</div>`;
+}
+
+async function marcarTodasLeidas() {
+  await fetch("/api/notificaciones/marcar-todas", { method: "POST" });
+  cargarNotifHistorial();
+}
+
+function abrirReprogramar(contratoId, artistaNombre) {
+  document.getElementById("reprogArtista").textContent = artistaNombre;
+  document.getElementById("reprogFecha").value = "";
+  const manana = new Date();
+  manana.setDate(manana.getDate() + 1);
+  document.getElementById("reprogFecha").min = manana.toISOString().split("T")[0];
+  document.getElementById("formReprogramar").action = "/contrato/reprogramar/" + contratoId;
+  new bootstrap.Modal(document.getElementById("modalReprogramar")).show();
+}
+
+function filtrarContratos(estado, btn) {
+  document.querySelectorAll(".tab-pill").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll("#tablaContratos tbody tr[data-estado]").forEach(row => {
+    row.style.display = (estado === "TODOS" || row.getAttribute("data-estado") === estado) ? "" : "none";
+  });
+}
+
+const nav = document.getElementById("nav");
+if (nav) window.addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 40));
+
+cargarNotifHistorial();
 </script>
-</body></html>
+</body>
+</html>
