@@ -121,6 +121,7 @@
                 <th>Artista</th>
                 <th>Obra</th>
                 <th>Fecha solicitada</th>
+                <th>Solicitud recibida</th>
                 <th>Aceptar</th>
                 <th>No disponible</th>
                 <th>Rechazar</th>
@@ -137,6 +138,13 @@
                 <td>
                   <span th:if="${c.fechaEvento != null}" style="font-family:var(--serif);font-size:0.95rem;" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
                   <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">—</span>
+                </td>
+                <td>
+                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;color:var(--muted2);line-height:1.5;">
+                    <div style="color:var(--off);font-weight:600;" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
+                    <div style="color:var(--amber2);" th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
+                  </div>
+                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
                 <!-- ACEPTAR -->
                 <td>
@@ -162,7 +170,7 @@
                 </td>
               </tr>
               <tr th:if="${#lists.isEmpty(solicitudes)}">
-                <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay solicitudes pendientes</td>
+                <td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay solicitudes pendientes</td>
               </tr>
             </tbody>
           </table>
@@ -185,7 +193,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table class="tbl" id="tablaH">
-            <thead><tr><th>#</th><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha</th><th>Estado</th><th>Accion</th></tr></thead>
+            <thead><tr><th>#</th><th>Cliente</th><th>Artista</th><th>Obra</th><th>Fecha evento</th><th>Solicitud recibida</th><th>Estado</th><th>Accion</th></tr></thead>
             <tbody>
               <tr th:each="c : ${todos}" th:attr="data-estado=${c.estado}">
                 <td style="color:var(--muted);font-size:13px;" th:text="${c.id}"></td>
@@ -196,6 +204,13 @@
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);">—</span>
                 </td>
                 <td style="font-size:13px;color:var(--muted2);" th:text="${c.fechaEvento != null ? c.fechaEvento : '—'}"></td>
+                <td>
+                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;line-height:1.5;">
+                    <div style="color:var(--off);font-weight:600;" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
+                    <div style="color:var(--amber2);" th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
+                  </div>
+                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
+                </td>
                 <td>
                   <span th:if="${c.estado == 'PENDIENTE'}" class="badge bdg-pending">Pendiente</span>
                   <span th:if="${c.estado == 'ACEPTADO'}"  class="badge bdg-ok">Aceptado</span>
@@ -210,7 +225,7 @@
                 </td>
               </tr>
               <tr th:if="${#lists.isEmpty(todos)}">
-                <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay contrataciones</td>
+                <td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted2);">No hay contrataciones</td>
               </tr>
             </tbody>
           </table>

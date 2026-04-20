@@ -113,7 +113,7 @@
           <table class="tbl" id="tablaContratos">
             <thead>
               <tr>
-                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Estado</th><th>Acción</th>
+                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Solicitud enviada</th><th>Estado</th><th>Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -153,6 +153,13 @@
                         style="color:var(--muted);font-size:13px;">Por confirmar</span>
                 </td>
                 <td>
+                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;line-height:1.6;">
+                    <div style="color:var(--off);font-weight:600;" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
+                    <div style="color:var(--amber2);font-size:11px;" th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
+                  </div>
+                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
+                </td>
+                <td>
                   <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
                   <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok">Aceptado</span>
                   <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no">Rechazado</span>
@@ -165,7 +172,7 @@
                 </td>
               </tr>
               <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
-                <td colspan="5" style="text-align:center;padding:5rem;color:var(--muted2);">
+                <td colspan="6" style="text-align:center;padding:5rem;color:var(--muted2);">
                   <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
                   <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
                   <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>

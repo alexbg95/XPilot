@@ -2,6 +2,7 @@ package com.XPilot.XPilot.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "contrataciones")
@@ -25,6 +26,10 @@ public class Contratacion {
     private String estado = "PENDIENTE";
 
     private boolean notificado = false;
+
+    // ✅ Fecha y hora de cuando se envió la solicitud
+    @Column(name = "fecha_solicitud")
+    private LocalDateTime fechaSolicitud = LocalDateTime.now();
 
     // Obra específica contratada (opcional)
     private Long obraId;
@@ -58,4 +63,7 @@ public class Contratacion {
     public void setObraNombre(String obraNombre) { this.obraNombre = obraNombre; }
     public Double getPrecioObra() { return precioObra; }
     public void setPrecioObra(Double precioObra) { this.precioObra = precioObra; }
+
+    public LocalDateTime getFechaSolicitud() { return fechaSolicitud; }
+    public void setFechaSolicitud(LocalDateTime fechaSolicitud) { this.fechaSolicitud = fechaSolicitud; }
 }
