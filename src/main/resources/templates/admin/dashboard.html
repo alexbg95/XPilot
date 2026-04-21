@@ -162,7 +162,7 @@
     <div class="side-foot">
       <div style="font-size:12px;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
         <div style="width:7px;height:7px;border-radius:50%;background:var(--jade2);box-shadow:0 0 6px var(--jade2);flex-shrink:0;"></div>
-        <span th:text="${#authentication.principal.username}" style="color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        <span th:text="${#authentication.principal.usuario.uname}" style="color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
         <span class="badge bdg-admin" style="font-size:9px;flex-shrink:0;">Admin</span>
       </div>
       <form th:action="@{/logout}" method="post">

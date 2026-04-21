@@ -196,7 +196,7 @@
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
-    <div class="xp-user" style="display:flex;align-items:center;gap:8px;"><div th:if="${fotoPerfil != null}" style="width:28px;height:28px;border-radius:50%;overflow:hidden;border:1px solid rgba(200,129,58,0.4);flex-shrink:0;"><img th:src="${fotoPerfil}" style="width:100%;height:100%;object-fit:cover;"></div><div class="xp-user-dot"></div><strong th:text="${uname != null ? uname : #authentication.principal.username}"></strong></div>
+    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.usuario.uname}"></strong></div>
     <div class="dropdown">
       <button class="notif-btn" id="notifBtn" data-bs-toggle="dropdown" data-bs-auto-close="outside">
         🔔
