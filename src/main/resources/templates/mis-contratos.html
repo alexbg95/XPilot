@@ -76,7 +76,7 @@
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
-    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
+    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${uname != null ? uname : #authentication.principal.username}"></strong></div>
     <a href="/perfil" class="xb xb-ghost xb-sm">Mi perfil</a>
     <a href="/gallery" class="xb xb-outline xb-sm">← Galería</a>
     <form th:action="@{/logout}" method="post" style="margin:0;">
