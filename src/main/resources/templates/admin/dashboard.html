@@ -123,12 +123,17 @@
     [data-tooltip] { position: relative; }
     [data-tooltip]:hover::after {
       content: attr(data-tooltip);
-      position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
-      background: var(--bg); border: 1px solid var(--border2);
+      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border2);
       color: var(--off); font-size: 11px; padding: 4px 8px;
-      border-radius: 6px; white-space: nowrap; z-index: 10;
-      font-family: var(--sans);
+      border-radius: 6px; white-space: nowrap; z-index: 9999;
+      font-family: var(--sans); pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
+    /* Evita que la tabla corte los tooltips */
+    .tbl td, .tbl th { overflow: visible; }
+    .tbl { overflow: visible; }
+    .section-wrap > div { overflow: visible !important; }
   </style>
 </head>
 <body>
@@ -240,7 +245,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr th:each="m : ${mediaList}" th:with="contratos=${contratacionesPorArtista.get(m.id)}, ganancias=${gananciasPorArtista.get(m.id)}">
+              <tr th:each="m : ${mediaList}">
                 <td>
                   <div class="artista-row">
                     <div class="artista-av">
@@ -258,13 +263,13 @@
                 <td><span class="badge bdg-art" th:text="${m.style}"></span></td>
                 <td>
                   <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;"
-                       th:text="${contratos != null ? contratos : 0}"></div>
+                       th:text="${m.totalContratos != null ? m.totalContratos : 0}"></div>
                 </td>
                 <td>
-                  <span th:if="${ganancias != null and ganancias > 0}"
+                  <span th:with="g=${m.totalGanancias}" th:if="${g != null and g > 0}"
                         style="color:var(--amber2);font-family:var(--serif);font-weight:600;"
-                        th:text="'$' + ${#numbers.formatInteger(ganancias,1,'COMMA')}"></span>
-                  <span th:unless="${ganancias != null and ganancias > 0}"
+                        th:text="'$' + ${#numbers.formatInteger(g,1,'COMMA')}"></span>
+                  <span th:with="g=${m.totalGanancias}" th:unless="${g != null and g > 0}"
                         style="color:var(--muted);">—</span>
                 </td>
                 <td>
