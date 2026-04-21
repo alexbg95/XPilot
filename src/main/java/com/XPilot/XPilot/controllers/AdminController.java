@@ -55,12 +55,13 @@ public class AdminController {
         for (media m : mediaRepo.findAll()) {
             long count = contratacionRepo.countByArtista_Id(m.getId());
             contratacionesPorArtista.put(m.getId(), count);
+            System.out.println("🔍 Calculando ganancias artista: " + m.getArtist());
             double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
                 .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
                 .mapToDouble(c -> {
-                    if (c.getPrecioObra() != null) return c.getPrecioObra();
+                    if (c.getPrecioObra() != null) { System.out.println("  precioObra: " + c.getPrecioObra()); return c.getPrecioObra(); }
                     if (c.getObraId() != null && c.getObraId() > 0) {
-                        return mediaFotoRepo.findById(c.getObraId()).map(f -> f.getPrecio() != null ? f.getPrecio() : 0.0).orElse(0.0);
+                        double p = mediaFotoRepo.findById(c.getObraId()).map(f -> f.getPrecio() != null ? f.getPrecio() : 0.0).orElse(0.0); System.out.println("  obraId: " + c.getObraId() + " precio: " + p); return p;
                     }
                     return c.getArtista() != null && c.getArtista().getPrecio() != null ? c.getArtista().getPrecio() : 0.0;
                 })
