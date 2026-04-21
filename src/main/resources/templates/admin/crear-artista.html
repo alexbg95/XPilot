@@ -113,13 +113,14 @@
       <div th:if="${fotosExistentes != null and !#lists.isEmpty(fotosExistentes)}" style="margin-bottom:1.5rem;">
         <label class="label">Galería actual</label>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;">
-          <div class="existing-obra" th:each="foto : ${fotosExistentes}">
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;" th:each="foto : ${fotosExistentes}">
+          <div class="existing-obra">
             <img th:src="${foto.url}">
             <div class="lbl" th:text="${foto.nombre != null ? foto.nombre : '#' + foto.id}"></div>
-            <form th:action="@{/admin/precio-obra/{f}(f=${foto.id})}" method="post" style="padding:4px;background:rgba(0,0,0,0.7);display:flex;gap:4px;">
+            </div><form th:action="@{/admin/precio-obra/{f}(f=${foto.id})}" method="post" style="display:flex;gap:6px;align-items:center;margin-top:4px;">
               <input type="number" name="precio" th:value="${foto.precio}" placeholder="Precio" min="0" step="1000"
-                     style="width:80px;font-size:10px;padding:2px 4px;background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:4px;outline:none;">
-              <button type="submit" style="font-size:9px;padding:2px 6px;background:var(--amber);color:#000;border:none;border-radius:4px;cursor:pointer;font-weight:700;">✓</button>
+                     style="width:110px;font-size:12px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);outline:none;">
+              <button type="submit" style="padding:5px 10px;background:var(--amber);color:#000;border:none;border-radius:var(--r);cursor:pointer;font-size:11px;font-weight:700;">✓</button>
             </form>
             <a th:href="@{/admin/eliminar-foto/{f}(f=${foto.id},artistaId=${media.id})}"
                onclick="return confirm('¿Eliminar esta obra de la galería?')" class="del-btn">×</a>
