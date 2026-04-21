@@ -245,7 +245,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr th:each="m : ${mediaList}">
+              <tr th:each="m : ${mediaList}"
+                  th:with="contratos=${contratacionesPorArtista.get(m.id)},ganancias=${gananciasPorArtista.get(m.id)}">
                 <td>
                   <div class="artista-row">
                     <div class="artista-av">
@@ -263,13 +264,13 @@
                 <td><span class="badge bdg-art" th:text="${m.style}"></span></td>
                 <td>
                   <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;"
-                       th:text="${m.totalContratos != null ? m.totalContratos : 0}"></div>
+                       th:text="${contratos != null ? contratos : 0}"></div>
                 </td>
                 <td>
-                  <span th:with="g=${m.totalGanancias}" th:if="${g != null and g > 0}"
+                  <span th:if="${ganancias != null and ganancias > 0}"
                         style="color:var(--amber2);font-family:var(--serif);font-weight:600;"
-                        th:text="'$' + ${#numbers.formatInteger(g,1,'COMMA')}"></span>
-                  <span th:with="g=${m.totalGanancias}" th:unless="${g != null and g > 0}"
+                        th:text="'$' + ${#numbers.formatInteger(ganancias,1,'COMMA')}"></span>
+                  <span th:unless="${ganancias != null and ganancias > 0}"
                         style="color:var(--muted);">—</span>
                 </td>
                 <td>
