@@ -55,7 +55,6 @@ public class AdminController {
         for (media m : mediaRepo.findAll()) {
             long count = contratacionRepo.countByArtista_Id(m.getId());
             contratacionesPorArtista.put(m.getId(), count);
-            m.setTotalContratos(count);
             System.out.println("🔍 Calculando ganancias artista: " + m.getArtist());
             double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
                 .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
@@ -68,7 +67,6 @@ public class AdminController {
                 })
                 .sum();
             gananciasPorArtista.put(m.getId(), ganancias);
-            m.setTotalGanancias(ganancias);
         }
         model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
         model.addAttribute("gananciasPorArtista", gananciasPorArtista);
