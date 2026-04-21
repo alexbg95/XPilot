@@ -28,10 +28,10 @@ public class GalleryController {
     @Autowired private MediaFotoRepository mediaFotoRepo;
 
     @GetMapping("/gallery")
-    public String gallery(Model model) {
+    public String gallery(Model model, java.security.Principal principal) {
         model.addAttribute("mediaList", mediaRepo.findAll());
         try {
-            java.security.Principal p = request.getUserPrincipal();
+            java.security.Principal p = principal;
             if (p != null) {
                 com.XPilot.XPilot.models.usuario u = usuarioRepo.findByEmail(p.getName()).orElse(null);
                 if (u != null) model.addAttribute("uname", u.getUname());
