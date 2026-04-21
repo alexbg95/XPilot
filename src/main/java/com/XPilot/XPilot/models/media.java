@@ -22,6 +22,10 @@ public class media {
     private Double precio;
 
     private boolean disponible = true;
+    @Transient
+    private Long totalContratos = 0L;
+    @Transient
+    private Double totalGanancias = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
