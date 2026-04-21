@@ -240,7 +240,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr th:each="m : ${mediaList}"><td th:text="${gananciasPorArtista}"></td>
+              <tr th:each="m : ${mediaList}">
                 <td>
                   <div class="artista-row">
                     <div class="artista-av">
@@ -258,13 +258,13 @@
                 <td><span class="badge bdg-art" th:text="${m.style}"></span></td>
                 <td>
                   <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;"
-                       th:text="${contratacionesPorArtista[m.getId()] != null ? contratacionesPorArtista[m.getId()] : 0}"></div>
+                       th:text="${contratacionesPorArtista[m.id.toString()] != null ? contratacionesPorArtista[m.id.toString()] : 0}"></div>
                 </td>
                 <td>
-                  <span th:with="g=${gananciasPorArtista[m.getId()]}" th:if="${g != null and g > 0}"
+                  <span th:with="g=${gananciasPorArtista[m.id.toString()]}" th:if="${g != null and g > 0}"
                         style="color:var(--amber2);font-family:var(--serif);font-weight:600;"
                         th:text="'$' + ${#numbers.formatInteger(g,1,'COMMA')}"></span>
-                  <span th:with="g=${gananciasPorArtista[m.getId()]}" th:unless="${g != null and g > 0}"
+                  <span th:with="g=${gananciasPorArtista[m.id.toString()]}" th:unless="${g != null and g > 0}"
                         style="color:var(--muted);">—</span>
                 </td>
                 <td>

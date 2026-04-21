@@ -50,11 +50,11 @@ public class AdminController {
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
         model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
 
-        java.util.Map<Long, Long> contratacionesPorArtista = new java.util.HashMap<>();
-        java.util.Map<Long, Double> gananciasPorArtista = new java.util.HashMap<>();
+        java.util.Map<String, Long> contratacionesPorArtista = new java.util.HashMap<>();
+        java.util.Map<String, Double> gananciasPorArtista = new java.util.HashMap<>();
         for (media m : mediaRepo.findAll()) {
             long count = contratacionRepo.countByArtista_Id(m.getId());
-            contratacionesPorArtista.put(m.getId(), count);
+            contratacionesPorArtista.put(String.valueOf(m.getId()), count);
             System.out.println("🔍 Calculando ganancias artista: " + m.getArtist());
             double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
                 .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
@@ -66,7 +66,7 @@ public class AdminController {
                     return c.getArtista() != null && c.getArtista().getPrecio() != null ? c.getArtista().getPrecio() : 0.0;
                 })
                 .sum();
-            gananciasPorArtista.put(m.getId(), ganancias);
+            gananciasPorArtista.put(String.valueOf(m.getId()), ganancias);
         }
         model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
         model.addAttribute("gananciasPorArtista", gananciasPorArtista);
