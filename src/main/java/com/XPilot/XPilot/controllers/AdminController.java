@@ -57,7 +57,13 @@ public class AdminController {
             contratacionesPorArtista.put(m.getId(), count);
             double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
                 .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
-                .mapToDouble(c -> c.getPrecioObra() != null ? c.getPrecioObra() : 0.0)
+                .mapToDouble(c -> {
+                    if (c.getPrecioObra() != null) return c.getPrecioObra();
+                    if (c.getObraId() != null && c.getObraId() > 0) {
+                        return mediaFotoRepo.findById(c.getObraId()).map(f -> f.getPrecio() != null ? f.getPrecio() : 0.0).orElse(0.0);
+                    }
+                    return c.getArtista() != null && c.getArtista().getPrecio() != null ? c.getArtista().getPrecio() : 0.0;
+                })
                 .sum();
             gananciasPorArtista.put(m.getId(), ganancias);
         }
