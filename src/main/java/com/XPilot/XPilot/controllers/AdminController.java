@@ -166,6 +166,19 @@ public class AdminController {
         return "admin/crear-artista";
     }
 
+    // ================= PRECIO OBRA =================
+    @PostMapping("/precio-obra/{fotoId}")
+    public String actualizarPrecioObra(@PathVariable Long fotoId,
+                                       @RequestParam Double precio,
+                                       @RequestParam(required=false) Long artistaId) {
+        mediaFotoRepo.findById(fotoId).ifPresent(foto -> {
+            foto.setPrecio(precio);
+            mediaFotoRepo.save(foto);
+        });
+        Long aid = mediaFotoRepo.findById(fotoId).map(f -> f.getMedia().getId()).orElse(artistaId);
+        return "redirect:/admin/editar/" + aid;
+    }
+
     // ================= ELIMINAR FOTO OBRA =================
     @Transactional
     @GetMapping("/eliminar-foto/{fotoId}")
