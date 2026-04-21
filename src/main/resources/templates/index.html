@@ -266,7 +266,7 @@
   </a>
   <div class="xp-nav-end">
     <div th:if="${usuarioLogueado}" style="display:flex;align-items:center;gap:12px;">
-      <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${nombreUsuario}"></strong></div>
+      <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${uname != null ? uname : nombreUsuario}"></strong></div>
       <a th:href="@{/gallery}" class="xb xb-amber xb-sm">Galería →</a>
       <form th:action="@{/logout}" method="post" style="margin:0;">
         <button class="xb xb-ghost xb-sm">Salir</button>
