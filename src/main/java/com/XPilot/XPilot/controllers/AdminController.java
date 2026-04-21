@@ -171,6 +171,7 @@ public class AdminController {
     public String actualizarPrecioObra(@PathVariable Long fotoId,
                                        @RequestParam Double precio,
                                        @RequestParam(required=false) Long artistaId) {
+        System.out.println("✅ Actualizando precio foto ID: " + fotoId + " precio: " + precio);
         mediaFotoRepo.findById(fotoId).ifPresent(foto -> {
             foto.setPrecio(precio);
             mediaFotoRepo.save(foto);
