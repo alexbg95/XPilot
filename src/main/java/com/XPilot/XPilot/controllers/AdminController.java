@@ -43,8 +43,11 @@ public class AdminController {
 
     // ================= DASHBOARD =================
     @GetMapping
+    @Transactional(readOnly = true)
     public String adminDashboard(Model model){
-        model.addAttribute("mediaList",   mediaRepo.findAll());
+        List<media> todosArtistas = mediaRepo.findAll();
+
+        model.addAttribute("mediaList",   todosArtistas);
         model.addAttribute("solicitudes", contratacionRepo.findByEstado("PENDIENTE"));
         model.addAttribute("todos",       contratacionRepo.findAll());
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
@@ -52,22 +55,25 @@ public class AdminController {
 
         java.util.Map<Long, Long> contratacionesPorArtista = new java.util.HashMap<>();
         java.util.Map<Long, Double> gananciasPorArtista = new java.util.HashMap<>();
-        for (media m : mediaRepo.findAll()) {
+
+        for (media m : todosArtistas) {
             long count = contratacionRepo.countByArtista_Id(m.getId());
             contratacionesPorArtista.put(m.getId(), count);
-            System.out.println("🔍 Calculando ganancias artista: " + m.getArtist());
             double ganancias = contratacionRepo.findByArtista_Id(m.getId()).stream()
                 .filter(c -> "ACEPTADO".equals(c.getEstado()) || "FINALIZADO".equals(c.getEstado()))
                 .mapToDouble(c -> {
-                    if (c.getPrecioObra() != null) { System.out.println("  precioObra: " + c.getPrecioObra()); return c.getPrecioObra(); }
+                    if (c.getPrecioObra() != null) return c.getPrecioObra();
                     if (c.getObraId() != null && c.getObraId() > 0) {
-                        double p = mediaFotoRepo.findById(c.getObraId()).map(f -> f.getPrecio() != null ? f.getPrecio() : 0.0).orElse(0.0); System.out.println("  obraId: " + c.getObraId() + " precio: " + p); return p;
+                        return mediaFotoRepo.findById(c.getObraId())
+                            .map(f -> f.getPrecio() != null ? f.getPrecio() : 0.0).orElse(0.0);
                     }
-                    return c.getArtista() != null && c.getArtista().getPrecio() != null ? c.getArtista().getPrecio() : 0.0;
+                    return c.getArtista() != null && c.getArtista().getPrecio() != null
+                        ? c.getArtista().getPrecio() : 0.0;
                 })
                 .sum();
             gananciasPorArtista.put(m.getId(), ganancias);
         }
+
         model.addAttribute("contratacionesPorArtista", contratacionesPorArtista);
         model.addAttribute("gananciasPorArtista", gananciasPorArtista);
         double totalGanancias = gananciasPorArtista.values().stream().mapToDouble(Double::doubleValue).sum();
