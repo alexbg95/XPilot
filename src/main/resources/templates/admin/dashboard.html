@@ -539,30 +539,6 @@ function ap(t = "") {
 
 // Inicializar iconos Lucide
 lucide.createIcons();
-
-// ── CONTADORES ANIMADOS ──────────────────────────────────────────
-function animateCounter(el) {
-  const target = parseInt(el.textContent.replace(/[^0-9]/g, "")) || 0;
-  if (target === 0) return;
-  let current = 0;
-  const step = Math.ceil(target / 40);
-  const timer = setInterval(() => {
-    current += step;
-    if (current >= target) { current = target; clearInterval(timer); }
-    el.textContent = current;
-  }, 40);
-}
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.querySelectorAll(".stat-num").forEach(animateCounter);
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.3 });
-
-document.querySelectorAll(".stat-card").forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
