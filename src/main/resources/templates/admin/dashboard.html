@@ -258,13 +258,13 @@
                 <td><span class="badge bdg-art" th:text="${m.style}"></span></td>
                 <td>
                   <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;"
-                       th:text="${m.totalContratos != null ? m.totalContratos : 0}"></div>
+                       th:text="${contratacionesPorArtista[m.id] != null ? contratacionesPorArtista[m.id] : 0}"></div>
                 </td>
                 <td>
-                  <span th:with="g=${m.totalGanancias}" th:if="${g != null and g > 0}"
+                  <span th:with="g=${gananciasPorArtista[m.id]}" th:if="${g != null and g > 0}"
                         style="color:var(--amber2);font-family:var(--serif);font-weight:600;"
                         th:text="'$' + ${#numbers.formatInteger(g,1,'COMMA')}"></span>
-                  <span th:with="g=${m.totalGanancias}" th:unless="${g != null and g > 0}"
+                  <span th:with="g=${gananciasPorArtista[m.id]}" th:unless="${g != null and g > 0}"
                         style="color:var(--muted);">—</span>
                 </td>
                 <td>
