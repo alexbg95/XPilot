@@ -80,11 +80,6 @@
     .notif-badge-count.visible { display: inline-block; }
 
     /* Filtros pill */
-    .notif-filters { display: flex; gap: 6px; padding: 10px 1.25rem; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
-    .notif-filters::-webkit-scrollbar { display: none; }
-    .notif-fpill { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted2); transition: all 0.18s; font-family: var(--sans); white-space: nowrap; }
-    .notif-fpill.active { background: rgba(200,129,58,0.12); color: var(--amber2); border-color: rgba(200,129,58,0.35); }
-    .notif-fpill:hover:not(.active) { color: var(--off); border-color: var(--border2); }
 
 
 
@@ -302,15 +297,6 @@
           </a>
         </div>
 
-        <!-- Filtros -->
-        <div class="notif-filters" id="notifFiltros">
-          <button class="notif-fpill active" onclick="filtrarNotif('TODOS', this)">Todas</button>
-          <button class="notif-fpill" onclick="filtrarNotif('aceptado', this)">Aceptadas</button>
-          <button class="notif-fpill" onclick="filtrarNotif('rechazado', this)">Rechazadas</button>
-          <button class="notif-fpill" onclick="filtrarNotif('fecha', this)">Fecha</button>
-          <button class="notif-fpill" onclick="filtrarNotif('pendiente', this)">Pendientes</button>
-        </div>
-
         <!-- Timeline scroll -->
         <div class="notif-scroll">
           <div id="notifHistorial">
@@ -377,7 +363,6 @@ document.querySelectorAll('#tablaContratos tbody tr[data-estado="FECHA_RECHAZADA
 // ── NOTIFICACIONES TIMELINE ───────────────────────────────────────
 let _notifTodas = [];       // cache completo
 let _tabActual  = 'nuevas'; // tab activa
-let _filtroActual = 'TODOS';
 
 // Detectar tipo de notificación desde el mensaje
 function detectarTipo(n) {
@@ -433,12 +418,7 @@ function buildTimelineItem(n) {
 function renderNotif() {
   const box = document.getElementById('notifHistorial');
   box.innerHTML = '';
-  const filtro = _filtroActual;
-
-  let lista = _notifTodas.filter(n => {
-    if (filtro !== 'TODOS' && detectarTipo(n) !== filtro) return false;
-    return true;
-  });
+  const lista = _notifTodas.slice();
 
   if (lista.length === 0) {
     box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-text">Sin notificaciones</div></div>`;
@@ -472,13 +452,6 @@ async function cargarNotifHistorial() {
 
 function switchTab(tab) {
   _tabActual = 'nuevas'; // siempre nuevas, historial va a /notificaciones
-  renderNotif();
-}
-
-function filtrarNotif(tipo, btn) {
-  _filtroActual = tipo;
-  document.querySelectorAll('.notif-fpill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
   renderNotif();
 }
 
