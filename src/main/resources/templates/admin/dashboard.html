@@ -406,12 +406,14 @@
                     th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
               <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
             </button>
-            <button class="xb xb-danger xb-sm"
-                    style="display:inline-flex;align-items:center;gap:5px;"
-                    th:onclick="'confirmarRechazo(' + ${c.id} + ', this)'"
-                    th:attr="data-artist=${c.artista.artist}">
-              <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
-            </button>
+            <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post" style="margin:0;"
+                  onsubmit="return confirm('¿Rechazar este contrato? El artista volverá a estar disponible.')">
+              <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+              <button type="submit" class="xb xb-danger xb-sm"
+                      style="display:inline-flex;align-items:center;gap:5px;">
+                <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
+              </button>
+            </form>
           </div>
         </div>
 
@@ -670,21 +672,6 @@ document.querySelectorAll('form[action*="/admin/aceptar/"]').forEach(function(fo
   </div>
 </div>
 
-<script>
-function confirmarRechazo(id, btn) {
-  // Get artist name from the nearest sol-card
-  var card = btn.closest ? btn.closest('.sol-card, .sol-item, [class*="sol"]') : null;
-  var nombre = '';
-  if (card) {
-    var el = card.querySelector('.sol-artist, strong, b');
-    if (el) nombre = el.textContent.trim();
-  }
-  // Fallback: read from data attribute on button
-  if (!nombre) nombre = btn.getAttribute('data-artist') || 'este artista';
-  document.getElementById('rechazoArtista').textContent = nombre;
-  document.getElementById('formRechazo').action = '/admin/rechazar/' + id;
-  new bootstrap.Modal(document.getElementById('modalRechazo')).show();
-}
-</script>
+
 </body>
 </html>
