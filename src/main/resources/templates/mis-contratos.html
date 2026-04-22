@@ -391,10 +391,9 @@ function detectarTipo(n) {
 
 const TIPO_LABEL = { fecha: 'Fecha rechazada', aceptado: 'Aceptado', rechazado: 'Rechazado', pendiente: 'Pendiente', info: 'Notificación' };
 
-function buildTimelineItem(n, mostrarLeida) {
+function buildTimelineItem(n) {
   const tipo = detectarTipo(n);
   const leida = n.leido;
-  if (!mostrarLeida && leida) return null; // solo nuevas
 
   let botonReprog = '';
   if (tipo === 'fecha') {
@@ -437,19 +436,19 @@ function renderNotif() {
   const filtro = _filtroActual;
 
   let lista = _notifTodas.filter(n => {
-    if (n.leido) return false; // panel solo muestra no leídas
     if (filtro !== 'TODOS' && detectarTipo(n) !== filtro) return false;
     return true;
   });
 
   if (lista.length === 0) {
-    box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-text">Todo al día — sin nuevas notificaciones</div></div>`;
+    box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-text">Sin notificaciones</div></div>`;
     return;
   }
 
   lista.forEach((n, i) => {
-    const el = buildTimelineItem(n, mostrarLeida);
-    if (el) { el.style.animationDelay = (i * 0.05) + 's'; box.appendChild(el); }
+    const el = buildTimelineItem(n);
+    el.style.animationDelay = (i * 0.05) + 's';
+    box.appendChild(el);
   });
 }
 
