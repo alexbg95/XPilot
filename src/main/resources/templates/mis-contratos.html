@@ -73,7 +73,7 @@
     #tablaContratos th:last-child { min-width: 130px; }
 
     /* ── NOTIFICACIONES TIMELINE ──────────────────────────────────── */
-    .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; position: sticky; top: 80px; }
+    .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); overflow: visible; position: sticky; top: 80px; }
     .notif-panel-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .notif-panel-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
     .notif-badge-count { background: var(--amber); color: #1a1208; font-size: 10px; font-weight: 800; font-family: var(--sans); border-radius: 20px; padding: 2px 7px; letter-spacing: 0.05em; display: none; }
@@ -118,9 +118,9 @@
     .ntl-item:last-child .ntl-connector { display: none; }
 
     /* Contenido */
-    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); min-width: 0; overflow: hidden; }
+    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); min-width: 0; }
     .ntl-item:last-child .ntl-body { border-bottom: none; }
-    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; margin-bottom: 4px; white-space: nowrap; overflow: visible; }
+    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; display: block; }
     .ntl-tipo.pendiente  { color: var(--amber); }
     .ntl-tipo.aceptado   { color: var(--jade2); }
     .ntl-tipo.rechazado  { color: var(--crimson2); }
