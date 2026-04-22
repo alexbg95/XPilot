@@ -394,12 +394,11 @@
                     th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
               <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
             </button>
-            <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post">
-              <button class="xb xb-danger xb-sm" data-tooltip="Rechazar solicitud"
-                      style="display:inline-flex;align-items:center;gap:5px;">
-                <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
-              </button>
-            </form>
+            <button class="xb xb-danger xb-sm" data-tooltip="Rechazar solicitud"
+                    style="display:inline-flex;align-items:center;gap:5px;"
+                    th:attr="onclick='confirmarRechazo(' + ${c.id} + ', '' + ${c.artista.artist} + '')'">
+              <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
+            </button>
           </div>
         </div>
 
@@ -631,6 +630,39 @@ document.querySelectorAll('form[action*="/admin/aceptar/"]').forEach(function(fo
     admToast('Contrato' + artistaNombre + ' aceptado para el ' + new Date(fechaInput.value + 'T12:00:00').toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'}), 'success');
   });
 });
+</script>
+<!-- Modal confirmación rechazo -->
+<div class="modal fade" id="modalRechazo" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="background:var(--card);border:1px solid rgba(192,57,43,0.3);border-top:3px solid #e07070;border-radius:var(--r2);">
+      <div class="modal-body" style="padding:1.75rem 1.5rem;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:12px;">🚫</div>
+        <div style="font-family:var(--serif);font-size:1.15rem;font-weight:600;margin-bottom:8px;color:var(--white);">¿Rechazar solicitud?</div>
+        <div style="font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:1.5rem;">
+          Estás a punto de rechazar el contrato de
+          <strong id="rechazoArtista" style="color:var(--off);"></strong>.
+          Esta acción notificará al usuario y no se puede deshacer.
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button class="xb xb-ghost xb-sm" data-bs-dismiss="modal">Cancelar</button>
+          <form id="formRechazo" method="post" style="margin:0;">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+            <button type="submit" class="xb xb-danger xb-sm">
+              Sí, rechazar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function confirmarRechazo(id, artista) {
+  document.getElementById('rechazoArtista').textContent = artista;
+  document.getElementById('formRechazo').action = '/admin/rechazar/' + id;
+  new bootstrap.Modal(document.getElementById('modalRechazo')).show();
+}
 </script>
 </body>
 </html>
