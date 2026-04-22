@@ -408,7 +408,8 @@
             </button>
             <button class="xb xb-danger xb-sm"
                     style="display:inline-flex;align-items:center;gap:5px;"
-                    th:attr="onclick='confirmarRechazo(' + ${c.id} + ', &quot;' + ${c.artista.artist} + '&quot;)'">
+                    th:onclick="'confirmarRechazo(' + ${c.id} + ', this)'"
+                    th:attr="data-artist=${c.artista.artist}">
               <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
             </button>
           </div>
@@ -670,8 +671,17 @@ document.querySelectorAll('form[action*="/admin/aceptar/"]').forEach(function(fo
 </div>
 
 <script>
-function confirmarRechazo(id, artista) {
-  document.getElementById('rechazoArtista').textContent = artista;
+function confirmarRechazo(id, btn) {
+  // Get artist name from the nearest sol-card
+  var card = btn.closest ? btn.closest('.sol-card, .sol-item, [class*="sol"]') : null;
+  var nombre = '';
+  if (card) {
+    var el = card.querySelector('.sol-artist, strong, b');
+    if (el) nombre = el.textContent.trim();
+  }
+  // Fallback: read from data attribute on button
+  if (!nombre) nombre = btn.getAttribute('data-artist') || 'este artista';
+  document.getElementById('rechazoArtista').textContent = nombre;
   document.getElementById('formRechazo').action = '/admin/rechazar/' + id;
   new bootstrap.Modal(document.getElementById('modalRechazo')).show();
 }
