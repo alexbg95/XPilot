@@ -120,12 +120,17 @@
     /* Contenido */
     .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); min-width: 0; }
     .ntl-item:last-child .ntl-body { border-bottom: none; }
-    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; display: block; }
-    .ntl-tipo.pendiente  { color: var(--amber); }
-    .ntl-tipo.aceptado   { color: var(--jade2); }
-    .ntl-tipo.rechazado  { color: var(--crimson2); }
-    .ntl-tipo.fecha      { color: var(--amber3); }
-    .ntl-tipo.info       { color: #a0a0ff; }
+    .ntl-tipo {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 20px; margin-bottom: 6px;
+      font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; white-space: nowrap; width: fit-content;
+    }
+    .ntl-tipo.pendiente  { background: rgba(200,129,58,0.12); color: var(--amber);    border: 1px solid rgba(200,129,58,0.25); }
+    .ntl-tipo.aceptado   { background: rgba(76,175,128,0.12); color: var(--jade2);    border: 1px solid rgba(76,175,128,0.25); }
+    .ntl-tipo.rechazado  { background: rgba(192,57,43,0.12);  color: #e07070;         border: 1px solid rgba(192,57,43,0.25); }
+    .ntl-tipo.fecha      { background: rgba(245,192,112,0.12);color: var(--amber3);   border: 1px solid rgba(245,192,112,0.3); }
+    .ntl-tipo.info       { background: rgba(160,160,255,0.10);color: #a0a0ff;         border: 1px solid rgba(160,160,255,0.2); }
     .ntl-msg { font-size: 12.5px; color: var(--off); line-height: 1.6; margin-bottom: 6px; word-break: break-word; }
     .ntl-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ntl-time { font-size: 10px; color: var(--muted); }
@@ -377,7 +382,7 @@ function detectarTipo(n) {
   return 'info';
 }
 
-const TIPO_LABEL = { fecha: '📅 Fecha rechazada', aceptado: '✅ Aceptado', rechazado: '❌ Rechazado', pendiente: '⏳ Pendiente', info: '🔔 Notificación' };
+const TIPO_LABEL = { fecha: '● Fecha rechazada', aceptado: '● Aceptado', rechazado: '● Rechazado', pendiente: '● Pendiente', info: '● Notificación' };
 
 function buildTimelineItem(n, mostrarLeida) {
   const tipo = detectarTipo(n);
