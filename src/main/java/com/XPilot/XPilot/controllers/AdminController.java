@@ -229,8 +229,11 @@ public class AdminController {
             }
             if (c.getCliente() != null) {
                 usuario cliente = c.getCliente();
+                String obraInfo = (c.getObraNombre() != null && !c.getObraNombre().isBlank())
+                        ? " — obra \"" + c.getObraNombre() + "\""
+                        : "";
                 String msg = "🎉 Tu contrato con " + c.getArtista().getArtist()
-                           + " fue aceptado para el " + c.getFechaEvento();
+                           + obraInfo + " fue aceptado para el " + c.getFechaEvento();
                 notificacionService.crearNotificacion(cliente, msg);
                 if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), "Contrato aceptado", msg);
