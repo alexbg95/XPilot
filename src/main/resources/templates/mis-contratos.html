@@ -393,7 +393,7 @@ const TIPO_LABEL = { fecha: 'Fecha rechazada', aceptado: 'Aceptado', rechazado: 
 
 function buildTimelineItem(n, mostrarLeida) {
   const tipo = detectarTipo(n);
-  const leida = n.leida;
+  const leida = n.leido;
   if (!mostrarLeida && leida) return null; // solo nuevas
 
   let botonReprog = '';
@@ -437,7 +437,7 @@ function renderNotif() {
   const filtro = _filtroActual;
 
   let lista = _notifTodas.filter(n => {
-    if (n.leida) return false; // panel solo muestra no leídas
+    if (n.leido) return false; // panel solo muestra no leídas
     if (filtro !== 'TODOS' && detectarTipo(n) !== filtro) return false;
     return true;
   });
@@ -454,7 +454,7 @@ function renderNotif() {
 }
 
 function actualizarContador() {
-  const nuevas = _notifTodas.filter(n => !n.leida).length;
+  const nuevas = _notifTodas.filter(n => !n.leido).length;
   const badge = document.getElementById('notifCount');
   const resumen = document.getElementById('notifResumen');
   if (badge) { badge.textContent = nuevas; badge.classList.toggle('visible', nuevas > 0); }
@@ -486,14 +486,14 @@ function filtrarNotif(tipo, btn) {
 async function marcarLeida(id) {
   await fetch(`/api/notificaciones/${id}/leer`, { method: 'POST' });
   const n = _notifTodas.find(x => x.id === id);
-  if (n) n.leida = true;
+  if (n) n.leido = true;
   actualizarContador();
   renderNotif();
 }
 
 async function marcarTodasLeidas() {
   await fetch('/api/notificaciones/marcar-todas', { method: 'POST' });
-  _notifTodas.forEach(n => n.leida = true);
+  _notifTodas.forEach(n => n.leido = true);
   actualizarContador();
   renderNotif();
 }
