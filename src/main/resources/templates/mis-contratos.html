@@ -96,41 +96,49 @@
     .notif-scroll::-webkit-scrollbar { width: 4px; }
     .notif-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
-    /* Timeline item */
+    /* Timeline item — borde izquierdo de color como indicador de estado */
     .ntl-item {
-      display: flex; gap: 0; padding: 0 1.25rem;
+      display: flex; gap: 0; padding: 0 1rem 0 0;
       position: relative; cursor: default;
       animation: ntlFadeIn 0.35s ease both;
+      border-left: 3px solid transparent;
+      margin-left: 0;
     }
-    .ntl-item.leida { opacity: 0.5; }
+    .ntl-item.leida { opacity: 0.45; }
     .ntl-item:hover { background: rgba(255,255,255,0.015); }
+    .ntl-item.pendiente { border-left-color: var(--amber); }
+    .ntl-item.aceptado  { border-left-color: var(--jade2); }
+    .ntl-item.rechazado { border-left-color: #e07070; }
+    .ntl-item.fecha     { border-left-color: var(--amber3); }
+    .ntl-item.info      { border-left-color: #a0a0ff; }
     @keyframes ntlFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
     /* Línea vertical */
-    .ntl-line { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; padding-top: 18px; }
-    .ntl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 2px solid; }
+    .ntl-line { display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0; padding-top: 16px; }
+    .ntl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; border: 2px solid; }
     .ntl-dot.pendiente  { background: rgba(200,129,58,0.3);  border-color: var(--amber); }
     .ntl-dot.aceptado   { background: rgba(76,175,128,0.3);  border-color: var(--jade2); }
-    .ntl-dot.rechazado  { background: rgba(192,57,43,0.3);   border-color: var(--crimson2); }
-    .ntl-dot.fecha      { background: rgba(200,129,58,0.45); border-color: var(--amber3); box-shadow: 0 0 8px rgba(200,129,58,0.4); }
+    .ntl-dot.rechazado  { background: rgba(192,57,43,0.3);   border-color: #e07070; }
+    .ntl-dot.fecha      { background: rgba(200,129,58,0.45); border-color: var(--amber3); box-shadow: 0 0 6px rgba(200,129,58,0.4); }
     .ntl-dot.info       { background: rgba(160,160,255,0.3); border-color: #a0a0ff; }
-    .ntl-connector { flex: 1; width: 1px; background: var(--border); margin: 4px 0; min-height: 24px; }
+    .ntl-connector { flex: 1; width: 1px; background: var(--border); margin: 3px 0; min-height: 20px; }
     .ntl-item:last-child .ntl-connector { display: none; }
 
-    /* Contenido */
-    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); min-width: 0; }
+    /* Contenido — ntl-tipo ahora es solo una línea de color corta */
+    .ntl-body { flex: 1; padding: 12px 0 12px 8px; border-bottom: 1px solid var(--border); min-width: 0; }
     .ntl-item:last-child .ntl-body { border-bottom: none; }
-    .ntl-tipo {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: 20px; margin-bottom: 6px;
-      font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
-      text-transform: uppercase; white-space: nowrap; width: fit-content;
-    }
-    .ntl-tipo.pendiente  { background: rgba(200,129,58,0.12); color: var(--amber);    border: 1px solid rgba(200,129,58,0.25); }
-    .ntl-tipo.aceptado   { background: rgba(76,175,128,0.12); color: var(--jade2);    border: 1px solid rgba(76,175,128,0.25); }
-    .ntl-tipo.rechazado  { background: rgba(192,57,43,0.12);  color: #e07070;         border: 1px solid rgba(192,57,43,0.25); }
-    .ntl-tipo.fecha      { background: rgba(245,192,112,0.12);color: var(--amber3);   border: 1px solid rgba(245,192,112,0.3); }
-    .ntl-tipo.info       { background: rgba(160,160,255,0.10);color: #a0a0ff;         border: 1px solid rgba(160,160,255,0.2); }
+    .ntl-tipo { font-size: 9px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+    .ntl-tipo-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .ntl-tipo.pendiente .ntl-tipo-dot { background: var(--amber); }
+    .ntl-tipo.pendiente  { color: var(--amber); }
+    .ntl-tipo.aceptado .ntl-tipo-dot  { background: var(--jade2); }
+    .ntl-tipo.aceptado   { color: var(--jade2); }
+    .ntl-tipo.rechazado .ntl-tipo-dot { background: #e07070; }
+    .ntl-tipo.rechazado  { color: #e07070; }
+    .ntl-tipo.fecha .ntl-tipo-dot     { background: var(--amber3); }
+    .ntl-tipo.fecha      { color: var(--amber3); }
+    .ntl-tipo.info .ntl-tipo-dot      { background: #a0a0ff; }
+    .ntl-tipo.info       { color: #a0a0ff; }
     .ntl-msg { font-size: 12.5px; color: var(--off); line-height: 1.6; margin-bottom: 6px; word-break: break-word; }
     .ntl-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ntl-time { font-size: 10px; color: var(--muted); }
@@ -382,7 +390,7 @@ function detectarTipo(n) {
   return 'info';
 }
 
-const TIPO_LABEL = { fecha: '● Fecha rechazada', aceptado: '● Aceptado', rechazado: '● Rechazado', pendiente: '● Pendiente', info: '● Notificación' };
+const TIPO_LABEL = { fecha: 'Fecha rechazada', aceptado: 'Aceptado', rechazado: 'Rechazado', pendiente: 'Pendiente', info: 'Notificación' };
 
 function buildTimelineItem(n, mostrarLeida) {
   const tipo = detectarTipo(n);
@@ -404,7 +412,7 @@ function buildTimelineItem(n, mostrarLeida) {
   const fecha = n.fecha ? new Date(n.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
 
   const div = document.createElement('div');
-  div.className = 'ntl-item' + (leida ? ' leida' : '');
+  div.className = 'ntl-item ' + tipo + (leida ? ' leida' : '');
   div.id = 'nh-' + n.id;
   div.setAttribute('data-tipo', tipo);
   div.innerHTML = `
@@ -413,7 +421,7 @@ function buildTimelineItem(n, mostrarLeida) {
       <div class="ntl-connector"></div>
     </div>
     <div class="ntl-body">
-      <div class="ntl-tipo ${tipo}">${TIPO_LABEL[tipo]}</div>
+      <div class="ntl-tipo ${tipo}"><span class="ntl-tipo-dot"></span>${TIPO_LABEL[tipo]}</div>
       <div class="ntl-msg">${n.mensaje}</div>
       <div class="ntl-footer">
         <span class="ntl-time">${fecha}</span>
