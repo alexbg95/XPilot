@@ -114,11 +114,11 @@ public class ContratosController {
             }
 
             if (c.getCliente() != null) {
+                Notificacion notif = new Notificacion();
+                notif.setUsuario(c.getCliente());
                 String obraInfo = (c.getObraNombre() != null && !c.getObraNombre().isBlank())
                         ? " — obra \"" + c.getObraNombre() + "\""
                         : "";
-                Notificacion notif = new Notificacion();
-                notif.setUsuario(c.getCliente());
                 notif.setMensaje("🎉 Tu contrato con " + c.getArtista().getArtist()
                         + obraInfo + " fue aceptado para el " + c.getFechaEvento());
                 notif.setLeido(false);
