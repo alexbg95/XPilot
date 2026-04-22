@@ -71,6 +71,78 @@
     #tablaContratos td:last-child { white-space: nowrap; min-width: 130px; }
     #tablaContratos td:nth-child(2) { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #tablaContratos th:last-child { min-width: 130px; }
+
+    /* ── NOTIFICACIONES TIMELINE ──────────────────────────────────── */
+    .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; position: sticky; top: 80px; }
+    .notif-panel-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .notif-panel-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .notif-badge-count { background: var(--amber); color: #1a1208; font-size: 10px; font-weight: 800; font-family: var(--sans); border-radius: 20px; padding: 2px 7px; letter-spacing: 0.05em; display: none; }
+    .notif-badge-count.visible { display: inline-block; }
+
+    /* Filtros pill */
+    .notif-filters { display: flex; gap: 6px; padding: 10px 1.25rem; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+    .notif-filters::-webkit-scrollbar { display: none; }
+    .notif-fpill { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted2); transition: all 0.18s; font-family: var(--sans); white-space: nowrap; }
+    .notif-fpill.active { background: rgba(200,129,58,0.12); color: var(--amber2); border-color: rgba(200,129,58,0.35); }
+    .notif-fpill:hover:not(.active) { color: var(--off); border-color: var(--border2); }
+
+    /* Tabs Nuevas / Historial */
+    .notif-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .notif-tab { flex: 1; padding: 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; background: none; border: none; color: var(--muted2); cursor: pointer; font-family: var(--sans); transition: color 0.18s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .notif-tab.active { color: var(--amber2); border-bottom-color: var(--amber); }
+
+    /* Scroll area */
+    .notif-scroll { max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+    .notif-scroll::-webkit-scrollbar { width: 4px; }
+    .notif-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    /* Timeline item */
+    .ntl-item {
+      display: flex; gap: 0; padding: 0 1.25rem;
+      position: relative; cursor: default;
+      animation: ntlFadeIn 0.35s ease both;
+    }
+    .ntl-item.leida { opacity: 0.5; }
+    .ntl-item:hover { background: rgba(255,255,255,0.015); }
+    @keyframes ntlFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* Línea vertical */
+    .ntl-line { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; padding-top: 18px; }
+    .ntl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 2px solid; }
+    .ntl-dot.pendiente  { background: rgba(200,129,58,0.3);  border-color: var(--amber); }
+    .ntl-dot.aceptado   { background: rgba(76,175,128,0.3);  border-color: var(--jade2); }
+    .ntl-dot.rechazado  { background: rgba(192,57,43,0.3);   border-color: var(--crimson2); }
+    .ntl-dot.fecha      { background: rgba(200,129,58,0.45); border-color: var(--amber3); box-shadow: 0 0 8px rgba(200,129,58,0.4); }
+    .ntl-dot.info       { background: rgba(160,160,255,0.3); border-color: #a0a0ff; }
+    .ntl-connector { flex: 1; width: 1px; background: var(--border); margin: 4px 0; min-height: 24px; }
+    .ntl-item:last-child .ntl-connector { display: none; }
+
+    /* Contenido */
+    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); }
+    .ntl-item:last-child .ntl-body { border-bottom: none; }
+    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .ntl-tipo.pendiente  { color: var(--amber); }
+    .ntl-tipo.aceptado   { color: var(--jade2); }
+    .ntl-tipo.rechazado  { color: var(--crimson2); }
+    .ntl-tipo.fecha      { color: var(--amber3); }
+    .ntl-tipo.info       { color: #a0a0ff; }
+    .ntl-msg { font-size: 12.5px; color: var(--off); line-height: 1.6; margin-bottom: 6px; }
+    .ntl-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ntl-time { font-size: 10px; color: var(--muted); }
+    .ntl-read-btn { background: none; border: none; color: var(--muted); font-size: 10px; cursor: pointer; font-family: var(--sans); padding: 0; transition: color 0.15s; }
+    .ntl-read-btn:hover { color: var(--jade2); }
+    .ntl-reprog-btn { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(200,129,58,0.1); color: var(--amber2); border: 1px solid rgba(200,129,58,0.3); border-radius: var(--r); font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; font-family: var(--sans); transition: background 0.18s; }
+    .ntl-reprog-btn:hover { background: rgba(200,129,58,0.2); }
+
+    /* Vacío */
+    .notif-empty { padding: 3.5rem 1.5rem; text-align: center; color: var(--muted2); }
+    .notif-empty-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.5; }
+    .notif-empty-text { font-size: 12px; line-height: 1.6; }
+
+    /* Footer panel */
+    .notif-panel-footer { padding: 10px 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+    .notif-clear-btn { background: none; border: none; color: var(--muted2); font-size: 10px; cursor: pointer; font-family: var(--sans); letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.15s; }
+    .notif-clear-btn:hover { color: var(--crimson2); }
   </style>
 </head>
 <body>
@@ -78,8 +150,7 @@
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
-    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.username}"></strong></div>
-    <a href="/perfil" class="xb xb-outline xb-sm">Perfil</a>
+    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.usuario.uname}"></strong></div>
     <a href="/gallery" class="xb xb-outline xb-sm">← Galería</a>
     <form th:action="@{/logout}" method="post" style="margin:0;">
       <button class="xb xb-ghost xb-sm">Salir</button>
@@ -114,7 +185,7 @@
           <table class="tbl" id="tablaContratos">
             <thead>
               <tr>
-                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Estado</th><th>Acción</th>
+                <th>Artista</th><th>Obra contratada</th><th>Fecha del evento</th><th>Solicitud enviada</th><th>Estado</th><th>Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -140,8 +211,25 @@
                   <span th:unless="${c.obraNombre != null}" style="color:var(--muted);font-size:13px;">Contratación general</span>
                 </td>
                 <td>
-                  <span th:if="${c.fechaEvento != null}" th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}" style="font-family:var(--serif);font-size:1rem;"></span>
-                  <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);font-size:13px;">Por confirmar</span>
+                  <div th:if="${c.estado == 'FECHA_RECHAZADA'}">
+                    <form th:action="@{/contrato/reprogramar/{id}(id=${c.id})}" method="post" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                      <input type="date" name="fechaEvento" required
+                             style="background:var(--bg3);border:1px solid rgba(200,129,58,0.45);color:var(--white);border-radius:var(--r);padding:5px 10px;font-family:var(--sans);font-size:12px;outline:none;">
+                      <button type="submit" class="xb xb-amber xb-sm" style="padding:5px 12px;font-size:11px;">Guardar</button>
+                    </form>
+                  </div>
+                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento != null}"
+                        th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"
+                        style="font-family:var(--serif);font-size:1rem;"></span>
+                  <span th:if="${c.estado != 'FECHA_RECHAZADA' and c.fechaEvento == null}"
+                        style="color:var(--muted);font-size:13px;">Por confirmar</span>
+                </td>
+                <td>
+                  <div th:if="${c.fechaSolicitud != null}" style="font-size:12px;line-height:1.6;">
+                    <div style="color:var(--off);font-weight:600;" th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy')}"></div>
+                    <div style="color:var(--amber2);font-size:11px;" th:text="${#temporals.format(c.fechaSolicitud,'HH:mm')} + ' hrs'"></div>
+                  </div>
+                  <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
                 <td>
                   <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
@@ -151,17 +239,12 @@
                   <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
                 </td>
                 <td>
-                  <button th:if="${c.estado == 'FECHA_RECHAZADA'}"
-                          class="xb xb-outline xb-sm"
-                          style="color:var(--amber2);border-color:rgba(200,129,58,0.45);"
-                          th:attr="onclick='abrirReprogramar(' + ${c.id} + ', \'' + (${c.artista != null ? c.artista.artist : ''}) + '\')'">
-                    📅 Cambiar fecha
-                  </button>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--amber2);font-size:12px;font-weight:700;">↑ Ingresa fecha</span>
                   <span th:unless="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--muted);font-size:12px;">—</span>
                 </td>
               </tr>
               <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
-                <td colspan="5" style="text-align:center;padding:5rem;color:var(--muted2);">
+                <td colspan="6" style="text-align:center;padding:5rem;color:var(--muted2);">
                   <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
                   <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
                   <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>
@@ -173,18 +256,52 @@
       </div>
     </div>
 
-    <!-- NOTIFICACIONES -->
+    <!-- NOTIFICACIONES TIMELINE -->
     <div class="col-lg-4">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
-        <div style="padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-family:var(--serif);font-size:1.1rem;font-weight:600;">🔔 Notificaciones</div>
-          <button onclick="marcarTodasLeidas()" style="background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;font-family:var(--sans);">Limpiar todo</button>
-        </div>
-        <div id="notifHistorial">
-          <div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;">
-            <div style="font-size:2rem;margin-bottom:8px;">🔕</div>Cargando...
+      <div class="notif-panel">
+
+        <!-- Header -->
+        <div class="notif-panel-header">
+          <div class="notif-panel-title">
+            <span style="font-size:15px;">🔔</span>
+            Notificaciones
+            <span class="notif-badge-count" id="notifCount">0</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;color:var(--muted);font-family:var(--sans);letter-spacing:0.06em;text-transform:uppercase;" id="notifResumen"></span>
           </div>
         </div>
+
+        <!-- Tabs Nuevas / Historial -->
+        <div class="notif-tabs">
+          <button class="notif-tab active" id="tabNuevas" onclick="switchTab('nuevas')">Nuevas</button>
+          <button class="notif-tab" id="tabHistorial" onclick="switchTab('historial')">Historial</button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="notif-filters" id="notifFiltros">
+          <button class="notif-fpill active" onclick="filtrarNotif('TODOS', this)">Todas</button>
+          <button class="notif-fpill" onclick="filtrarNotif('aceptado', this)">Aceptadas</button>
+          <button class="notif-fpill" onclick="filtrarNotif('rechazado', this)">Rechazadas</button>
+          <button class="notif-fpill" onclick="filtrarNotif('fecha', this)">Fecha</button>
+          <button class="notif-fpill" onclick="filtrarNotif('pendiente', this)">Pendientes</button>
+        </div>
+
+        <!-- Timeline scroll -->
+        <div class="notif-scroll">
+          <div id="notifHistorial">
+            <div class="notif-empty">
+              <div class="notif-empty-icon">🔕</div>
+              <div class="notif-empty-text">Cargando...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="notif-panel-footer">
+          <button class="notif-clear-btn" onclick="marcarTodasLeidas()">Limpiar todas ✕</button>
+        </div>
+
       </div>
     </div>
 
@@ -233,64 +350,132 @@ document.querySelectorAll('#tablaContratos tbody tr[data-estado="FECHA_RECHAZADA
   if (id && artista) mapaFechasRechazadas[artista.toLowerCase()] = { id, nombre: artista };
 });
 
-// ── NOTIFICACIONES ────────────────────────────────────────────────
+// ── NOTIFICACIONES TIMELINE ───────────────────────────────────────
+let _notifTodas = [];       // cache completo
+let _tabActual  = 'nuevas'; // tab activa
+let _filtroActual = 'TODOS';
+
+// Detectar tipo de notificación desde el mensaje
+function detectarTipo(n) {
+  const m = (n.mensaje || '').toLowerCase();
+  if (m.includes('no está disponible para la fecha') || m.includes('fecha rechazada')) return 'fecha';
+  if (m.includes('aceptado') || m.includes('confirmado'))  return 'aceptado';
+  if (m.includes('rechazado') || m.includes('cancelado'))  return 'rechazado';
+  if (m.includes('pendiente') || m.includes('solicitud'))  return 'pendiente';
+  return 'info';
+}
+
+const TIPO_LABEL = { fecha: '📅 Fecha rechazada', aceptado: '✅ Aceptado', rechazado: '❌ Rechazado', pendiente: '⏳ Pendiente', info: '🔔 Notificación' };
+
+function buildTimelineItem(n, mostrarLeida) {
+  const tipo = detectarTipo(n);
+  const leida = n.leida;
+  if (!mostrarLeida && leida) return null; // solo nuevas
+
+  let botonReprog = '';
+  if (tipo === 'fecha') {
+    for (const [key, val] of Object.entries(mapaFechasRechazadas)) {
+      if ((n.mensaje || '').toLowerCase().includes(key)) {
+        botonReprog = `<button class="ntl-reprog-btn" onclick="abrirReprogramar(${val.id}, '${val.nombre}')">📅 Cambiar fecha</button>`;
+        break;
+      }
+    }
+    if (!botonReprog)
+      botonReprog = `<button class="ntl-reprog-btn" onclick="document.getElementById('tablaContratos').scrollIntoView({behavior:'smooth'})">📅 Ver contrato</button>`;
+  }
+
+  const fecha = n.fecha ? new Date(n.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+
+  const div = document.createElement('div');
+  div.className = 'ntl-item' + (leida ? ' leida' : '');
+  div.id = 'nh-' + n.id;
+  div.setAttribute('data-tipo', tipo);
+  div.innerHTML = `
+    <div class="ntl-line">
+      <div class="ntl-dot ${tipo}"></div>
+      <div class="ntl-connector"></div>
+    </div>
+    <div class="ntl-body">
+      <div class="ntl-tipo ${tipo}">${TIPO_LABEL[tipo]}</div>
+      <div class="ntl-msg">${n.mensaje}</div>
+      <div class="ntl-footer">
+        <span class="ntl-time">${fecha}</span>
+        ${botonReprog}
+        ${!leida ? `<button class="ntl-read-btn" onclick="marcarLeida(${n.id})">✓ Leída</button>` : ''}
+      </div>
+    </div>`;
+  return div;
+}
+
+function renderNotif() {
+  const box = document.getElementById('notifHistorial');
+  box.innerHTML = '';
+  const mostrarLeida = _tabActual === 'historial';
+  const filtro = _filtroActual;
+
+  let lista = _notifTodas.filter(n => {
+    if (!mostrarLeida && n.leida) return false;
+    if (mostrarLeida && !n.leida) return false;
+    if (filtro !== 'TODOS' && detectarTipo(n) !== filtro) return false;
+    return true;
+  });
+
+  if (lista.length === 0) {
+    box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${mostrarLeida ? '🗂️' : '🔕'}</div><div class="notif-empty-text">${mostrarLeida ? 'No hay notificaciones en el historial' : 'Todo al día — sin nuevas notificaciones'}</div></div>`;
+    return;
+  }
+
+  lista.forEach((n, i) => {
+    const el = buildTimelineItem(n, mostrarLeida);
+    if (el) { el.style.animationDelay = (i * 0.05) + 's'; box.appendChild(el); }
+  });
+}
+
+function actualizarContador() {
+  const nuevas = _notifTodas.filter(n => !n.leida).length;
+  const badge = document.getElementById('notifCount');
+  const resumen = document.getElementById('notifResumen');
+  if (badge) { badge.textContent = nuevas; badge.classList.toggle('visible', nuevas > 0); }
+  if (resumen) resumen.textContent = nuevas > 0 ? nuevas + ' sin leer' : 'Al día';
+}
+
 async function cargarNotifHistorial() {
   try {
-    const res = await fetch("/api/notificaciones/historial");
+    const res = await fetch('/api/notificaciones/historial');
     if (!res.ok) return;
-    const lista = await res.json();
-    const box = document.getElementById("notifHistorial");
-    box.innerHTML = "";
-
-    if (!lista || lista.length === 0) {
-      box.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;"><div style="font-size:2rem;margin-bottom:8px;">🔕</div>Sin notificaciones</div>`;
-      return;
-    }
-
-    lista.forEach(n => {
-      const esFechaRechazada = n.mensaje && n.mensaje.includes("no está disponible para la fecha");
-      let botonReprog = '';
-
-      if (esFechaRechazada) {
-        for (const [key, val] of Object.entries(mapaFechasRechazadas)) {
-          if (n.mensaje.toLowerCase().includes(key)) {
-            botonReprog = `<button class="btn-reprog" onclick="abrirReprogramar(${val.id}, '${val.nombre}')">📅 Cambiar fecha</button>`;
-            break;
-          }
-        }
-        if (!botonReprog)
-          botonReprog = `<button class="btn-reprog" onclick="document.getElementById('tablaContratos').scrollIntoView({behavior:'smooth'})">📅 Ver contrato</button>`;
-      }
-
-      const div = document.createElement("div");
-      div.className = "notif-history-item";
-      div.id = "nh-" + n.id;
-      div.innerHTML = `
-        <div class="notif-icon ${esFechaRechazada ? 'fecha' : ''}">${esFechaRechazada ? '📅' : '🔔'}</div>
-        <div class="notif-msg">
-          ${n.mensaje}
-          ${botonReprog}
-          <div style="margin-top:8px;display:flex;align-items:center;gap:10px;">
-            <span class="notif-time">${n.fecha ? new Date(n.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : ''}</span>
-            <button onclick="marcarLeida(${n.id})" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--sans);padding:0;">✓ Leída</button>
-          </div>
-        </div>`;
-      box.appendChild(div);
-    });
+    _notifTodas = await res.json() || [];
+    actualizarContador();
+    renderNotif();
   } catch(e) { console.error(e); }
 }
 
+function switchTab(tab) {
+  _tabActual = tab;
+  document.getElementById('tabNuevas').classList.toggle('active', tab === 'nuevas');
+  document.getElementById('tabHistorial').classList.toggle('active', tab === 'historial');
+  renderNotif();
+}
+
+function filtrarNotif(tipo, btn) {
+  _filtroActual = tipo;
+  document.querySelectorAll('.notif-fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNotif();
+}
+
 async function marcarLeida(id) {
-  await fetch(`/api/notificaciones/${id}/leer`, { method: "POST" });
-  document.getElementById("nh-" + id)?.remove();
-  const box = document.getElementById("notifHistorial");
-  if (box && box.children.length === 0)
-    box.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--muted2);font-size:13px;"><div style="font-size:2rem;margin-bottom:8px;">🔕</div>Sin notificaciones</div>`;
+  await fetch(`/api/notificaciones/${id}/leer`, { method: 'POST' });
+  const n = _notifTodas.find(x => x.id === id);
+  if (n) n.leida = true;
+  actualizarContador();
+  renderNotif();
 }
 
 async function marcarTodasLeidas() {
-  await fetch("/api/notificaciones/marcar-todas", { method: "POST" });
-  cargarNotifHistorial();
+  await fetch('/api/notificaciones/marcar-todas', { method: 'POST' });
+  _notifTodas.forEach(n => n.leida = true);
+  actualizarContador();
+  renderNotif();
 }
 
 function abrirReprogramar(contratoId, artistaNombre) {
