@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Notificaciones — XPilot</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    /* ── FILTROS ───────────────────────────────────────────────────── */
+    .nf-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:2rem; align-items:center; }
+    .nf-pill {
+      padding:6px 18px; border-radius:20px; font-size:11px; font-weight:700;
+      letter-spacing:0.07em; text-transform:uppercase; cursor:pointer;
+      border:1px solid var(--border); background:transparent; color:var(--muted2);
+      transition:all 0.18s; font-family:var(--sans); white-space:nowrap;
+    }
+    .nf-pill.active, .nf-pill:hover { background:rgba(200,129,58,0.1); color:var(--amber2); border-color:rgba(200,129,58,0.35); }
+    .nf-search {
+      margin-left:auto; background:var(--bg3); border:1px solid var(--border);
+      color:var(--white); border-radius:var(--r); padding:7px 14px;
+      font-family:var(--sans); font-size:12px; outline:none; width:220px;
+      transition:border-color 0.2s;
+    }
+    .nf-search:focus { border-color:rgba(200,129,58,0.4); }
+    .nf-search::placeholder { color:var(--muted); }
+
+    /* ── STATS BAR ─────────────────────────────────────────────────── */
+    .nf-stats { display:flex; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .nf-stat {
+      flex:1; min-width:120px; background:var(--card);
+      border:1px solid var(--border); border-radius:var(--r2);
+      padding:1rem 1.25rem; text-align:center;
+    }
+    .nf-stat-num { font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1; }
+    .nf-stat-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted2); margin-top:4px; }
+    .nf-stat.pendiente .nf-stat-num  { color:var(--amber); }
+    .nf-stat.aceptado  .nf-stat-num  { color:var(--jade2); }
+    .nf-stat.rechazado .nf-stat-num  { color:#e07070; }
+    .nf-stat.total     .nf-stat-num  { color:var(--amber2); }
+
+    /* ── TIMELINE ──────────────────────────────────────────────────── */
+    .nf-timeline { display:flex; flex-direction:column; }
+    .nf-item {
+      display:flex; gap:0; padding:0;
+      border-left:3px solid transparent;
+      animation:nfFadeIn 0.3s ease both;
+      background:var(--card); border-radius:var(--r2);
+      margin-bottom:10px; overflow:hidden;
+      transition:box-shadow 0.2s;
+    }
+    .nf-item:hover { box-shadow:var(--sh2); }
+    .nf-item.leida { opacity:0.55; }
+    .nf-item.pendiente { border-left-color:var(--amber); }
+    .nf-item.aceptado  { border-left-color:var(--jade2); }
+    .nf-item.rechazado { border-left-color:#e07070; }
+    .nf-item.fecha     { border-left-color:var(--amber3); }
+    .nf-item.info      { border-left-color:#a0a0ff; }
+    @keyframes nfFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+    /* Ícono lateral */
+    .nf-icon {
+      width:52px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; background:rgba(255,255,255,0.02);
+      border-right:1px solid var(--border);
+    }
+
+    /* Contenido */
+    .nf-body { flex:1; padding:1rem 1.25rem; min-width:0; }
+    .nf-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+    .nf-badge {
+      font-size:9px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+      padding:2px 10px; border-radius:20px; white-space:nowrap;
+    }
+    .nf-badge.pendiente { background:rgba(200,129,58,0.15); color:var(--amber);  border:1px solid rgba(200,129,58,0.3); }
+    .nf-badge.aceptado  { background:rgba(76,175,128,0.15); color:var(--jade2);  border:1px solid rgba(76,175,128,0.3); }
+    .nf-badge.rechazado { background:rgba(192,57,43,0.15);  color:#e07070;       border:1px solid rgba(192,57,43,0.3); }
+    .nf-badge.fecha     { background:rgba(245,192,112,0.15);color:var(--amber3); border:1px solid rgba(245,192,112,0.3); }
+    .nf-badge.info      { background:rgba(160,160,255,0.12);color:#a0a0ff;       border:1px solid rgba(160,160,255,0.2); }
+    .nf-leida-tag { font-size:10px; color:var(--jade2); margin-left:auto; white-space:nowrap; }
+    .nf-msg { font-size:13px; color:var(--off); line-height:1.6; word-break:break-word; margin-bottom:8px; }
+    .nf-footer { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .nf-time { font-size:11px; color:var(--muted); }
+    .nf-read-btn {
+      background:none; border:1px solid var(--border); color:var(--muted2);
+      font-size:10px; cursor:pointer; font-family:var(--sans); padding:3px 10px;
+      border-radius:var(--r); transition:all 0.15s; letter-spacing:0.04em;
+    }
+    .nf-read-btn:hover { border-color:var(--jade2); color:var(--jade2); }
+    .nf-reprog-btn {
+      display:inline-flex; align-items:center; gap:5px; padding:4px 12px;
+      background:rgba(200,129,58,0.1); color:var(--amber2);
+      border:1px solid rgba(200,129,58,0.3); border-radius:var(--r);
+      font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+      cursor:pointer; font-family:var(--sans); transition:background 0.18s;
+    }
+    .nf-reprog-btn:hover { background:rgba(200,129,58,0.2); }
+
+    /* Empty */
+    .nf-empty { text-align:center; padding:5rem 2rem; color:var(--muted2); }
+    .nf-empty-icon { font-size:3rem; margin-bottom:1rem; opacity:0.4; }
+
+    /* Paginación simple */
+    .nf-pagination { display:flex; justify-content:center; gap:8px; margin-top:2rem; flex-wrap:wrap; }
+    .nf-page-btn {
+      padding:6px 14px; border-radius:var(--r); font-size:11px; font-weight:700;
+      border:1px solid var(--border); background:transparent; color:var(--muted2);
+      cursor:pointer; font-family:var(--sans); transition:all 0.18s;
+    }
+    .nf-page-btn.active, .nf-page-btn:hover { background:rgba(200,129,58,0.1); color:var(--amber2); border-color:rgba(200,129,58,0.35); }
+    .nf-page-btn:disabled { opacity:0.3; cursor:not-allowed; }
+
+    /* Toolbar accion masiva */
+    .nf-toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:8px; }
+    .nf-count-label { font-size:12px; color:var(--muted2); }
+    .nf-count-label strong { color:var(--amber2); }
+    .nf-clear-all {
+      background:none; border:1px solid var(--border); color:var(--muted2);
+      font-size:10px; cursor:pointer; font-family:var(--sans); padding:5px 14px;
+      border-radius:var(--r); transition:all 0.18s; letter-spacing:0.05em; text-transform:uppercase;
+    }
+    .nf-clear-all:hover { border-color:#e07070; color:#e07070; }
+  </style>
+</head>
+<body>
+
+<nav class="xp-nav" id="nav">
+  <a href="/gallery" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
+  <div class="xp-nav-end">
+    <div class="xp-user" style="display:flex;align-items:center;gap:9px;">
+      <div style="position:relative;flex-shrink:0;">
+        <img th:if="${#authentication.principal.usuario.fotoPerfil != null and !#strings.isEmpty(#authentication.principal.usuario.fotoPerfil)}"
+             th:src="${#authentication.principal.usuario.fotoPerfil}"
+             style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(200,129,58,0.45);">
+        <div th:unless="${#authentication.principal.usuario.fotoPerfil != null and !#strings.isEmpty(#authentication.principal.usuario.fotoPerfil)}"
+             style="width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1.5px solid rgba(200,129,58,0.35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber2);"
+             th:text="${#strings.toUpperCase(#strings.substring(#authentication.principal.usuario.uname,0,1))}">U</div>
+        <div class="xp-user-dot" style="position:absolute;bottom:0;right:0;"></div>
+      </div>
+      <strong th:text="${#authentication.principal.usuario.uname}"></strong>
+    </div>
+    <a href="/perfil" class="xb xb-ghost xb-sm">Perfil</a>
+    <a href="/mis-contratos" class="xb xb-outline xb-sm">Mis contratos</a>
+    <form th:action="@{/logout}" method="post" style="margin:0;">
+      <button class="xb xb-ghost xb-sm">Salir</button>
+    </form>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="padding:calc(58px + 2rem) 0 2.5rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2),var(--bg));">
+  <div class="container">
+    <div class="sec-eyebrow fu">Mi actividad</div>
+    <h1 style="font-family:var(--serif);font-size:3rem;font-weight:600;" class="fu d1">
+      🔔 Notificaciones
+    </h1>
+    <p style="color:var(--muted2);font-size:15px;margin-top:6px;" class="fu d2">
+      Historial completo de todas tus notificaciones
+    </p>
+  </div>
+</div>
+
+<div class="container" style="padding:3rem 0 6rem;">
+
+  <!-- STATS -->
+  <div class="nf-stats" id="nfStats">
+    <div class="nf-stat total">
+      <div class="nf-stat-num" id="statTotal">—</div>
+      <div class="nf-stat-label">Total</div>
+    </div>
+    <div class="nf-stat pendiente">
+      <div class="nf-stat-num" id="statPendiente">—</div>
+      <div class="nf-stat-label">Pendientes</div>
+    </div>
+    <div class="nf-stat aceptado">
+      <div class="nf-stat-num" id="statAceptado">—</div>
+      <div class="nf-stat-label">Aceptadas</div>
+    </div>
+    <div class="nf-stat rechazado">
+      <div class="nf-stat-num" id="statRechazado">—</div>
+      <div class="nf-stat-label">Rechazadas</div>
+    </div>
+  </div>
+
+  <!-- FILTROS + BÚSQUEDA -->
+  <div class="nf-bar">
+    <button class="nf-pill active" onclick="aplicarFiltro('TODOS',this)">Todas</button>
+    <button class="nf-pill" onclick="aplicarFiltro('pendiente',this)">Pendientes</button>
+    <button class="nf-pill" onclick="aplicarFiltro('aceptado',this)">Aceptadas</button>
+    <button class="nf-pill" onclick="aplicarFiltro('rechazado',this)">Rechazadas</button>
+    <button class="nf-pill" onclick="aplicarFiltro('fecha',this)">Fecha rechazada</button>
+    <button class="nf-pill" onclick="aplicarFiltro('nuevas',this)">Sin leer</button>
+    <button class="nf-pill" onclick="aplicarFiltro('leidas',this)">Leídas</button>
+    <input class="nf-search" id="nfSearch" type="text" placeholder="🔍 Buscar notificación..." oninput="buscar(this.value)">
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="nf-toolbar">
+    <span class="nf-count-label">Mostrando <strong id="nfShownCount">0</strong> notificaciones</span>
+    <button class="nf-clear-all" onclick="marcarTodas()">Marcar todas como leídas ✓</button>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="nf-timeline" id="nfTimeline">
+    <div class="nf-empty">
+      <div class="nf-empty-icon">🔕</div>
+      <div>Cargando notificaciones...</div>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="nf-pagination" id="nfPagination"></div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-logo">X<em>Pilot</em></div>
+  <div class="footer-sub">© 2026 XPilot — Arte que inspira</div>
+</footer>
+
+<!-- MODAL REPROGRAMAR -->
+<div class="modal fade" id="modalReprogramar" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
+      <div class="modal-header" style="border-bottom:1px solid var(--border);">
+        <div>
+          <h5 class="modal-title" style="font-family:var(--serif);font-size:1.2rem;margin:0;">📅 Reprogramar fecha</h5>
+          <small style="color:var(--muted2);">Elige una nueva fecha para el evento</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:1.75rem;">
+        <div style="margin-bottom:1.25rem;padding:10px 14px;background:rgba(200,129,58,0.08);border:1px solid rgba(200,129,58,0.2);border-radius:var(--r);font-size:13px;color:var(--amber2);">
+          Artista: <strong id="reprogArtista" style="color:var(--white);"></strong>
+        </div>
+        <form id="formReprogramar" method="post">
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="label">Nueva fecha del evento</label>
+            <input type="date" name="fechaEvento" id="reprogFecha" class="input" required
+                   style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;outline:none;">
+          </div>
+          <button type="submit" class="xb xb-amber xb-lg xb-full">✓ Confirmar nueva fecha</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Estado global ───────────────────────────────────────────────────
+let _todas      = [];
+let _filtradas  = [];
+let _filtro     = 'TODOS';
+let _busqueda   = '';
+let _pagina     = 1;
+const POR_PAGINA = 15;
+
+const ICONOS = { pendiente:'⏳', aceptado:'✅', rechazado:'❌', fecha:'📅', info:'🔔' };
+const LABELS = { pendiente:'Pendiente', aceptado:'Aceptado', rechazado:'Rechazado', fecha:'Fecha rechazada', info:'Notificación' };
+
+function detectarTipo(n) {
+  const m = (n.mensaje || '').toLowerCase();
+  if (m.includes('no está disponible para la fecha') || m.includes('fecha rechazada')) return 'fecha';
+  if (m.includes('aceptado') || m.includes('confirmado'))  return 'aceptado';
+  if (m.includes('rechazado') || m.includes('cancelado'))  return 'rechazado';
+  if (m.includes('pendiente') || m.includes('solicitud'))  return 'pendiente';
+  return 'info';
+}
+
+function formatFecha(f) {
+  if (!f) return '';
+  return new Date(f).toLocaleDateString('es-CO', {
+    day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+}
+
+// ── Carga desde API ────────────────────────────────────────────────
+async function cargar() {
+  try {
+    const res = await fetch('/api/notificaciones/historial');
+    if (!res.ok) throw new Error('Error API');
+    _todas = await res.json() || [];
+    calcularStats();
+    aplicarFiltros();
+  } catch(e) {
+    document.getElementById('nfTimeline').innerHTML = `
+      <div class="nf-empty">
+        <div class="nf-empty-icon">⚠️</div>
+        <div>No se pudieron cargar las notificaciones</div>
+      </div>`;
+  }
+}
+
+function calcularStats() {
+  let p=0, a=0, r=0;
+  _todas.forEach(n => {
+    const t = detectarTipo(n);
+    if (t==='pendiente') p++;
+    else if (t==='aceptado') a++;
+    else if (t==='rechazado' || t==='fecha') r++;
+  });
+  document.getElementById('statTotal').textContent    = _todas.length;
+  document.getElementById('statPendiente').textContent = p;
+  document.getElementById('statAceptado').textContent  = a;
+  document.getElementById('statRechazado').textContent = r;
+}
+
+function aplicarFiltros() {
+  _filtradas = _todas.filter(n => {
+    const tipo = detectarTipo(n);
+    // Filtro de estado
+    if (_filtro === 'nuevas'  && n.leido)  return false;
+    if (_filtro === 'leidas'  && !n.leido) return false;
+    if (!['TODOS','nuevas','leidas'].includes(_filtro) && tipo !== _filtro) return false;
+    // Búsqueda
+    if (_busqueda && !(n.mensaje||'').toLowerCase().includes(_busqueda.toLowerCase())) return false;
+    return true;
+  });
+  _pagina = 1;
+  renderTimeline();
+  renderPaginacion();
+  document.getElementById('nfShownCount').textContent = _filtradas.length;
+}
+
+function renderTimeline() {
+  const timeline = document.getElementById('nfTimeline');
+  const inicio = (_pagina - 1) * POR_PAGINA;
+  const pagina = _filtradas.slice(inicio, inicio + POR_PAGINA);
+
+  if (pagina.length === 0) {
+    timeline.innerHTML = `
+      <div class="nf-empty">
+        <div class="nf-empty-icon">🔕</div>
+        <div>No hay notificaciones para este filtro</div>
+      </div>`;
+    return;
+  }
+
+  timeline.innerHTML = '';
+  pagina.forEach((n, i) => {
+    const tipo  = detectarTipo(n);
+    const leida = n.leido;
+    const div   = document.createElement('div');
+    div.className = `nf-item ${tipo}${leida ? ' leida' : ''}`;
+    div.id = 'nfi-' + n.id;
+    div.style.animationDelay = (i * 0.04) + 's';
+
+    const botonReprog = (tipo === 'fecha')
+      ? `<button class="nf-reprog-btn" onclick="abrirReprogramar(${n.id})">📅 Cambiar fecha</button>`
+      : '';
+
+    const botonLeer = !leida
+      ? `<button class="nf-read-btn" onclick="marcarLeida(${n.id})">✓ Marcar leída</button>`
+      : `<span style="font-size:10px;color:var(--jade2);">✓ Leída</span>`;
+
+    div.innerHTML = `
+      <div class="nf-icon">${ICONOS[tipo]}</div>
+      <div class="nf-body">
+        <div class="nf-header">
+          <span class="nf-badge ${tipo}">${LABELS[tipo]}</span>
+          ${leida ? '<span class="nf-leida-tag">✓ Leída</span>' : ''}
+        </div>
+        <div class="nf-msg">${n.mensaje || ''}</div>
+        <div class="nf-footer">
+          <span class="nf-time">🕐 ${formatFecha(n.fecha)}</span>
+          ${botonReprog}
+          ${botonLeer}
+        </div>
+      </div>`;
+    timeline.appendChild(div);
+  });
+}
+
+function renderPaginacion() {
+  const total = Math.ceil(_filtradas.length / POR_PAGINA);
+  const pag   = document.getElementById('nfPagination');
+  pag.innerHTML = '';
+  if (total <= 1) return;
+
+  const prev = document.createElement('button');
+  prev.className = 'nf-page-btn';
+  prev.textContent = '← Anterior';
+  prev.disabled = _pagina === 1;
+  prev.onclick = () => { _pagina--; renderTimeline(); renderPaginacion(); window.scrollTo(0,0); };
+  pag.appendChild(prev);
+
+  for (let i = 1; i <= total; i++) {
+    if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - _pagina) > 1) {
+      if (i === 3 || i === total - 2) { const dots = document.createElement('span'); dots.textContent='…'; dots.style.cssText='color:var(--muted);padding:0 4px;'; pag.appendChild(dots); }
+      continue;
+    }
+    const btn = document.createElement('button');
+    btn.className = 'nf-page-btn' + (i === _pagina ? ' active' : '');
+    btn.textContent = i;
+    btn.onclick = () => { _pagina = i; renderTimeline(); renderPaginacion(); window.scrollTo(0,0); };
+    pag.appendChild(btn);
+  }
+
+  const next = document.createElement('button');
+  next.className = 'nf-page-btn';
+  next.textContent = 'Siguiente →';
+  next.disabled = _pagina === total;
+  next.onclick = () => { _pagina++; renderTimeline(); renderPaginacion(); window.scrollTo(0,0); };
+  pag.appendChild(next);
+}
+
+// ── Acciones ───────────────────────────────────────────────────────
+function aplicarFiltro(filtro, btn) {
+  _filtro = filtro;
+  document.querySelectorAll('.nf-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  aplicarFiltros();
+}
+
+function buscar(val) {
+  _busqueda = val;
+  aplicarFiltros();
+}
+
+async function marcarLeida(id) {
+  await fetch(`/api/notificaciones/${id}/leer`, { method:'POST' });
+  const n = _todas.find(x => x.id === id);
+  if (n) n.leido = true;
+  calcularStats();
+  aplicarFiltros();
+}
+
+async function marcarTodas() {
+  await fetch('/api/notificaciones/marcar-todas', { method:'POST' });
+  _todas.forEach(n => n.leido = true);
+  calcularStats();
+  aplicarFiltros();
+}
+
+function abrirReprogramar(notifId) {
+  // Busca el contrato relacionado en el mensaje
+  document.getElementById('reprogArtista').textContent = 'Ver tabla de contratos';
+  const hoy = new Date(); hoy.setDate(hoy.getDate()+1);
+  document.getElementById('reprogFecha').min = hoy.toISOString().split('T')[0];
+  document.getElementById('reprogFecha').value = '';
+  document.getElementById('formReprogramar').action = '/mis-contratos';
+  new bootstrap.Modal(document.getElementById('modalReprogramar')).show();
+}
+
+const nav = document.getElementById('nav');
+if (nav) window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+cargar();
+</script>
+</body>
+</html>

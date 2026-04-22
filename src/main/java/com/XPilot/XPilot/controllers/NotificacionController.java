@@ -67,6 +67,13 @@ public class NotificacionController {
         System.out.println("🔥 Notificación leída ID: " + id);
     }
 
+    // 📜 HISTORIAL COMPLETO (leídas + no leídas)
+    @GetMapping("/historial")
+    public List<Notificacion> historial(Principal principal){
+        usuario user = getUser(principal);
+        return notifRepo.findByUsuario_IdOrderByIdDesc(user.getId());
+    }
+
     // 🔥 MARCAR TODAS
     @PostMapping("/marcar-todas")
     public void marcarTodas(Principal principal){
