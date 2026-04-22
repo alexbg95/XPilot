@@ -86,10 +86,7 @@
     .notif-fpill.active { background: rgba(200,129,58,0.12); color: var(--amber2); border-color: rgba(200,129,58,0.35); }
     .notif-fpill:hover:not(.active) { color: var(--off); border-color: var(--border2); }
 
-    /* Tabs Nuevas / Historial */
-    .notif-tabs { display: flex; border-bottom: 1px solid var(--border); }
-    .notif-tab { flex: 1; padding: 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; background: none; border: none; color: var(--muted2); cursor: pointer; font-family: var(--sans); transition: color 0.18s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-    .notif-tab.active { color: var(--amber2); border-bottom-color: var(--amber); }
+
 
     /* Scroll area */
     .notif-scroll { max-height: 520px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
@@ -292,15 +289,17 @@
             Notificaciones
             <span class="notif-badge-count" id="notifCount">0</span>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--sans);letter-spacing:0.06em;text-transform:uppercase;" id="notifResumen"></span>
-          </div>
-        </div>
-
-        <!-- Tabs Nuevas / Historial -->
-        <div class="notif-tabs">
-          <button class="notif-tab active" id="tabNuevas" onclick="switchTab('nuevas')">Nuevas</button>
-          <button class="notif-tab" id="tabHistorial" onclick="switchTab('historial')">Historial</button>
+          <a href="/notificaciones"
+             style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
+                    letter-spacing:0.07em;text-transform:uppercase;font-family:var(--sans);
+                    color:var(--amber2);border:1px solid rgba(200,129,58,0.3);
+                    border-radius:var(--r);padding:4px 10px;
+                    background:rgba(200,129,58,0.06);transition:background 0.18s;
+                    text-decoration:none;"
+             onmouseover="this.style.background='rgba(200,129,58,0.14)'"
+             onmouseout="this.style.background='rgba(200,129,58,0.06)'">
+            Historial completo ↗
+          </a>
         </div>
 
         <!-- Filtros -->
@@ -323,8 +322,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="notif-panel-footer" style="display:flex;justify-content:space-between;align-items:center;">
-          <a href="/notificaciones" style="font-size:10px;color:var(--amber2);font-family:var(--sans);letter-spacing:0.05em;text-transform:uppercase;font-weight:700;">Ver historial completo →</a>
+        <div class="notif-panel-footer" style="display:flex;justify-content:flex-end;align-items:center;">
           <button class="notif-clear-btn" onclick="marcarTodasLeidas()">Limpiar todas ✕</button>
         </div>
 
@@ -436,18 +434,16 @@ function buildTimelineItem(n, mostrarLeida) {
 function renderNotif() {
   const box = document.getElementById('notifHistorial');
   box.innerHTML = '';
-  const mostrarLeida = _tabActual === 'historial';
   const filtro = _filtroActual;
 
   let lista = _notifTodas.filter(n => {
-    if (!mostrarLeida && n.leida) return false;
-    if (mostrarLeida && !n.leida) return false;
+    if (n.leida) return false; // panel solo muestra no leídas
     if (filtro !== 'TODOS' && detectarTipo(n) !== filtro) return false;
     return true;
   });
 
   if (lista.length === 0) {
-    box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${mostrarLeida ? '🗂️' : '🔕'}</div><div class="notif-empty-text">${mostrarLeida ? 'No hay notificaciones en el historial' : 'Todo al día — sin nuevas notificaciones'}</div></div>`;
+    box.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-text">Todo al día — sin nuevas notificaciones</div></div>`;
     return;
   }
 
@@ -476,9 +472,7 @@ async function cargarNotifHistorial() {
 }
 
 function switchTab(tab) {
-  _tabActual = tab;
-  document.getElementById('tabNuevas').classList.toggle('active', tab === 'nuevas');
-  document.getElementById('tabHistorial').classList.toggle('active', tab === 'historial');
+  _tabActual = 'nuevas'; // siempre nuevas, historial va a /notificaciones
   renderNotif();
 }
 
