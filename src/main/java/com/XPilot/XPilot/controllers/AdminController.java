@@ -229,11 +229,8 @@ public class AdminController {
             }
             if (c.getCliente() != null) {
                 usuario cliente = c.getCliente();
-                String obraInfo = (c.getObraNombre() != null && !c.getObraNombre().isBlank())
-                        ? " — obra \"" + c.getObraNombre() + "\""
-                        : "";
                 String msg = "🎉 Tu contrato con " + c.getArtista().getArtist()
-                           + obraInfo + " fue aceptado para el " + c.getFechaEvento();
+                           + " fue aceptado para el " + c.getFechaEvento();
                 notificacionService.crearNotificacion(cliente, msg);
                 if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), "Contrato aceptado", msg);
@@ -257,6 +254,12 @@ public class AdminController {
         c.setEstado("RECHAZADO");
         c.setNotificado(true);
         contratacionRepo.save(c);
+
+        // Artista vuelve a estar disponible al rechazar
+        if (c.getArtista() != null) {
+            c.getArtista().setDisponible(true);
+            mediaRepo.save(c.getArtista());
+        }
 
         try {
             if (c.getCliente() != null) {
