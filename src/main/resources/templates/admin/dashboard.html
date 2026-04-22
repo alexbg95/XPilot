@@ -134,9 +134,41 @@
     .tbl td, .tbl th { overflow: visible; }
     .tbl { overflow: visible; }
     .section-wrap > div { overflow: visible !important; }
+
+    /* ── TOAST ADMIN ─────────────────────────────────────────────── */
+    .adm-toast-wrap { position:fixed; top:20px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+    .adm-toast {
+      display:flex; align-items:flex-start; gap:14px;
+      background:#0d0d0d; border:1px solid rgba(76,175,128,0.35);
+      border-left:3px solid var(--jade2);
+      border-radius:var(--r2); padding:14px 18px 10px;
+      min-width:300px; max-width:400px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.8);
+      pointer-events:all; position:relative; overflow:hidden;
+      animation:admToastIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .adm-toast.error  { border-color:rgba(192,57,43,0.5); border-left-color:#e07070; }
+    .adm-toast.warn   { border-color:rgba(200,129,58,0.5); border-left-color:var(--amber); }
+    .adm-toast.hide   { animation:admToastOut 0.3s ease forwards; }
+    @keyframes admToastIn  { from{opacity:0;transform:translateX(110%)} to{opacity:1;transform:translateX(0)} }
+    @keyframes admToastOut { from{opacity:1;transform:translateX(0)}    to{opacity:0;transform:translateX(110%)} }
+    .adm-toast-icon  { font-size:20px; line-height:1; flex-shrink:0; margin-top:1px; }
+    .adm-toast-body  { flex:1; min-width:0; }
+    .adm-toast-title { font-size:11px; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:var(--jade2); margin-bottom:3px; }
+    .adm-toast.error .adm-toast-title { color:#e07070; }
+    .adm-toast.warn  .adm-toast-title { color:var(--amber2); }
+    .adm-toast-msg   { font-size:13px; color:var(--off); line-height:1.5; word-break:break-word; }
+    .adm-toast-close { background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0; line-height:1; flex-shrink:0; }
+    .adm-toast-close:hover { color:var(--white); }
+    .adm-toast-bar { position:absolute; bottom:0; left:0; height:2px; border-radius:2px; animation:admBar 4.5s linear forwards; }
+    .adm-toast-bar.success { background:var(--jade2); }
+    .adm-toast-bar.error   { background:#e07070; }
+    .adm-toast-bar.warn    { background:var(--amber); }
+    @keyframes admBar { from{width:100%} to{width:0%} }
   </style>
 </head>
 <body>
+<div class="adm-toast-wrap" id="admToastWrap"></div>
 <div class="admin-wrap">
 
   <!-- SIDEBAR -->
@@ -350,7 +382,7 @@
           <div class="sol-actions">
             <form th:action="@{/admin/aceptar/{id}(id=${c.id})}" method="post"
                   style="display:flex;gap:6px;align-items:center;">
-              <input type="date" name="fechaEvento" required
+              <input type="date" name="fechaEvento" class="fecha-evento-input" required
                      style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:6px 10px;font-family:var(--sans);font-size:12px;outline:none;width:130px;">
               <button class="xb xb-success xb-sm" data-tooltip="Aceptar solicitud"
                       style="display:inline-flex;align-items:center;gap:5px;">
@@ -545,6 +577,60 @@ function ap(t = "") {
 
 // Inicializar iconos Lucide
 lucide.createIcons();
+
+// ── FECHA MÍNIMA: hoy en todos los inputs de fecha ────────────────
+(function() {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd   = String(hoy.getDate()).padStart(2, '0');
+  const minFecha = yyyy + '-' + mm + '-' + dd;
+  document.querySelectorAll('.fecha-evento-input').forEach(function(el) {
+    el.min   = minFecha;
+    el.value = '';
+  });
+})();
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function admToast(msg, tipo) {
+  tipo = tipo || 'success';
+  var icons   = { success:'✅', error:'❌', warn:'⚠️' };
+  var titles  = { success:'Contrato aceptado', error:'Error', warn:'Atención' };
+  var wrap = document.getElementById('admToastWrap');
+  var t    = document.createElement('div');
+  t.className = 'adm-toast ' + tipo;
+  t.innerHTML =
+    '<div class="adm-toast-icon">' + icons[tipo] + '</div>' +
+    '<div class="adm-toast-body">' +
+      '<div class="adm-toast-title">' + titles[tipo] + '</div>' +
+      '<div class="adm-toast-msg">'   + msg + '</div>' +
+    '</div>' +
+    '<button class="adm-toast-close" onclick="admCerrar(this.parentElement)">✕</button>' +
+    '<div class="adm-toast-bar ' + tipo + '"></div>';
+  wrap.appendChild(t);
+  setTimeout(function() { admCerrar(t); }, 4800);
+}
+
+function admCerrar(el) {
+  if (!el || el.classList.contains('hide')) return;
+  el.classList.add('hide');
+  setTimeout(function() { el && el.remove(); }, 300);
+}
+
+// Interceptar formularios de aceptar para mostrar toast antes de submit
+document.querySelectorAll('form[action*="/admin/aceptar/"]').forEach(function(form) {
+  form.addEventListener('submit', function(e) {
+    var fechaInput = form.querySelector('.fecha-evento-input');
+    if (!fechaInput || !fechaInput.value) return; // deja que el browser valide
+    var artistaNombre = '';
+    var card = form.closest('.sol-card, .sol-item, [class*="sol"]');
+    if (card) {
+      var nombreEl = card.querySelector('[class*="sol-name"], strong, b, .font-serif');
+      if (nombreEl) artistaNombre = ' con ' + nombreEl.textContent.trim();
+    }
+    admToast('Contrato' + artistaNombre + ' aceptado para el ' + new Date(fechaInput.value + 'T12:00:00').toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'}), 'success');
+  });
+});
 </script>
 </body>
 </html>
