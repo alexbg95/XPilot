@@ -118,15 +118,15 @@
     .ntl-item:last-child .ntl-connector { display: none; }
 
     /* Contenido */
-    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); }
+    .ntl-body { flex: 1; padding: 14px 0 14px 10px; border-bottom: 1px solid var(--border); min-width: 0; overflow: hidden; }
     .ntl-item:last-child .ntl-body { border-bottom: none; }
-    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .ntl-tipo { font-size: 9px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; margin-bottom: 4px; white-space: nowrap; overflow: visible; }
     .ntl-tipo.pendiente  { color: var(--amber); }
     .ntl-tipo.aceptado   { color: var(--jade2); }
     .ntl-tipo.rechazado  { color: var(--crimson2); }
     .ntl-tipo.fecha      { color: var(--amber3); }
     .ntl-tipo.info       { color: #a0a0ff; }
-    .ntl-msg { font-size: 12.5px; color: var(--off); line-height: 1.6; margin-bottom: 6px; }
+    .ntl-msg { font-size: 12.5px; color: var(--off); line-height: 1.6; margin-bottom: 6px; word-break: break-word; }
     .ntl-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ntl-time { font-size: 10px; color: var(--muted); }
     .ntl-read-btn { background: none; border: none; color: var(--muted); font-size: 10px; cursor: pointer; font-family: var(--sans); padding: 0; transition: color 0.15s; }
@@ -150,7 +150,19 @@
 <nav class="xp-nav" id="nav">
   <a href="/" class="xp-logo"><div class="xp-logo-dot"></div>X<em>Pilot</em></a>
   <div class="xp-nav-end">
-    <div class="xp-user"><div class="xp-user-dot"></div><strong th:text="${#authentication.principal.usuario.uname}"></strong></div>
+    <div class="xp-user" style="display:flex;align-items:center;gap:9px;">
+      <div style="position:relative;flex-shrink:0;">
+        <img th:if="${#authentication.principal.usuario.fotoPerfil != null and !#strings.isEmpty(#authentication.principal.usuario.fotoPerfil)}"
+             th:src="${#authentication.principal.usuario.fotoPerfil}"
+             style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(200,129,58,0.45);">
+        <div th:unless="${#authentication.principal.usuario.fotoPerfil != null and !#strings.isEmpty(#authentication.principal.usuario.fotoPerfil)}"
+             style="width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1.5px solid rgba(200,129,58,0.35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber2);"
+             th:text="${#strings.toUpperCase(#strings.substring(#authentication.principal.usuario.uname,0,1))}">U</div>
+        <div class="xp-user-dot" style="position:absolute;bottom:0;right:0;"></div>
+      </div>
+      <strong th:text="${#authentication.principal.usuario.uname}"></strong>
+    </div>
+    <a href="/perfil" class="xb xb-outline xb-sm">Perfil</a>
     <a href="/gallery" class="xb xb-outline xb-sm">← Galería</a>
     <form th:action="@{/logout}" method="post" style="margin:0;">
       <button class="xb xb-ghost xb-sm">Salir</button>
