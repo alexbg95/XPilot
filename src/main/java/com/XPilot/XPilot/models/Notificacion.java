@@ -2,6 +2,7 @@ package com.XPilot.XPilot.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "notificacion")
@@ -17,7 +18,7 @@ public class Notificacion {
     @Column(name = "leida", columnDefinition = "TINYINT(1)")
     private boolean leido = false;
 
-    private LocalDateTime fecha = LocalDateTime.now();
+    private LocalDateTime fecha = LocalDateTime.now(ZoneId.of("America/Bogota"));
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

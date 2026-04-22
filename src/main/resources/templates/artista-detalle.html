@@ -372,7 +372,12 @@ function abrirObra(el){
   document.getElementById('obraTitulo').textContent='🎨 '+nombre;
   document.getElementById('obraId').textContent='ID de obra: #'+id;
   document.getElementById('inObraId').value=id;
-  document.getElementById('inObraNombre').value=nombre;
+  // Limpiar nombre: si es una URL (contiene http o /), usar solo la parte final sin extensión
+  var nombreLimpio = nombre;
+  if (nombre && (nombre.startsWith('http') || nombre.includes('/'))) {
+    nombreLimpio = nombre.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+  }
+  document.getElementById('inObraNombre').value = nombreLimpio;
   new bootstrap.Modal(document.getElementById('modalObra')).show();
 }
 function abrirModalContratar(){
