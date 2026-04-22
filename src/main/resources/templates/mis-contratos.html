@@ -537,7 +537,7 @@ function mostrarToast({ icon='🎉', title='XPilot', msg='', color='var(--amber)
       '<div class="xp-toast-title">' + title + '</div>' +
       '<div class="xp-toast-msg">'  + msg   + '</div>' +
     '</div>' +
-    '<button class="xp-toast-close" onclick="cerrarToast(this.closest('.xp-toast'))">✕</button>' +
+    '<button class="xp-toast-close" onclick="cerrarToast(this.parentElement)">✕</button>' +
     '<div class="xp-toast-bar" style="background:' + color + '"></div>';
   wrap.appendChild(t);
   setTimeout(() => cerrarToast(t), 4800);
