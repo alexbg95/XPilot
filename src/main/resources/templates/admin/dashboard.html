@@ -120,17 +120,6 @@
     }
 
     /* Tooltip en botones icono */
-    [data-tooltip] { position: relative; }
-    [data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-      background: var(--bg2); border: 1px solid var(--border2);
-      color: var(--off); font-size: 11px; padding: 4px 8px;
-      border-radius: 6px; white-space: nowrap; z-index: 9999;
-      font-family: var(--sans); pointer-events: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    /* Evita que la tabla corte los tooltips */
     .tbl td, .tbl th { overflow: visible; }
     .tbl { overflow: visible; }
     .section-wrap > div { overflow: visible !important; }
@@ -341,12 +330,12 @@
                 <td>
                   <div style="display:flex;gap:6px;">
                     <a th:href="@{/admin/editar/{id}(id=${m.id})}" class="xb xb-outline xb-sm"
-                       style="display:inline-flex;align-items:center;gap:5px;" data-tooltip="Editar artista">
+                       style="display:inline-flex;align-items:center;gap:5px;">
                       <i data-lucide="pencil" style="width:13px;height:13px;"></i> Editar
                     </a>
                     <a th:href="@{/admin/eliminar/{id}(id=${m.id})}" class="xb xb-danger xb-sm"
                        style="display:inline-flex;align-items:center;gap:5px;"
-                       onclick="return confirm('¿Eliminar artista?')" data-tooltip="Eliminar artista">
+                       onclick="return confirm('¿Eliminar artista?')">
                       <i data-lucide="trash-2" style="width:13px;height:13px;"></i> Eliminar
                     </a>
                   </div>
@@ -407,17 +396,17 @@
                 <svg class="date-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <input type="date" name="fechaEvento" class="fecha-evento-input" required>
               </div>
-              <button class="xb xb-success xb-sm" data-tooltip="Aceptar solicitud"
+              <button class="xb xb-success xb-sm"
                       style="display:inline-flex;align-items:center;gap:5px;">
                 <i data-lucide="check" style="width:14px;height:14px;"></i> Aceptar
               </button>
             </form>
-            <button class="xb xb-sm" data-tooltip="Fecha no disponible"
+            <button class="xb xb-sm"
                     style="background:rgba(200,129,58,0.1);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);display:inline-flex;align-items:center;gap:5px;"
                     th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
               <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
             </button>
-            <button class="xb xb-danger xb-sm" data-tooltip="Rechazar solicitud"
+            <button class="xb xb-danger xb-sm"
                     style="display:inline-flex;align-items:center;gap:5px;"
                     th:attr="onclick='confirmarRechazo(' + ${c.id} + ', &quot;' + ${c.artista.artist} + '&quot;)'">
               <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
