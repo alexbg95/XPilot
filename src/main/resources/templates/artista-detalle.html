@@ -288,7 +288,7 @@
           <input type="hidden" name="obraNombre" id="inObraNombre">
           <div class="form-group" style="margin-bottom:1rem;text-align:left;">
             <label class="label">Fecha del evento</label>
-            <input type="date" name="fechaEvento" class="input" required
+            <input type="date" name="fechaEvento" id="fechaObraEvento" class="input" required
                    style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;">
           </div>
           <button type="submit" class="xb xb-amber xb-lg xb-full">🎧 Contratar a <span th:text="${artista.artist}"></span> por esta obra</button>
@@ -313,7 +313,7 @@
         <form th:action="@{/contratar/{id}(id=${artista.id})}" method="post">
           <div class="form-group" style="margin-bottom:1rem;text-align:left;">
             <label class="label">Fecha del evento</label>
-            <input type="date" name="fechaEvento" class="input" required
+            <input type="date" name="fechaEvento" id="fechaContratarEvento" class="input" required
                    style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:10px 14px;font-family:var(--sans);font-size:13px;width:100%;">
           </div>
           <button type="submit" class="xb xb-amber xb-lg xb-full">✓ Confirmar contratación</button>
@@ -324,6 +324,19 @@
 </div>
 
 <script>
+// Bloquear fechas pasadas: solo se puede seleccionar desde hoy en adelante
+(function() {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const minFecha = yyyy + '-' + mm + '-' + dd;
+  ['fechaObraEvento', 'fechaContratarEvento'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) { el.min = minFecha; el.value = ''; }
+  });
+})();
+
 function handleObraClick(el) {
   const auth = el.getAttribute('data-auth');
   if (auth === 'true') {
