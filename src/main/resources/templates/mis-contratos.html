@@ -72,6 +72,31 @@
     #tablaContratos td:nth-child(2) { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #tablaContratos th:last-child { min-width: 130px; }
 
+    /* ── PAGINACIÓN ───────────────────────────────────────────────── */
+    .pag-wrap { display:flex; justify-content:space-between; align-items:center; padding:14px 1.25rem; border-top:1px solid var(--border); flex-wrap:wrap; gap:8px; }
+    .pag-info  { font-size:12px; color:var(--muted2); }
+    .pag-info strong { color:var(--amber2); }
+    .pag-btns  { display:flex; gap:6px; flex-wrap:wrap; }
+    .pag-btn   { padding:5px 12px; border-radius:var(--r); font-size:11px; font-weight:700; border:1px solid var(--border); background:transparent; color:var(--muted2); cursor:pointer; font-family:var(--sans); transition:all 0.18s; }
+    .pag-btn.active, .pag-btn:hover:not(:disabled) { background:rgba(200,129,58,0.12); color:var(--amber2); border-color:rgba(200,129,58,0.35); }
+    .pag-btn:disabled { opacity:0.3; cursor:not-allowed; }
+    .pag-btn.prev-next { padding:5px 14px; }
+
+    /* ── ERROR OCUPADO ────────────────────────────────────────────── */
+    .ocupado-banner {
+      display:flex; align-items:flex-start; gap:16px;
+      background:rgba(192,57,43,0.07); border:1px solid rgba(192,57,43,0.25);
+      border-left:3px solid #e07070; border-radius:var(--r2);
+      padding:1.25rem 1.5rem; margin-bottom:1.75rem;
+      animation:fadeSlideIn 0.4s ease both;
+    }
+    @keyframes fadeSlideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+    .ocupado-icon { font-size:1.8rem; flex-shrink:0; }
+    .ocupado-title { font-size:13px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#e07070; margin-bottom:4px; }
+    .ocupado-msg { font-size:13px; color:var(--off); line-height:1.6; }
+    .ocupado-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; margin-left:auto; align-self:flex-start; padding:0; }
+    .ocupado-close:hover { color:var(--white); }
+
     /* ── NOTIFICACIONES TIMELINE ──────────────────────────────────── */
     .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); overflow: visible; position: sticky; top: 80px; }
     .notif-panel-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -223,6 +248,20 @@
 
     <!-- CONTRATOS -->
     <div class="col-lg-8">
+
+      <!-- Banner artista ocupado -->
+      <div class="ocupado-banner" id="ocupadoBanner" style="display:none;">
+        <div class="ocupado-icon">🚫</div>
+        <div>
+          <div class="ocupado-title">Artista no disponible</div>
+          <div class="ocupado-msg">
+            Este artista ya fue contratado por otro usuario mientras revisabas su perfil.<br>
+            <strong style="color:var(--amber2);">Explora otros artistas disponibles en la galería.</strong>
+          </div>
+        </div>
+        <button class="ocupado-close" onclick="cerrarOcupado()">✕</button>
+      </div>
+
       <div class="tabs-wrap">
         <button class="tab-pill active" onclick="filtrarContratos('TODOS', this)">Todos</button>
         <button class="tab-pill" onclick="filtrarContratos('PENDIENTE', this)">Pendientes</button>
@@ -303,6 +342,11 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <!-- Paginación -->
+        <div class="pag-wrap" id="pagWrap" style="display:none;">
+          <div class="pag-info">Mostrando <strong id="pagDesde">1</strong>–<strong id="pagHasta">10</strong> de <strong id="pagTotal">0</strong> contratos</div>
+          <div class="pag-btns" id="pagBtns"></div>
         </div>
       </div>
     </div>
@@ -514,12 +558,93 @@ function abrirReprogramar(contratoId, artistaNombre) {
   new bootstrap.Modal(document.getElementById("modalReprogramar")).show();
 }
 
+// ── PAGINACIÓN DE CONTRATOS ───────────────────────────────────────
+const FILAS_POR_PAG = 8;
+let _pagActual  = 1;
+let _filtroTab  = 'TODOS';
+
+function todasLasFilas() {
+  return Array.from(document.querySelectorAll('#tablaContratos tbody tr[data-estado]'));
+}
+
+function filasFiltradas() {
+  return todasLasFilas().filter(r =>
+    _filtroTab === 'TODOS' || r.getAttribute('data-estado') === _filtroTab
+  );
+}
+
+function renderPagContratos() {
+  const filas  = filasFiltradas();
+  const total  = filas.length;
+  const totPag = Math.ceil(total / FILAS_POR_PAG) || 1;
+  if (_pagActual > totPag) _pagActual = totPag;
+
+  const desde = (_pagActual - 1) * FILAS_POR_PAG;
+  const hasta = Math.min(desde + FILAS_POR_PAG, total);
+
+  // Ocultar todas primero
+  todasLasFilas().forEach(r => r.style.display = 'none');
+  // Mostrar solo las de esta página
+  filas.forEach((r, i) => { r.style.display = (i >= desde && i < hasta) ? '' : 'none'; });
+
+  // Info texto
+  const wrap = document.getElementById('pagWrap');
+  if (total > FILAS_POR_PAG) {
+    wrap.style.display = 'flex';
+    document.getElementById('pagDesde').textContent  = total === 0 ? 0 : desde + 1;
+    document.getElementById('pagHasta').textContent  = hasta;
+    document.getElementById('pagTotal').textContent  = total;
+  } else {
+    wrap.style.display = 'none';
+  }
+
+  // Botones
+  const btns = document.getElementById('pagBtns');
+  btns.innerHTML = '';
+
+  const prev = document.createElement('button');
+  prev.className = 'pag-btn prev-next'; prev.textContent = '← Ant';
+  prev.disabled = _pagActual === 1;
+  prev.onclick = () => { _pagActual--; renderPagContratos(); };
+  btns.appendChild(prev);
+
+  for (let i = 1; i <= totPag; i++) {
+    if (totPag > 6 && i > 2 && i < totPag - 1 && Math.abs(i - _pagActual) > 1) {
+      if (i === 3 || i === totPag - 2) { const d = document.createElement('span'); d.textContent='…'; d.style.cssText='color:var(--muted);padding:0 4px;line-height:2;'; btns.appendChild(d); }
+      continue;
+    }
+    const b = document.createElement('button');
+    b.className = 'pag-btn' + (i === _pagActual ? ' active' : '');
+    b.textContent = i;
+    b.onclick = () => { _pagActual = i; renderPagContratos(); };
+    btns.appendChild(b);
+  }
+
+  const next = document.createElement('button');
+  next.className = 'pag-btn prev-next'; next.textContent = 'Sig →';
+  next.disabled = _pagActual === totPag;
+  next.onclick = () => { _pagActual++; renderPagContratos(); };
+  btns.appendChild(next);
+}
+
 function filtrarContratos(estado, btn) {
-  document.querySelectorAll(".tab-pill").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  document.querySelectorAll("#tablaContratos tbody tr[data-estado]").forEach(row => {
-    row.style.display = (estado === "TODOS" || row.getAttribute("data-estado") === estado) ? "" : "none";
-  });
+  document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _filtroTab  = estado;
+  _pagActual  = 1;
+  renderPagContratos();
+}
+
+// Inicializar paginación al cargar
+document.addEventListener('DOMContentLoaded', renderPagContratos);
+
+// ── BANNER ARTISTA OCUPADO ────────────────────────────────────────
+function cerrarOcupado() {
+  const b = document.getElementById('ocupadoBanner');
+  b.style.opacity = '0'; b.style.transform = 'translateY(-8px)';
+  b.style.transition = 'all 0.3s ease';
+  setTimeout(() => b.style.display = 'none', 300);
+  window.history.replaceState({}, '', '/mis-contratos');
 }
 
 const nav = document.getElementById("nav");
@@ -559,6 +684,16 @@ function cerrarToast(el) {
       color: 'var(--amber)'
     }), 400);
     window.history.replaceState({}, '', '/mis-contratos');
+  }
+  if (params.get('ocupado') === 'true') {
+    const banner = document.getElementById('ocupadoBanner');
+    if (banner) banner.style.display = 'flex';
+    setTimeout(() => mostrarToast({
+      icon: '🚫',
+      title: 'Artista no disponible',
+      msg: 'Este artista ya fue contratado. Explora otros artistas en la galería.',
+      color: '#e07070'
+    }), 400);
   }
 })();
 
