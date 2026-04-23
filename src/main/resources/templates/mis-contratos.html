@@ -520,7 +520,7 @@ function actualizarContador() {
 
 async function cargarNotifHistorial() {
   try {
-    const res = await fetch('/api/notificaciones/historial');
+    const res = await fetch('/api/notificaciones');
     if (!res.ok) return;
     _notifTodas = await res.json() || [];
     actualizarContador();
