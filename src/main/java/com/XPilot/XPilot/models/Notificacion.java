@@ -1,6 +1,7 @@
 package com.XPilot.XPilot.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,6 +26,7 @@ public class Notificacion {
     private boolean leido = false;
 
     @Column(name = "fecha")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fecha = LocalDateTime.now(ZoneId.of("America/Bogota"));
 
     // ── Getters & Setters ──────────────────────────────────────────
