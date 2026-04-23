@@ -222,7 +222,7 @@ public class AdminController {
         try {
             if (c.getArtista() != null && c.getArtista().getUsuario() != null) {
                 usuario artistaUser = c.getArtista().getUsuario();
-                String msg = "🎤 Has sido contratado para el " + c.getFechaEvento();
+                String msg = "🎤 Has sido contratado para el " + c.getFechaEvento() + (c.getObraNombre() != null ? " · Obra: " + c.getObraNombre() : "");
                 notificacionService.crearNotificacion(artistaUser, msg);
                 if (artistaUser.getFcmToken() != null && !artistaUser.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(artistaUser.getFcmToken(), "Nuevo contrato", msg);
@@ -230,7 +230,7 @@ public class AdminController {
             if (c.getCliente() != null) {
                 usuario cliente = c.getCliente();
                 String msg = "🎉 Tu contrato con " + c.getArtista().getArtist()
-                           + " fue aceptado para el " + c.getFechaEvento();
+                           + " fue aceptado para el " + c.getFechaEvento() + (c.getObraNombre() != null ? " · Obra: " + c.getObraNombre() : "");
                 notificacionService.crearNotificacion(cliente, msg);
                 if (cliente.getFcmToken() != null && !cliente.getFcmToken().isBlank())
                     notificationService.enviarNotificacion(cliente.getFcmToken(), "Contrato aceptado", msg);
