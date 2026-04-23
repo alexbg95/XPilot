@@ -362,8 +362,9 @@
                 <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Aceptar
               </button>
             </form>
-            <button type="button" class="xb xb-sm nd-btn"
+            <button type="button" class="xb xb-sm"
                     style="background:rgba(200,129,58,0.1);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);display:inline-flex;align-items:center;gap:5px;"
+                    data-bs-toggle="modal" data-bs-target="#modalNoDisponible"
                     th:attr="data-cid=${c.id},data-cnombre=${c.artista.artist}">
               <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/></svg>
             </button>
@@ -522,17 +523,15 @@ const msg=firebase.messaging();
 window.addEventListener("load",async()=>{try{const r=await navigator.serviceWorker.register("/firebase-messaging-sw.js");const p=await Notification.requestPermission();if(p!=="granted")return;const t=await msg.getToken({vapidKey:"BK2AResPV3NQc7F-ZHUIKVIuwbI4HS2QLI4otoYKWNVr2wEAgBegGjc7pzgrm-fLZKuaS49DTxs2mNTQSB8Mz8c",serviceWorkerRegistration:r});if(!t)return;await fetch("/guardar-fcm-token",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({token:t})});}catch(e){}});
 msg.onMessage(p=>{new Notification(p.notification.title,{body:p.notification.body,icon:"/media/avatar.png"});});
 
-// ── NO DISPONIBLE — event delegation definitivo ──────────────
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.nd-btn');
+// ── NO DISPONIBLE — Bootstrap show.bs.modal event ──────────────
+document.getElementById('modalNoDisponible').addEventListener('show.bs.modal', function(e) {
+  var btn = e.relatedTarget;
   if (!btn) return;
   var id     = btn.getAttribute('data-cid');
   var nombre = btn.getAttribute('data-cnombre');
   document.getElementById('ndArtista').textContent = nombre || '';
   document.getElementById('ndMensaje').value = '';
   document.getElementById('formNoDisponible').action = '/admin/no-disponible/' + id;
-  var modal = new bootstrap.Modal(document.getElementById('modalNoDisponible'));
-  modal.show();
 });
 
 let cur = "TODOS";
