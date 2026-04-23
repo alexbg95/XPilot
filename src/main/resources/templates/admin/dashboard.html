@@ -87,7 +87,7 @@
     .sol-fecha { text-align: center; min-width: 80px; }
     .sol-fecha-day { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; color: var(--white); }
     .sol-fecha-sub { font-size: 10px; color: var(--amber2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-    .sol-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .sol-actions { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
 
     /* ── ARTISTA ROW ── */
     .artista-row { display: flex; align-items: center; gap: 12px; }
@@ -406,7 +406,8 @@
                     th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
               <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
             </button>
-            <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post" style="margin:0;"
+            <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post"
+                  style="margin:0;display:inline-flex;"
                   onsubmit="return confirm('¿Rechazar este contrato? El artista volverá a estar disponible.')">
               <input type="hidden" name="_csrf" th:value="${_csrf.token}">
               <button type="submit" class="xb xb-danger xb-sm"
