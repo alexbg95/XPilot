@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function(){
 function admToast(msg) {
   var wrap = document.getElementById('admToastWrap');
   var t = document.createElement('div'); t.className = 'adm-toast';
-  t.innerHTML = '<div class="adm-toast-icon">✅</div><div class="adm-toast-body"><div class="adm-toast-title">Contrato aceptado</div><div class="adm-toast-msg">'+msg+'</div></div><button class="adm-toast-close" onclick="this.parentElement.classList.add('hide')">✕</button><div class="adm-toast-bar"></div>';
+  t.innerHTML = '<div class="adm-toast-icon">✅</div><div class="adm-toast-body"><div class="adm-toast-title">Contrato aceptado</div><div class="adm-toast-msg">'+msg+'</div></div><button class="adm-toast-close" onclick="this.parentElement.classList.add(\"hide\")">✕</button><div class="adm-toast-bar"></div>';
   wrap.appendChild(t);
   setTimeout(function(){ t.classList.add('hide'); setTimeout(function(){ t.remove(); }, 300); }, 4800);
 }
