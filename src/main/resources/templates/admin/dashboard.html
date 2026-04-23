@@ -6,7 +6,7 @@
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  
   <style>
     /* ── STATS ── */
     .stat-card {
@@ -150,16 +150,16 @@
     </div>
     <nav class="side-nav">
       <a href="#stats"       class="side-item active">
-        <i data-lucide="layout-dashboard"></i>Resumen
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Resumen
       </a>
       <a href="#artistas"    class="side-item">
-        <i data-lucide="palette"></i>Artistas
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>Artistas
       </a>
       <a href="#solicitudes" class="side-item">
-        <i data-lucide="inbox"></i>Solicitudes
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Solicitudes
       </a>
       <a href="#historial"   class="side-item">
-        <i data-lucide="scroll-text"></i>Historial
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-14a2 2 0 1 0-4 0v14c0 1.1.9 2 2 2zm10-14H8m8 4H8"/></svg>Historial
       </a>
     </nav>
     <div class="side-foot">
@@ -190,35 +190,35 @@
       <div id="stats" class="row g-3 mb-4">
         <div class="col-6 col-lg">
           <div class="stat-card amber">
-            <div class="stat-ico amber"><i data-lucide="users"></i></div>
+            <div class="stat-ico amber"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
             <div class="stat-num" th:text="${#lists.size(mediaList)}">0</div>
             <div class="stat-lbl">Artistas</div>
           </div>
         </div>
         <div class="col-6 col-lg">
           <div class="stat-card amber">
-            <div class="stat-ico amber"><i data-lucide="clock"></i></div>
+            <div class="stat-ico amber"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
             <div class="stat-num" th:text="${#lists.size(solicitudes)}">0</div>
             <div class="stat-lbl">Pendientes</div>
           </div>
         </div>
         <div class="col-6 col-lg">
           <div class="stat-card green">
-            <div class="stat-ico green"><i data-lucide="check-circle"></i></div>
+            <div class="stat-ico green"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
             <div class="stat-num" th:text="${#lists.size(aceptados)}">0</div>
             <div class="stat-lbl">Aceptados</div>
           </div>
         </div>
         <div class="col-6 col-lg">
           <div class="stat-card blue">
-            <div class="stat-ico blue"><i data-lucide="file-text"></i></div>
+            <div class="stat-ico blue"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
             <div class="stat-num" th:text="${#lists.size(todos)}">0</div>
             <div class="stat-lbl">Total contratos</div>
           </div>
         </div>
         <div class="col-6 col-lg">
           <div class="stat-card gold" style="border-color:rgba(200,129,58,0.3);">
-            <div class="stat-ico gold"><i data-lucide="dollar-sign"></i></div>
+            <div class="stat-ico gold"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <div class="stat-num" style="font-size:1.5rem;color:var(--amber2);"
                  th:text="'$' + ${#numbers.formatInteger(totalGanancias,1,'COMMA')}">$0</div>
             <div class="stat-lbl">Ganancias totales</div>
@@ -230,13 +230,13 @@
       <div id="artistas" class="section-wrap">
         <div class="section-head">
           <div class="section-title">
-            <i data-lucide="palette"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
             Artistas registrados
             <span style="font-size:11px;font-weight:400;color:var(--muted2);"
                   th:text="${#lists.size(mediaList)} + ' en total'"></span>
           </div>
           <a th:href="@{/admin/nuevo}" class="xb xb-amber xb-sm" style="display:flex;align-items:center;gap:6px;">
-            <i data-lucide="plus" style="width:14px;height:14px;"></i> Crear Artista
+            <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Crear Artista
           </a>
         </div>
         <div style="overflow-x:auto;">
@@ -255,8 +255,7 @@
                     <div class="artista-av">
                       <img th:if="${m.urlm != null and !#strings.isEmpty(m.urlm)}" th:src="${m.urlm}">
                       <img th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and m.tags != null and !#strings.isEmpty(m.tags)}" th:src="${m.tags}">
-                      <i th:if="${(m.urlm == null or #strings.isEmpty(m.urlm)) and (m.tags == null or #strings.isEmpty(m.tags))}"
-                         data-lucide="mic-2"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2a2 2 0 0 1 2 2v7a2 2 0 0 1-4 0V4a2 2 0 0 1 2-2z"/><path d="M19 11a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="16" y1="2" x2="16" y2="2"/></svg>
                     </div>
                     <div>
                       <div style="font-family:var(--serif);font-weight:600;" th:text="${m.artist}"></div>
@@ -292,12 +291,12 @@
                   <div style="display:flex;gap:6px;">
                     <a th:href="@{/admin/editar/{id}(id=${m.id})}" class="xb xb-outline xb-sm"
                        style="display:inline-flex;align-items:center;gap:5px;">
-                      <i data-lucide="pencil" style="width:13px;height:13px;"></i> Editar
+                      <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar
                     </a>
                     <a th:href="@{/admin/eliminar/{id}(id=${m.id})}" class="xb xb-danger xb-sm"
                        style="display:inline-flex;align-items:center;gap:5px;"
                        onclick="return confirm('¿Eliminar artista?')">
-                      <i data-lucide="trash-2" style="width:13px;height:13px;"></i> Eliminar
+                      <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Eliminar
                     </a>
                   </div>
                 </td>
@@ -316,7 +315,7 @@
       <div id="solicitudes" class="section-wrap">
         <div class="section-head">
           <div class="section-title">
-            <i data-lucide="inbox"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
             Solicitudes pendientes
             <span class="badge bdg-pending" th:text="${#lists.size(solicitudes)}"></span>
           </div>
@@ -325,19 +324,19 @@
         <div th:each="c : ${solicitudes}" class="solicitud-card">
           <div class="sol-avatar">
             <img th:if="${c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}" th:src="${c.artista.urlm}">
-            <i th:unless="${c.artista.urlm != null and !#strings.isEmpty(c.artista.urlm)}" data-lucide="mic-2"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2a2 2 0 0 1 2 2v7a2 2 0 0 1-4 0V4a2 2 0 0 1 2-2z"/><path d="M19 11a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="16" y1="2" x2="16" y2="2"/></svg>
           </div>
           <div class="sol-info">
             <div class="sol-name" th:text="${c.artista.artist}"></div>
             <div class="sol-meta">
-              <i data-lucide="user"></i>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <span th:text="${c.cliente.uname}"></span>
               <span th:if="${c.obraNombre != null}">·
                 <span class="badge bdg-art obra-tag" th:text="${c.obraNombre}"></span>
               </span>
             </div>
             <div class="sol-meta" th:if="${c.fechaSolicitud != null}" style="margin-top:3px;">
-              <i data-lucide="send"></i>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               <span style="color:var(--amber2);"
                     th:text="${#temporals.format(c.fechaSolicitud,'dd MMM yyyy HH:mm')} + ' hrs'"></span>
             </div>
@@ -360,20 +359,20 @@
               </div>
               <button class="xb xb-success xb-sm"
                       style="display:inline-flex;align-items:center;gap:5px;">
-                <i data-lucide="check" style="width:14px;height:14px;"></i> Aceptar
+                <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Aceptar
               </button>
             </form>
             <button class="xb xb-sm"
                     style="background:rgba(200,129,58,0.1);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);display:inline-flex;align-items:center;gap:5px;"
                     th:attr="onclick='abrirNoDisponible(' + ${c.id} + ', \'' + ${c.artista.artist} + '\')'">
-              <i data-lucide="calendar-x" style="width:14px;height:14px;"></i>
+              <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/></svg>
             </button>
             <form th:action="@{/admin/rechazar/{id}(id=${c.id})}" method="post"
                   style="display:inline-flex;"
                   onsubmit="return confirm('¿Rechazar este contrato? El artista volverá a estar disponible.')">
               <button type="submit" class="xb xb-danger xb-sm"
                       style="display:inline-flex;align-items:center;gap:5px;">
-                <i data-lucide="x" style="width:14px;height:14px;"></i> Rechazar
+                <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Rechazar
               </button>
             </form>
           </div>
@@ -381,7 +380,7 @@
 
         <div th:if="${#lists.isEmpty(solicitudes)}"
              style="padding:3rem;text-align:center;color:var(--muted2);">
-          <i data-lucide="inbox" style="width:2.5rem;height:2.5rem;margin-bottom:12px;opacity:0.3;"></i>
+          <svg style="width:2.5rem;height:2.5rem;margin-bottom:12px;opacity:0.3;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
           <div>No hay solicitudes pendientes</div>
         </div>
       </div>
@@ -390,7 +389,7 @@
       <div id="historial" class="section-wrap">
         <div class="section-head">
           <div class="section-title">
-            <i data-lucide="scroll-text"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-14a2 2 0 1 0-4 0v14c0 1.1.9 2 2 2zm10-14H8m8 4H8"/></svg>
             Historial de contrataciones
           </div>
           <div class="filter-tabs">
@@ -400,7 +399,7 @@
             <button class="ftab f-red"   onclick="filtrar('RECHAZADO',this)">Rechazados</button>
             <button class="ftab f-blue"  onclick="filtrar('FINALIZADO',this)">Finalizados</button>
             <div style="position:relative;">
-              <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none;"></i>
+              <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none;" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="text" id="buscador" placeholder="Buscar..." oninput="buscar(this.value)"
                      style="background:var(--bg3);border:1px solid var(--border);color:var(--white);border-radius:var(--r);padding:6px 12px 6px 30px;font-family:var(--sans);font-size:12px;outline:none;width:140px;">
             </div>
@@ -419,7 +418,7 @@
                 <td style="color:var(--muted);font-size:12px;" th:text="${c.id}"></td>
                 <td>
                   <div style="display:flex;align-items:center;gap:6px;">
-                    <i data-lucide="user" style="width:13px;height:13px;color:var(--muted);"></i>
+                    <svg style="width:13px;height:13px;color:var(--muted);" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <span style="font-weight:600;" th:text="${c.cliente.uname}"></span>
                   </div>
                 </td>
@@ -431,7 +430,7 @@
                 </td>
                 <td>
                   <div th:if="${c.fechaEvento != null}" style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--off);">
-                    <i data-lucide="calendar" style="width:12px;height:12px;color:var(--muted);"></i>
+                    <svg style="width:12px;height:12px;color:var(--muted);" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span th:text="${#temporals.format(c.fechaEvento,'dd MMM yyyy')}"></span>
                   </div>
                   <span th:unless="${c.fechaEvento != null}" style="color:var(--muted);">—</span>
@@ -457,7 +456,7 @@
                   <form th:if="${c.estado == 'ACEPTADO'}" th:action="'/admin/finalizar/' + ${c.id}" method="post">
                     <button class="xb xb-sm"
                             style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);display:inline-flex;align-items:center;gap:5px;">
-                      <i data-lucide="flag" style="width:13px;height:13px;"></i> Finalizar
+                      <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> Finalizar
                     </button>
                   </form>
                   <span th:unless="${c.estado == 'ACEPTADO'}" style="color:var(--muted);font-size:12px;">—</span>
@@ -482,7 +481,7 @@
     <div class="modal-content" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);">
       <div class="modal-header" style="border-bottom:1px solid var(--border);">
         <div style="display:flex;align-items:center;gap:10px;">
-          <i data-lucide="calendar-x" style="width:20px;height:20px;color:var(--amber2);"></i>
+          <svg style="width:20px;height:20px;color:var(--amber2);" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/></svg>
           <div>
             <h5 class="modal-title" style="font-family:var(--serif);font-size:1.1rem;margin:0;">Artista no disponible</h5>
             <small style="color:var(--muted2);">El usuario recibirá una notificación</small>
@@ -492,7 +491,7 @@
       </div>
       <div class="modal-body" style="padding:1.5rem;">
         <div style="margin-bottom:1rem;padding:10px 14px;background:rgba(200,129,58,0.08);border:1px solid rgba(200,129,58,0.2);border-radius:var(--r);font-size:13px;color:var(--amber2);display:flex;align-items:center;gap:8px;">
-          <i data-lucide="user" style="width:14px;height:14px;flex-shrink:0;"></i>
+          <svg style="width:14px;height:14px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Artista: <strong id="ndArtista" style="color:var(--white);"></strong>
         </div>
         <form id="formNoDisponible" method="post">
@@ -505,7 +504,7 @@
           </div>
           <button type="submit" class="xb xb-amber xb-lg xb-full"
                   style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
-            <i data-lucide="send" style="width:15px;height:15px;"></i>
+            <svg style="width:15px;height:15px;" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Enviar notificación
           </button>
         </form>
@@ -553,7 +552,7 @@ function ap(t = "") {
 
 // Inicializar iconos Lucide
 document.addEventListener('DOMContentLoaded', function(){
-  lucide.createIcons();
+  
 
   // Fecha mínima: hoy
   var hoy=new Date(), y=hoy.getFullYear();
