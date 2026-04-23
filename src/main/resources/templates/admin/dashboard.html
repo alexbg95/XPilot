@@ -136,6 +136,10 @@
     .adm-toast-close { background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0; }
     .adm-toast-bar  { position:absolute; bottom:0; left:0; height:2px; background:#4caf80; border-radius:2px; animation:admBar 4.5s linear forwards; }
     @keyframes admBar { from{width:100%} to{width:0%} }
+
+    /* Ocultar ícono nativo del input date */
+    .fecha-evento-input::-webkit-calendar-picker-indicator { display: none; }
+    .fecha-evento-input::-webkit-inner-spin-button { display: none; }
   </style>
 </head>
 <body>
