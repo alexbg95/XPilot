@@ -3,6 +3,7 @@ package com.XPilot.XPilot.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "notificacion")
@@ -24,7 +25,7 @@ public class Notificacion {
     private boolean leido = false;
 
     @Column(name = "fecha")
-    private LocalDateTime fecha = LocalDateTime.now();
+    private LocalDateTime fecha = LocalDateTime.now(ZoneId.of("America/Bogota"));
 
     // ── Getters & Setters ──────────────────────────────────────────
 
