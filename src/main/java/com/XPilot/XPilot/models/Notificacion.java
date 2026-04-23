@@ -2,6 +2,7 @@ package com.XPilot.XPilot.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notificacion")
@@ -22,6 +23,9 @@ public class Notificacion {
     @Column(nullable = false)
     private boolean leido = false;
 
+    @Column(name = "fecha")
+    private LocalDateTime fecha = LocalDateTime.now();
+
     // ── Getters & Setters ──────────────────────────────────────────
 
     public Long getId() { return id; }
@@ -35,4 +39,7 @@ public class Notificacion {
 
     public boolean isLeido() { return leido; }
     public void setLeido(boolean leido) { this.leido = leido; }
+
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 }
