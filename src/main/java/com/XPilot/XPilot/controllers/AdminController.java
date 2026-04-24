@@ -47,9 +47,17 @@ public class AdminController {
     public String adminDashboard(Model model){
         List<media> todosArtistas = mediaRepo.findAll();
 
+        // Ordenar todos los contratos por fecha de solicitud más reciente primero
+        java.util.List<com.XPilot.XPilot.models.Contratacion> todosOrdenados = new java.util.ArrayList<>(contratacionRepo.findAll());
+        todosOrdenados.sort((a, b) -> {
+            if (a.getFechaSolicitud() == null) return 1;
+            if (b.getFechaSolicitud() == null) return -1;
+            return b.getFechaSolicitud().compareTo(a.getFechaSolicitud());
+        });
+
         model.addAttribute("mediaList",   todosArtistas);
         model.addAttribute("solicitudes", contratacionRepo.findByEstado("PENDIENTE"));
-        model.addAttribute("todos",       contratacionRepo.findAll());
+        model.addAttribute("todos",       todosOrdenados);
         model.addAttribute("aceptados",   contratacionRepo.findByEstado("ACEPTADO"));
         model.addAttribute("rechazados",  contratacionRepo.findByEstado("RECHAZADO"));
 
