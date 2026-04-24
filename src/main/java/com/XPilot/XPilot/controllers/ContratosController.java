@@ -40,7 +40,13 @@ public class ContratosController {
         Set<Contratacion> todosSet = new HashSet<>();
         todosSet.addAll(comoCliente);
         todosSet.addAll(comoArtista);
-        model.addAttribute("contratos", new ArrayList<>(todosSet));
+        List<Contratacion> ordenados = new ArrayList<>(todosSet);
+        ordenados.sort((a, b) -> {
+            if (a.getFechaSolicitud() == null) return 1;
+            if (b.getFechaSolicitud() == null) return -1;
+            return b.getFechaSolicitud().compareTo(a.getFechaSolicitud());
+        });
+        model.addAttribute("contratos", ordenados);
         return "mis-contratos";
     }
 
