@@ -45,15 +45,21 @@
 
     .tabs-wrap { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .tab-pill {
-      padding: 6px 18px; border-radius: 20px; font-size: 11px;
+      padding: 7px 20px; border-radius: 20px; font-size: 11px;
       font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
       cursor: pointer; border: 1px solid var(--border);
       background: transparent; color: var(--muted2);
-      transition: all 0.2s; font-family: var(--sans);
+      transition: all 0.22s; font-family: var(--sans);
+      display: inline-flex; align-items: center; gap: 7px;
     }
-    .tab-pill.active, .tab-pill:hover {
-      background: rgba(200,129,58,0.1); color: var(--amber2);
-      border-color: rgba(200,129,58,0.35);
+    .tab-pill.active {
+      background: rgba(200,129,58,0.12); color: var(--amber2);
+      border-color: rgba(200,129,58,0.45);
+      box-shadow: 0 0 12px rgba(200,129,58,0.12);
+    }
+    .tab-pill:hover:not(.active) {
+      background: rgba(200,129,58,0.06); color: var(--amber2);
+      border-color: rgba(200,129,58,0.25);
     }
 
     /* Banner alerta fecha rechazada */
@@ -98,7 +104,7 @@
     .ocupado-close:hover { color:var(--white); }
 
     /* ── NOTIFICACIONES TIMELINE ──────────────────────────────────── */
-    .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); overflow: visible; position: sticky; top: 80px; }
+    .notif-panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: visible; position: sticky; top: 80px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
     .notif-panel-header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .notif-panel-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
     .notif-badge-count { background: var(--amber); color: #1a1208; font-size: 10px; font-weight: 800; font-family: var(--sans); border-radius: 20px; padding: 2px 7px; letter-spacing: 0.05em; display: none; }
@@ -129,6 +135,7 @@
     .ntl-item.fecha     { border-left-color: var(--amber3); }
     .ntl-item.info      { border-left-color: #a0a0ff; }
     @keyframes ntlFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
 
     /* Línea vertical */
     .ntl-line { display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0; padding-top: 16px; }
@@ -234,11 +241,13 @@
   </div>
 </nav>
 
-<div style="padding:calc(58px + 2rem) 0 2.5rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2),var(--bg));">
+<div style="padding:calc(58px + 2.5rem) 0 3rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2),var(--bg));position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 700px 300px at 60% 50%,rgba(200,129,58,0.04),transparent);pointer-events:none;"></div>
+  <div style="position:absolute;right:-1%;bottom:-10%;font-family:var(--serif);font-size:12rem;font-weight:700;color:transparent;-webkit-text-stroke:1px rgba(200,129,58,0.03);user-select:none;pointer-events:none;line-height:1;">CONTRATOS</div>
   <div class="container">
-    <div class="sec-eyebrow fu">Mi actividad</div>
-    <h1 style="font-family:var(--serif);font-size:3rem;font-weight:600;" class="fu d1">Mis Contratos</h1>
-    <p style="color:var(--muted2);font-size:15px;margin-top:6px;" class="fu d2">Historial de tus contrataciones y notificaciones</p>
+    <div class="sec-eyebrow fu" style="position:relative;z-index:1;">Mi actividad</div>
+    <h1 style="font-family:var(--serif);font-size:clamp(2.5rem,5vw,3.5rem);font-weight:600;line-height:1.1;position:relative;z-index:1;" class="fu d1">Mis <em style="font-style:italic;color:var(--amber2);">Contratos</em></h1>
+    <p style="color:var(--muted2);font-size:15px;margin-top:8px;position:relative;z-index:1;" class="fu d2">Historial de tus contrataciones y notificaciones en tiempo real</p>
   </div>
 </div>
 
@@ -270,7 +279,7 @@
         <button class="tab-pill" onclick="filtrarContratos('FINALIZADO', this)">Finalizados</button>
       </div>
 
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.25);">
         <div style="overflow-x:auto;">
           <table class="tbl" id="tablaContratos">
             <thead>
@@ -322,11 +331,11 @@
                   <span th:unless="${c.fechaSolicitud != null}" style="color:var(--muted);font-size:13px;">—</span>
                 </td>
                 <td>
-                  <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending">Pendiente</span>
-                  <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok">Aceptado</span>
-                  <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no">Rechazado</span>
-                  <span th:if="${c.estado == 'FINALIZADO'}"      class="badge" style="background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);">Finalizado</span>
-                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);">Fecha rechazada</span>
+                  <span th:if="${c.estado == 'PENDIENTE'}"       class="badge bdg-pending" style="display:inline-flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;flex-shrink:0;"></span>Pendiente</span>
+                  <span th:if="${c.estado == 'ACEPTADO'}"        class="badge bdg-ok" style="display:inline-flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;"></span>Aceptado</span>
+                  <span th:if="${c.estado == 'RECHAZADO'}"       class="badge bdg-no" style="display:inline-flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;"></span>Rechazado</span>
+                  <span th:if="${c.estado == 'FINALIZADO'}"      class="badge" style="display:inline-flex;align-items:center;gap:5px;background:rgba(100,100,255,0.15);color:#a0a0ff;border:1px solid rgba(100,100,255,0.2);"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;"></span>Finalizado</span>
+                  <span th:if="${c.estado == 'FECHA_RECHAZADA'}" class="badge" style="display:inline-flex;align-items:center;gap:5px;background:rgba(200,129,58,0.15);color:var(--amber2);border:1px solid rgba(200,129,58,0.3);"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;flex-shrink:0;"></span>Fecha rechazada</span>
                 </td>
                 <td>
                   <span th:if="${c.estado == 'FECHA_RECHAZADA'}" style="color:var(--amber2);font-size:12px;font-weight:700;">↑ Ingresa fecha</span>
@@ -334,10 +343,11 @@
                 </td>
               </tr>
               <tr th:if="${contratos == null or #lists.isEmpty(contratos)}">
-                <td colspan="6" style="text-align:center;padding:5rem;color:var(--muted2);">
-                  <div style="font-size:3rem;margin-bottom:1rem;">🎵</div>
-                  <div style="font-family:var(--serif);font-size:1.2rem;">Aún no has contratado ningún artista</div>
-                  <a href="/gallery" class="xb xb-amber xb-sm" style="margin-top:1.25rem;display:inline-flex;">Explorar galería →</a>
+                <td colspan="6" style="text-align:center;padding:5rem 2rem;color:var(--muted2);">
+                  <div style="font-size:3.5rem;margin-bottom:1.25rem;filter:grayscale(0.2);">🎵</div>
+                  <div style="font-family:var(--serif);font-size:1.4rem;color:var(--white);margin-bottom:8px;">Aún no has contratado ningún artista</div>
+                  <div style="font-size:13px;color:var(--muted2);margin-bottom:1.5rem;">Explora nuestra galería y encuentra el artista perfecto para tu evento</div>
+                  <a href="/gallery" class="xb xb-amber xb-sm" style="display:inline-flex;">Explorar galería →</a>
                 </td>
               </tr>
             </tbody>

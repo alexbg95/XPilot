@@ -34,10 +34,22 @@
     .filter-btn {
       font-family: var(--sans); font-size: 11px; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 7px 18px; border-radius: 20px; cursor: pointer;
+      padding: 7px 20px; border-radius: 20px; cursor: pointer;
       background: transparent; color: var(--muted2);
       border: 1px solid var(--border); transition: all 0.25s;
       position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .filter-count {
+      background: var(--bg3); color: var(--muted);
+      font-size: 9px; font-weight: 800;
+      padding: 1px 6px; border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all 0.25s;
+    }
+    .filter-btn.active .filter-count, .filter-btn:hover .filter-count {
+      background: rgba(200,129,58,0.15); color: var(--amber2);
+      border-color: rgba(200,129,58,0.3);
     }
     .filter-btn::before {
       content: ''; position: absolute; inset: 0;
@@ -72,9 +84,9 @@
       position: relative; background: var(--bg3);
       border: 1px solid var(--border); border-radius: var(--r);
       padding: 8px 14px; cursor: pointer; color: var(--muted2);
-      font-size: 16px; transition: all 0.2s;
+      font-size: 16px; transition: all 0.25s;
     }
-    .notif-btn:hover { border-color: var(--border2); color: var(--white); }
+    .notif-btn:hover { border-color: rgba(200,129,58,0.4); color: var(--amber2); background: rgba(200,129,58,0.05); }
     .notif-count {
       position: absolute; top: -6px; right: -6px;
       background: var(--amber); color: #1a1208;
@@ -97,14 +109,15 @@
     }
     .masonry-item {
       break-inside: avoid; margin-bottom: 16px;
-      border-radius: var(--r2); overflow: hidden;
+      border-radius: 16px; overflow: hidden;
       position: relative; cursor: pointer;
       background: var(--bg3);
       transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s;
+      border: 1px solid rgba(255,255,255,0.04);
     }
     .masonry-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      transform: translateY(-7px);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,129,58,0.15);
     }
     .masonry-item.hidden {
       display: none;
@@ -125,14 +138,14 @@
       position: absolute; inset: 0;
       background: linear-gradient(
         to top,
-        rgba(0,0,0,0.97) 0%,
-        rgba(0,0,0,0.6) 45%,
-        rgba(0,0,0,0.1) 75%,
+        rgba(0,0,0,0.98) 0%,
+        rgba(0,0,0,0.65) 40%,
+        rgba(0,0,0,0.15) 70%,
         transparent 100%
       );
-      opacity: 0; transition: opacity 0.35s;
+      opacity: 0; transition: opacity 0.3s;
       display: flex; flex-direction: column;
-      justify-content: flex-end; padding: 1.25rem;
+      justify-content: flex-end; padding: 1.4rem;
       z-index: 3;
     }
     .masonry-item:hover .masonry-overlay { opacity: 1; }
@@ -236,8 +249,8 @@
   <div class="gallery-header-bg" aria-hidden="true">GALERÍA</div>
   <div class="container" style="position:relative;z-index:1;">
     <div class="sec-eyebrow fu">Directorio de artistas</div>
-    <h1 style="font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;margin:0;" class="fu d1">Galería de Arte</h1>
-    <p style="color:var(--muted2);font-size:15px;margin-top:8px;" class="fu d2">Explora artistas únicos y contrátalos para tu próximo proyecto</p>
+    <h1 style="font-family:var(--serif);font-size:clamp(2.2rem,5vw,4rem);font-weight:600;margin:0;line-height:1.1;" class="fu d1">Galería de <em style="font-style:italic;color:var(--amber2);">Arte</em></h1>
+    <p style="color:var(--muted2);font-size:15px;margin-top:10px;max-width:480px;line-height:1.8;" class="fu d2">Explora artistas únicos y contrátalos para tu próximo proyecto o evento especial.</p>
 
     <!-- FILTROS -->
     <div class="filter-wrap fu d3">
@@ -284,8 +297,8 @@
           </div>
         </div>
         <div class="masonry-actions" onclick="event.stopPropagation()">
-          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-outline xb-sm" style="flex:1;justify-content:center;">Ver obras</a>
-          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-amber xb-sm" style="flex:1;justify-content:center;">Contratar</a>
+          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-outline xb-sm" style="flex:1;justify-content:center;font-size:10px;">Ver obras</a>
+          <a th:href="@{/artista/{id}(id=${m.id})}" class="xb xb-amber xb-sm" style="flex:1;justify-content:center;font-size:10px;letter-spacing:0.06em;">Contratar →</a>
         </div>
       </div>
     </div>
@@ -301,9 +314,10 @@
 
   <!-- Empty filtrado -->
   <div id="noResults" style="display:none;" class="empty-state">
-    <div class="empty-state-icon">🔍</div>
-    <div style="font-family:var(--serif);font-size:1.4rem;margin-bottom:8px;">Sin resultados</div>
-    <div style="font-size:14px;color:var(--muted2);">Prueba con otro filtro o búsqueda</div>
+    <div class="empty-state-icon" style="font-size:3.5rem;margin-bottom:1.25rem;filter:grayscale(0.3);">🔍</div>
+    <div style="font-family:var(--serif);font-size:1.6rem;margin-bottom:10px;color:var(--white);">Sin resultados</div>
+    <div style="font-size:14px;color:var(--muted2);margin-bottom:1.5rem;">Prueba con otro filtro o búsqueda diferente</div>
+    <button class="xb xb-outline xb-sm" onclick="filtrar('todos',document.querySelector('.filter-btn'))">Ver todos los artistas</button>
   </div>
 </div>
 
@@ -382,11 +396,25 @@ items.forEach(item => {
   if (style) styleSet.add(style);
 });
 
+// Contar artistas por estilo
+const styleCounts = {};
+items.forEach(item => {
+  const s = item.getAttribute('data-style');
+  if (s) styleCounts[s] = (styleCounts[s] || 0) + 1;
+});
+// Añadir contadores a filtros fijos
+const totalCount = items.length;
+document.querySelector('.filter-btn.active').innerHTML = 'Todos <span class="filter-count">' + totalCount + '</span>';
+const dispCount = [...items].filter(i => i.getAttribute('data-disponible') === 'true').length;
+const dispBtn = document.querySelectorAll('.filter-btn')[1];
+if (dispBtn) dispBtn.innerHTML = 'Disponibles <span class="filter-count">' + dispCount + '</span>';
+
 const styleFilters = document.getElementById('styleFilters');
 styleSet.forEach(style => {
   const btn = document.createElement('button');
   btn.className = 'filter-btn';
-  btn.textContent = style;
+  const count = styleCounts[style] || 0;
+  btn.innerHTML = style + ' <span class="filter-count">' + count + '</span>';
   btn.onclick = () => filtrar('style:' + style, btn);
   styleFilters.appendChild(btn);
 });

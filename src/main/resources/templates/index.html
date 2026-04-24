@@ -71,6 +71,8 @@
     .hero-title em {
       font-style: italic; color: transparent;
       -webkit-text-stroke: 1.5px var(--amber2);
+      text-shadow: none;
+      filter: drop-shadow(0 0 30px rgba(200,129,58,0.25));
     }
     /* Texto que cambia */
     .rotating-text {
@@ -108,11 +110,11 @@
     .hero-meta-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 6px }
 
     /* Mosaic */
-    .mosaic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 200px 160px; gap: 10px }
-    .mosaic-cell { border-radius: var(--r2); overflow: hidden; position: relative; background: var(--bg3) }
+    .mosaic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 220px 175px; gap: 14px }
+    .mosaic-cell { border-radius: 18px; overflow: hidden; position: relative; background: var(--bg3); box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: box-shadow 0.4s; }
     .mosaic-cell:first-child { grid-row: span 2 }
-    .mosaic-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease }
-    .mosaic-cell:hover img { transform: scale(1.05) }
+    .mosaic-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .mosaic-cell:hover img { transform: scale(1.09); } .mosaic-cell:hover { box-shadow: 0 16px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,129,58,0.15); }
     .mosaic-cell::after {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.4), transparent 50%);
@@ -131,15 +133,16 @@
       padding: 2.5rem;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--r2);
+      border-radius: 20px;
       position: relative;
       overflow: hidden;
-      transition: border-color 0.3s, transform 0.3s;
+      transition: border-color 0.3s, transform 0.35s, box-shadow 0.35s;
       height: 100%;
     }
     .feat-card:hover {
-      border-color: var(--border3);
-      transform: translateY(-4px);
+      border-color: rgba(200,129,58,0.4);
+      transform: translateY(-8px);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,129,58,0.06);
     }
     .feat-card::before {
       content: '';
@@ -187,8 +190,11 @@
       font-size: clamp(3rem, 6vw, 5rem);
       font-weight: 300; color: var(--white);
       line-height: 1;
+      background: linear-gradient(135deg, #fff 50%, rgba(200,129,58,0.5));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .stat-item-val span { color: var(--amber2); }
+    .stat-item-val span { background: linear-gradient(135deg, var(--amber2), #f0c070); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .stat-item-lbl {
       font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
       text-transform: uppercase; color: var(--muted); margin-top: 10px;
@@ -214,9 +220,11 @@
     }
     .masonry-item img {
       width: 100%; display: block;
-      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
     }
-    .masonry-item:hover img { transform: scale(1.06); }
+    .masonry-item { transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s; }
+    .masonry-item:hover { transform: translateY(-6px); box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,129,58,0.12); }
+    .masonry-item:hover img { transform: scale(1.07); }
     .masonry-overlay {
       position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
@@ -228,13 +236,17 @@
     .masonry-name { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: #fff; }
     .masonry-style { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber2); margin-top: 4px; }
     .masonry-btn {
-      margin-top: 12px; padding: 8px 16px;
-      background: var(--amber); color: #000;
-      border-radius: var(--r); font-size: 12px; font-weight: 700;
+      margin-top: 12px; padding: 8px 20px;
+      background: rgba(200,129,58,0.85);
+      backdrop-filter: blur(8px);
+      color: #000;
+      border-radius: 10px; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.04em;
       display: inline-block; text-decoration: none;
-      transition: background 0.2s;
+      border: 1px solid rgba(200,129,58,0.4);
+      transition: background 0.2s, transform 0.2s;
     }
-    .masonry-btn:hover { background: var(--amber2); color: #000; }
+    .masonry-btn:hover { background: var(--amber2); color: #000; transform: translateX(4px); }
     .masonry-disponible {
       position: absolute; top: 12px; right: 12px;
       padding: 3px 10px; border-radius: 20px;
@@ -306,6 +318,10 @@
           <div th:if="${usuarioLogueado}">
             <a th:href="@{/gallery}" class="xb xb-amber xb-xl">Explorar galería →</a>
           </div>
+          <div th:unless="${usuarioLogueado}" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a th:href="@{/login-view}" class="xb xb-amber xb-xl">Empezar ahora →</a>
+            <a th:href="@{/register}" class="xb xb-outline xb-xl">Crear cuenta</a>
+          </div>
         </div>
         <div class="hero-meta fu d4" th:if="${mediaList != null}">
           <div><div class="hero-meta-val counter" data-target th:attr="data-target=${mediaList.size()}">0</div><div class="hero-meta-lbl">Artistas</div></div>
@@ -356,8 +372,8 @@
   <div class="container">
     <div style="text-align:center;max-width:500px;margin:0 auto 5rem;">
       <div class="sec-eyebrow" style="justify-content:center;"><span>Cómo funciona</span></div>
-      <h2 style="font-family:var(--serif);font-size:3rem;font-weight:600;">Tres pasos<br>para el arte</h2>
-      <p style="color:var(--muted2);font-size:15px;margin-top:1rem;line-height:1.7;">Conectamos talento con oportunidades de forma simple, rápida y profesional.</p>
+      <h2 style="font-family:var(--serif);font-size:3rem;font-weight:600;line-height:1.15;">Tres pasos<br><em style="font-style:italic;color:var(--amber2);">para el arte</em></h2>
+      <p style="color:var(--muted2);font-size:15px;margin-top:1.25rem;line-height:1.8;">Conectamos talento con oportunidades de forma simple, rápida y profesional.</p>
     </div>
     <div class="row g-4">
       <div class="col-md-4 fu">
@@ -403,12 +419,13 @@
 <!-- MASONRY ARTISTAS -->
 <section class="artists-sec" th:if="${mediaList != null and !#lists.isEmpty(mediaList)}">
   <div class="container">
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border);">
       <div>
         <div class="sec-eyebrow">Talento disponible</div>
-        <h2 style="font-family:var(--serif);font-size:3rem;font-weight:600;">Artistas<br>Destacados</h2>
+        <h2 style="font-family:var(--serif);font-size:3rem;font-weight:600;line-height:1.1;">Artistas<br><em style="font-style:italic;color:var(--amber2);">Destacados</em></h2>
+        <p style="color:var(--muted2);font-size:14px;margin-top:0.5rem;">Explora el talento que transforma eventos en experiencias únicas</p>
       </div>
-      <a th:href="${usuarioLogueado ? '/gallery' : '/login-view'}" class="xb xb-outline xb-sm">Ver todos →</a>
+      <a th:href="${usuarioLogueado ? '/gallery' : '/login-view'}" class="xb xb-outline xb-sm" style="white-space:nowrap;">Ver galería completa →</a>
     </div>
     <div class="masonry-grid">
       <div class="masonry-item fu" th:each="m,i : ${mediaList}"
